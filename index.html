@@ -1,0 +1,1609 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+<title>Matsya-Vedh — The Archer's Trial</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Manrope:wght@400;500;600;700&family=Work+Sans:wght@600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
+<style>
+  :root {
+    --bg:            #131407;
+    --bg-2:          #0e0f03;
+    --surface-1:     #1f2111;
+    --surface-2:     #2a2b1b;
+    --surface-3:     #343625;
+    --gold:          #e9c349;
+    --gold-dim:      #af8d11;
+    --vermilion:     #e74b38;
+    --ice:           #b1c8e9;
+    --text:          #e4e4cc;
+    --text-dim:      #c4c6ce;
+
+    --font-display: 'Cinzel', serif;
+    --font-body:    'Manrope', sans-serif;
+    --font-label:   'Work Sans', sans-serif;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+
+  html, body { height: 100%; }
+
+  body {
+    font-family: var(--font-body);
+    background:
+      radial-gradient(circle at 50% 0%, rgba(233,195,73,0.08), transparent 55%),
+      radial-gradient(circle at 50% 100%, rgba(231,75,56,0.06), transparent 55%),
+      var(--bg-2);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: var(--text);
+    padding: 26px 16px;
+    overflow-x: hidden;
+  }
+
+  /* ---------- Top bar ---------- */
+  .topbar {
+    display: flex; align-items: center; gap: 14px;
+    background: rgba(31,33,17,0.65);
+    backdrop-filter: blur(14px);
+    border: 1px solid rgba(233,195,73,0.25);
+    padding: 9px 22px;
+    border-radius: 999px;
+    margin-bottom: 16px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+  }
+  .topbar .mark {
+    width: 26px; height: 26px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    background: radial-gradient(circle, rgba(233,195,73,0.25), transparent 70%);
+    border: 1px solid rgba(233,195,73,0.5);
+    color: var(--gold);
+  }
+  .topbar .mark svg { width: 14px; height: 14px; }
+  .topbar h1 {
+    font-family: var(--font-display);
+    font-size: 16px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--gold);
+    font-weight: 600;
+  }
+  .topbar .tag {
+    font-family: var(--font-label);
+    font-size: 10px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    opacity: 0.7;
+    border-left: 1px solid rgba(233,195,73,0.25);
+    padding-left: 14px;
+  }
+
+  /* ---------- Stage ---------- */
+  .stage-wrap { position: relative; width: min(92vw, 780px); }
+
+  .stage {
+    position: relative;
+    border-radius: 18px;
+    background: linear-gradient(160deg, var(--surface-2), var(--bg-2) 70%);
+    border: 1px solid rgba(233,195,73,0.22);
+    box-shadow: 0 30px 70px -20px rgba(0,0,0,0.75), inset 0 0 40px rgba(0,0,0,0.6);
+    padding: 4px;
+  }
+
+  .stage-inner { position: relative; border-radius: 15px; overflow: hidden; background: var(--bg); }
+
+  .ornament-corner {
+    position: absolute; width: 26px; height: 26px;
+    border: 1px solid var(--gold);
+    box-shadow: 0 0 15px rgba(233,195,73,0.45);
+    z-index: 6; pointer-events: none;
+  }
+  .corner-tl { top: 8px; left: 8px; border-right: 0; border-bottom: 0; border-top-left-radius: 6px; }
+  .corner-tr { top: 8px; right: 8px; border-left: 0; border-bottom: 0; border-top-right-radius: 6px; }
+  .corner-bl { bottom: 8px; left: 8px; border-right: 0; border-top: 0; border-bottom-left-radius: 6px; }
+  .corner-br { bottom: 8px; right: 8px; border-left: 0; border-top: 0; border-bottom-right-radius: 6px; }
+
+  canvas#gameCanvas { display: block; width: 100%; height: auto; cursor: none; }
+
+  /* ---------- HUD pills ---------- */
+  .hud {
+    position: absolute; top: 14px; left: 14px; right: 14px;
+    display: flex; justify-content: space-between; gap: 10px; z-index: 5; pointer-events: none;
+  }
+
+  .pill {
+    display: flex; align-items: center; gap: 8px;
+    background: rgba(42,43,27,0.72);
+    backdrop-filter: blur(14px);
+    border: 1px solid rgba(233,195,73,0.3);
+    border-radius: 999px;
+    padding: 7px 16px 7px 12px;
+    box-shadow: 0 0 15px rgba(233,195,73,0.08), 0 4px 12px rgba(0,0,0,0.4);
+    transition: transform 0.18s ease, filter 0.18s ease;
+  }
+  .pill.is-pulsing { animation: pillPulse 0.4s ease-out; }
+  @keyframes pillPulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.08); filter: brightness(1.25); }
+    100% { transform: scale(1); filter: brightness(1); }
+  }
+
+  .pill .icon { font-family: 'Material Symbols Outlined'; font-size: 17px; color: var(--gold); }
+  .pill .label {
+    font-family: var(--font-label); font-size: 9px; letter-spacing: 0.16em;
+    text-transform: uppercase; color: var(--gold-dim); display: block; line-height: 1.1;
+  }
+  .pill .value { font-family: var(--font-display); font-size: 16px; font-weight: 600; color: var(--text); line-height: 1.25; }
+
+  .arrow-pips { display: flex; gap: 3px; margin-top: 2px; }
+  .arrow-pips .pip { width: 5px; height: 14px; border-radius: 3px; background: rgba(233,195,73,0.22); }
+  .arrow-pips .pip.filled { background: var(--gold); box-shadow: 0 0 6px rgba(233,195,73,0.7); }
+
+  .sound-btn {
+    position: absolute; top: 14px; left: 50%; transform: translateX(-50%); z-index: 5;
+    background: rgba(19,20,7,0.7); border: 1px solid rgba(233,195,73,0.35); border-radius: 50%;
+    width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;
+    cursor: pointer; color: var(--gold); transition: background 0.15s, transform 0.15s;
+  }
+  .sound-btn:hover { background: rgba(233,195,73,0.15); transform: translateX(-50%) scale(1.06); }
+  .sound-btn .icon { font-family: 'Material Symbols Outlined'; font-size: 16px; }
+  .sound-btn:focus-visible, button:focus-visible { outline: 2px solid var(--vermilion); outline-offset: 2px; }
+
+  /* ---------- Draw strength bar ---------- */
+  .draw-strength {
+    position: absolute; bottom: 16px; left: 50%; transform: translateX(-50%);
+    width: 220px; z-index: 6; pointer-events: none;
+    display: flex; flex-direction: column; align-items: center; gap: 6px;
+    opacity: 0; transition: opacity 0.2s ease;
+  }
+  .draw-strength.active { opacity: 1; }
+  .draw-strength .label {
+    font-family: var(--font-label); font-size: 9px; letter-spacing: 0.28em;
+    text-transform: uppercase; color: var(--gold); opacity: 0.85;
+  }
+  .draw-strength .track {
+    width: 100%; height: 4px; border-radius: 999px; overflow: hidden;
+    background: rgba(255,255,255,0.08); border: 1px solid rgba(233,195,73,0.25);
+  }
+  .draw-strength .fill {
+    height: 100%; width: 0%;
+    background: linear-gradient(90deg, var(--gold), var(--vermilion));
+    box-shadow: 0 0 10px rgba(233,195,73,0.7);
+    transition: width 0.05s linear;
+  }
+
+  /* ---------- Level banner ---------- */
+  .level-banner {
+    position: absolute; top: 42%; left: 50%; transform: translate(-50%, -50%) scaleX(0.3);
+    opacity: 0; z-index: 8; text-align: center; pointer-events: none;
+  }
+  .level-banner.show { animation: bannerIn 1.4s cubic-bezier(.2,.9,.25,1) forwards; }
+  @keyframes bannerIn {
+    0%   { transform: translate(-50%,-50%) scaleX(0.2); opacity: 0; }
+    18%  { transform: translate(-50%,-50%) scaleX(1.04); opacity: 1; }
+    28%  { transform: translate(-50%,-50%) scaleX(1); opacity: 1; }
+    78%  { transform: translate(-50%,-50%) scaleX(1); opacity: 1; }
+    100% { transform: translate(-50%,-50%) scaleX(1); opacity: 0; }
+  }
+  .level-banner .rule { width: 240px; height: 1px; background: linear-gradient(90deg, transparent, var(--gold), transparent); margin: 6px auto; }
+  .level-banner .big {
+    font-family: var(--font-display); font-size: 26px; color: var(--gold);
+    text-shadow: 0 0 30px rgba(233,195,73,0.6), 0 2px 4px #000;
+  }
+  .level-banner .small {
+    font-family: var(--font-label); font-size: 11px; letter-spacing: 0.3em;
+    text-transform: uppercase; color: var(--vermilion);
+  }
+
+  .flash {
+    position: absolute; inset: 0;
+    background: radial-gradient(circle at var(--fx,50%) var(--fy,40%), rgba(255,255,255,0.9) 0%, rgba(233,195,73,0.7) 20%, transparent 60%);
+    opacity: 0; pointer-events: none; z-index: 4;
+  }
+  .flash.hit { animation: flashPulse 0.6s ease-out; }
+  @keyframes flashPulse { 0% { opacity: 1; } 100% { opacity: 0; } }
+
+  .shake { animation: shakeAnim 0.4s cubic-bezier(.36,.07,.19,.97); }
+  @keyframes shakeAnim {
+    0%   { transform: translate(0,0) rotate(0deg); }
+    10%  { transform: translate(-3px,-3px) rotate(-0.5deg); }
+    20%  { transform: translate(3px,3px) rotate(0.5deg); }
+    40%  { transform: translate(3px,-3px) rotate(0.5deg); }
+    60%  { transform: translate(2px,2px) rotate(0deg); }
+    80%  { transform: translate(2px,-2px) rotate(0.5deg); }
+    100% { transform: translate(0,0) rotate(0deg); }
+  }
+
+  /* ---------- Modal ---------- */
+  .modal-veil {
+    position: absolute; inset: 0; background: rgba(6,7,2,0.78); backdrop-filter: blur(4px);
+    display: flex; align-items: center; justify-content: center; z-index: 10; padding: 20px;
+  }
+
+  .scroll {
+    width: min(420px, 100%);
+    background: linear-gradient(180deg, rgba(233,195,73,0.07), transparent 25%), var(--surface-1);
+    border: 1px solid rgba(233,195,73,0.35); border-radius: 14px; padding: 30px 28px 26px; text-align: center;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.75), 0 0 40px rgba(233,195,73,0.10);
+    animation: fadeUp 0.5s cubic-bezier(.2,.8,.25,1);
+  }
+  @keyframes fadeUp { from { transform: translateY(14px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+  .scroll .mark { font-size: 18px; color: var(--gold); margin-bottom: 8px; letter-spacing: 0.4em; }
+  .scroll h2 { font-family: var(--font-display); font-size: 24px; color: var(--gold); margin-bottom: 6px; font-weight: 600; }
+  .scroll .tagline {
+    font-family: var(--font-label); font-size: 10px; letter-spacing: 0.25em;
+    text-transform: uppercase; color: var(--gold-dim); margin-bottom: 18px;
+  }
+  .scroll p { font-family: var(--font-body); font-size: 15.5px; line-height: 1.7; color: var(--text-dim); margin-bottom: 22px; }
+  .scroll .stats-row { display: flex; justify-content: center; gap: 28px; margin-bottom: 22px; }
+  .scroll .stats-row div { text-align: center; }
+  .scroll .stats-row .num { font-family: var(--font-display); font-size: 26px; color: var(--gold); display: block; }
+  .scroll .stats-row .lbl { font-family: var(--font-label); font-size: 9px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--gold-dim); }
+
+  button.primary {
+    background: linear-gradient(180deg, var(--gold), var(--gold-dim));
+    border: none; padding: 13px 34px; font-family: var(--font-label); font-size: 12.5px; font-weight: 600;
+    letter-spacing: 0.14em; text-transform: uppercase; color: #1a1500; border-radius: 999px; cursor: pointer;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.45), inset 0 1px 0 rgba(255,255,255,0.35);
+    transition: transform 0.12s ease, box-shadow 0.12s ease;
+  }
+  button.primary:hover { transform: translateY(-1px); box-shadow: 0 10px 24px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.45); }
+  button.primary:active { transform: translateY(0px) scale(0.97); }
+
+  .footer { margin-top: 16px; text-align: center; max-width: 520px; }
+  .footer .hint {
+    font-family: var(--font-label); font-size: 10px; letter-spacing: 0.14em;
+    color: var(--gold-dim); text-transform: uppercase;
+  }
+  .footer .legend-note { font-family: var(--font-body); font-style: italic; font-size: 13.5px; color: var(--text-dim); opacity: 0.55; margin-top: 6px; }
+
+  @media (max-width: 480px) {
+    .pill { padding: 5px 11px 5px 9px; gap: 6px; }
+    .pill .value { font-size: 13px; }
+    .pill .icon { font-size: 14px; }
+    .topbar h1 { font-size: 13px; letter-spacing: 0.16em; }
+    .topbar .tag { display: none; }
+    .scroll { padding: 24px 18px 20px; }
+    .draw-strength { width: 160px; }
+  }
+
+  /* ---------- Privacy notice banner ---------- */
+  .privacy-banner {
+    position: fixed;
+    left: 16px; right: 16px; bottom: 16px;
+    max-width: 640px;
+    margin: 0 auto;
+    z-index: 100;
+    background: rgba(19,20,7,0.92);
+    backdrop-filter: blur(14px);
+    border: 1px solid rgba(233,195,73,0.35);
+    border-radius: 14px;
+    padding: 16px 18px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px 16px;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.6);
+    transform: translateY(0);
+    transition: transform 0.35s ease, opacity 0.35s ease;
+  }
+  .privacy-banner.hidden {
+    transform: translateY(120%);
+    opacity: 0;
+    pointer-events: none;
+  }
+  .privacy-banner p {
+    flex: 1 1 320px;
+    font-family: var(--font-body);
+    font-size: 13.5px;
+    line-height: 1.55;
+    color: var(--text-dim);
+  }
+  .privacy-banner p b { color: var(--gold); font-weight: 600; }
+  .privacy-banner .btn-row { display: flex; gap: 8px; flex-shrink: 0; }
+  .privacy-banner button {
+    font-family: var(--font-label);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 9px 16px;
+    border-radius: 999px;
+    cursor: pointer;
+    border: 1px solid rgba(233,195,73,0.35);
+    transition: transform 0.12s ease, background 0.15s ease;
+  }
+  .privacy-banner button:active { transform: scale(0.96); }
+  .privacy-banner .accept {
+    background: linear-gradient(180deg, var(--gold), var(--gold-dim));
+    color: #1a1500;
+    border: none;
+    font-weight: 600;
+  }
+  .privacy-banner .decline {
+    background: transparent;
+    color: var(--text-dim);
+  }
+  .privacy-banner .decline:hover { color: var(--gold); border-color: var(--gold); }
+
+  /* ---------- Tabs ---------- */
+  .tab-nav {
+    display: flex; gap: 6px;
+    background: rgba(31,33,17,0.55);
+    border: 1px solid rgba(233,195,73,0.22);
+    border-radius: 999px;
+    padding: 5px;
+    margin-bottom: 20px;
+  }
+  .tab-btn {
+    font-family: var(--font-label);
+    font-size: 12px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 10px 22px;
+    border-radius: 999px;
+    border: none;
+    background: transparent;
+    color: var(--text-dim);
+    cursor: pointer;
+    transition: background 0.18s ease, color 0.18s ease;
+  }
+  .tab-btn.active {
+    background: linear-gradient(180deg, var(--gold), var(--gold-dim));
+    color: #1a1500;
+    font-weight: 700;
+  }
+  .tab-btn:not(.active):hover { color: var(--gold); }
+  .tab-panel { display: none; width: 100%; }
+  .tab-panel.active { display: flex; flex-direction: column; align-items: center; }
+
+  /* ---------- Blog / story tab ---------- */
+  .story-wrap { max-width: 780px; width: 100%; }
+  .story-intro { text-align: center; margin-bottom: 34px; }
+  .story-intro .kicker {
+    font-family: var(--font-label); font-size: 11px; letter-spacing: 0.3em;
+    text-transform: uppercase; color: var(--vermilion); margin-bottom: 12px;
+  }
+  .story-intro h2 {
+    font-family: var(--font-display); font-size: clamp(24px, 4.5vw, 34px);
+    color: var(--gold-light, var(--gold)); margin-bottom: 12px; line-height: 1.3;
+  }
+  .story-intro p { font-size: 16px; color: var(--text-dim); max-width: 560px; margin: 0 auto; line-height: 1.7; }
+
+  .blog-toc {
+    width: 100%; background: var(--surface-1); border: 1px solid rgba(233,195,73,0.2);
+    border-radius: 10px; padding: 18px 20px; margin-bottom: 36px;
+  }
+  .blog-toc .toc-title {
+    font-family: var(--font-label); font-size: 11px; letter-spacing: 0.2em;
+    text-transform: uppercase; color: var(--gold-dim); margin-bottom: 10px;
+  }
+  .blog-toc ol { list-style: none; counter-reset: toc; display: grid; grid-template-columns: 1fr 1fr; gap: 6px 18px; }
+  @media (max-width: 600px) { .blog-toc ol { grid-template-columns: 1fr; } }
+  .blog-toc li { counter-increment: toc; font-size: 14px; }
+  .blog-toc a { color: var(--text); text-decoration: none; }
+  .blog-toc a:hover { color: var(--gold); }
+  .blog-toc li::before {
+    content: counter(toc) '. '; color: var(--gold); font-weight: 700; margin-right: 2px;
+  }
+
+  .blog-post {
+    width: 100%; padding: 30px 4px; border-top: 1px solid rgba(233,195,73,0.15);
+    scroll-margin-top: 20px;
+  }
+  .blog-post .eyebrow {
+    font-family: var(--font-label); font-size: 10.5px; letter-spacing: 0.2em;
+    text-transform: uppercase; color: var(--vermilion); margin-bottom: 8px;
+  }
+  .blog-post h3 {
+    font-family: var(--font-display); font-size: 22px; color: var(--gold);
+    margin-bottom: 14px; font-weight: 600; line-height: 1.35;
+  }
+  .blog-post p { font-size: 16px; color: var(--text-dim); line-height: 1.8; margin-bottom: 14px; }
+  .blog-post p:last-child { margin-bottom: 0; }
+
+  .story-cta {
+    width: 100%; text-align: center; margin: 46px 0 10px; padding: 30px 20px;
+    background: linear-gradient(160deg, var(--surface-2), var(--bg-2) 70%);
+    border: 1px solid rgba(233,195,73,0.25); border-radius: 14px;
+  }
+  .story-cta h3 { font-family: var(--font-display); font-size: 22px; color: var(--gold); margin-bottom: 10px; }
+  .story-cta p { font-size: 15px; color: var(--text-dim); margin-bottom: 18px; }
+  .story-cta button {
+    font-family: var(--font-label); font-size: 12.5px; letter-spacing: 0.12em; text-transform: uppercase;
+    background: linear-gradient(180deg, var(--gold), var(--gold-dim)); border: none; color: #1a1500;
+    font-weight: 700; padding: 12px 30px; border-radius: 999px; cursor: pointer;
+  }
+
+  .comic-mini { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 40px; }
+  @media (max-width: 600px) { .comic-mini { grid-template-columns: 1fr; } }
+  .comic-mini figure {
+    background: #0a0904; border: 2px solid rgba(233,195,73,0.5); border-radius: 4px; overflow: hidden;
+    box-shadow: 3px 3px 0 rgba(0,0,0,0.4);
+  }
+  .comic-mini svg { display: block; width: 100%; height: auto; }
+  .comic-mini figcaption {
+    font-size: 12.5px; color: var(--text-dim); padding: 8px 10px; border-top: 1px solid rgba(233,195,73,0.15);
+  }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="mark">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 20L20 4"/><path d="M20 4v6M20 4h-6"/></svg>
+  </div>
+  <h1 id="mainTitle">Matsya-Vedh</h1>
+  <span class="tag" id="topTag">The Archer's Trial · Mahabharata</span>
+</div>
+
+<div class="tab-nav">
+  <button class="tab-btn active" id="tabBtnPlay">Play the Game</button>
+  <button class="tab-btn" id="tabBtnStory">Full Story</button>
+</div>
+
+<div class="tab-panel active" id="tabPlay">
+<div class="stage-wrap">
+  <div class="stage">
+    <div class="stage-inner" id="stageInner">
+
+      <div class="ornament-corner corner-tl"></div>
+      <div class="ornament-corner corner-tr"></div>
+      <div class="ornament-corner corner-bl"></div>
+      <div class="ornament-corner corner-br"></div>
+
+      <div class="hud">
+        <div class="pill" id="scorePill">
+          <span class="icon">military_tech</span>
+          <div><span class="label">Score</span><span class="value" id="scoreDisplay">0</span></div>
+        </div>
+        <div class="pill" id="levelPill">
+          <span class="icon">trending_up</span>
+          <div><span class="label">Level</span><span class="value" id="levelDisplay">1</span></div>
+        </div>
+        <div class="pill" id="arrowsPill">
+          <span class="icon">arrow_upward</span>
+          <div>
+            <span class="label">Arrows</span>
+            <div class="arrow-pips" id="arrowPips"></div>
+          </div>
+        </div>
+      </div>
+
+      <button class="sound-btn" id="soundBtn" aria-label="Toggle sound" title="Sound on/off">
+        <span class="icon" id="soundIconOn">volume_up</span>
+        <span class="icon" id="soundIconOff" style="display:none">volume_off</span>
+      </button>
+
+      <div class="flash" id="flashEl"></div>
+
+      <div class="level-banner" id="levelBanner">
+        <div class="rule"></div>
+        <div class="small">Level Cleared</div>
+        <div class="big" id="levelBannerBig">Level 2</div>
+        <div class="rule"></div>
+      </div>
+
+      <canvas id="gameCanvas" width="760" height="560"></canvas>
+
+      <div class="draw-strength" id="drawStrength">
+        <span class="label">Draw Strength</span>
+        <div class="track"><div class="fill" id="drawFill"></div></div>
+      </div>
+
+      <div class="modal-veil" id="modalVeil">
+        <div class="scroll">
+          <div class="mark">◆ ◆ ◆</div>
+          <h2 id="modalTitle">The Archer's Trial</h2>
+          <div class="tagline" id="modalTagline">Set by Guru Dronacharya</div>
+          <div id="modalStats" style="display:none" class="stats-row">
+            <div><span class="num" id="finalScore">0</span><span class="lbl">Final Score</span></div>
+            <div><span class="num" id="finalLevel">1</span><span class="lbl">Level Reached</span></div>
+          </div>
+          <p id="modalText">
+            Watch only the fish's reflection in the water below — fix your mind on its eye alone.<br>
+            Move to aim. Hold to draw the bowstring. Release to loose the arrow.
+          </p>
+          <button class="primary" id="startBtn">Begin the Trial</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+</div>
+
+<div class="tab-panel" id="tabStory">
+<div class="story-wrap">
+
+  <div class="story-intro">
+    <div class="kicker">A Story From The Mahabharata</div>
+    <h2>The Piercing of the Fish's Eye</h2>
+    <p>Everything this game is built around — the trial, the reflection, the single-minded archer — comes from one of the most famous episodes in the Mahabharata. Here is the full story, told across ten short chapters, along with the history and ideas behind it.</p>
+  </div>
+
+  <div class="comic-mini">
+    <figure>
+      <svg viewBox="0 0 480 360" xmlns="http://www.w3.org/2000/svg">
+        <rect width="480" height="360" fill="#12140a"/>
+        <rect x="20" y="0" width="26" height="360" fill="#241d08"/>
+        <rect x="434" y="0" width="26" height="360" fill="#241d08"/>
+        <g fill="#3a3418">
+          <circle cx="70" cy="300" r="12"/><rect x="60" y="308" width="20" height="40"/>
+          <circle cx="105" cy="304" r="12"/><rect x="95" y="312" width="20" height="36"/>
+          <circle cx="340" cy="302" r="12"/><rect x="330" y="310" width="20" height="38"/>
+          <circle cx="375" cy="298" r="13"/><rect x="363" y="308" width="22" height="42"/>
+        </g>
+        <line x1="240" y1="20" x2="240" y2="120" stroke="#8a7020" stroke-width="3"/>
+        <ellipse cx="240" cy="150" rx="150" ry="24" fill="none" stroke="#e9c349" stroke-width="2" opacity="0.5"/>
+        <g transform="translate(360,150)">
+          <ellipse rx="34" ry="18" fill="#f0ae3f"/>
+          <circle cx="18" cy="-2" r="6" fill="#fffdf5"/><circle cx="20" cy="-2" r="3" fill="#1a0d00"/>
+          <path d="M -30 0 L -46 -12 L -46 12 Z" fill="#c9822f"/>
+        </g>
+        <ellipse cx="240" cy="300" rx="130" ry="26" fill="#0d2a30" stroke="#e9c349" stroke-width="1.5" opacity="0.8"/>
+      </svg>
+      <figcaption>A wooden fish spins above a still pool — the trial no one could pass.</figcaption>
+    </figure>
+    <figure>
+      <svg viewBox="0 0 480 360" xmlns="http://www.w3.org/2000/svg">
+        <rect width="480" height="360" fill="#0d0e05"/>
+        <rect x="20" y="0" width="26" height="360" fill="#241d08"/>
+        <rect x="434" y="0" width="26" height="360" fill="#241d08"/>
+        <g transform="translate(240,130)" stroke="#8a5a2b" stroke-width="6" fill="none"><path d="M -34 -30 Q 0 -70 34 -30"/></g>
+        <line x1="240" y1="90" x2="240" y2="176" stroke="#e8dcc0" stroke-width="1.6"/>
+        <line x1="240" y1="60" x2="240" y2="176" stroke="#3a2510" stroke-width="3"/>
+        <path d="M240 56 L233 72 L247 72 Z" fill="#333"/>
+        <ellipse cx="240" cy="280" rx="140" ry="30" fill="#0d2a30" stroke="#e9c349" stroke-width="1.6"/>
+        <g transform="translate(240,280)"><ellipse rx="18" ry="6" fill="#fffdf5" opacity="0.9"/><circle r="8" fill="#1a0d00"/></g>
+      </svg>
+      <figcaption>Arjuna aims only at the reflection — never at the fish itself.</figcaption>
+    </figure>
+  </div>
+
+  <div class="blog-toc">
+    <div class="toc-title">In This Story</div>
+    <ol>
+      <li><a href="#blog1">What Is Matsya-Vedh?</a></li>
+      <li><a href="#blog2">Draupadi's Swayamvara Explained</a></li>
+      <li><a href="#blog3">Who Was Arjuna?</a></li>
+      <li><a href="#blog4">The Rules of the Impossible Test</a></li>
+      <li><a href="#blog5">Why Only the Reflection?</a></li>
+      <li><a href="#blog6">Dronacharya and the Guru-Shishya Tradition</a></li>
+      <li><a href="#blog7">Other Trials of Skill in Indian Mythology</a></li>
+      <li><a href="#blog8">Focus, Flow, and the Psychology of the Single Point</a></li>
+      <li><a href="#blog9">Archery in Ancient India: A Short History</a></li>
+      <li><a href="#blog10">From Myth to Mechanic: Designing This Game</a></li>
+    </ol>
+  </div>
+
+  <article class="blog-post" id="blog1">
+    <div class="eyebrow">Chapter 1 of 10</div>
+    <h3>What Is Matsya-Vedh?</h3>
+    <p><em>Matsya-Vedh</em> translates roughly to "the piercing of the fish," and it names one of the most celebrated trials of skill in the Mahabharata, the great Sanskrit epic of ancient India. In its most famous telling, a king sets an archery contest to decide his daughter's marriage: a heavy bow must be strung, and an arrow sent through the eye of a golden or wooden fish mounted on a wheel turning high above a pool of water.</p>
+    <p>What makes the trial legendary isn't the distance or the size of the target — it's a single restriction that turns the contest from difficult into nearly impossible. The archer is forbidden from looking directly at the fish. They may only aim by watching its reflection, rippling and inverted, in the water below.</p>
+    <p>This single rule transforms a test of strength into a test of mind. It rewards patience and stillness over raw power, which is exactly why the story has been retold for centuries — and why it forms the entire premise of this game. Every mechanic here, from the water strip that mirrors the arena to the hold-and-release bowstring, is built around that one idea: look at the reflection, not the target.</p>
+    <p>The word "vedh" itself means piercing or penetration, and it appears in the names of several other trial-like episodes across Indian epic literature — a small linguistic clue that these tests of skill were understood as a distinct genre of story even in their own time. Matsya-Vedh sits within a Mahabharata full of such trials, each one designed less to showcase strength than to reveal something about the character attempting it.</p>
+    <p>Read this way, the episode functions almost like a compressed origin story: a single afternoon that tells an entire hall — and, centuries later, an entire audience of readers — exactly who Arjuna is, without needing a single line of exposition to explain it.</p>
+  </article>
+
+  <article class="blog-post" id="blog2">
+    <div class="eyebrow">Chapter 2 of 10</div>
+    <h3>Draupadi's Swayamvara Explained</h3>
+    <p>The fish-eye trial is most famously remembered as part of Draupadi's <em>swayamvara</em> — a ceremony in ancient Indian tradition where a princess would choose her own husband from among assembled suitors, often by setting a contest of skill. A swayamvara wasn't a private family matter; it was a public event, drawing kings, princes, and warriors from across the land, each hoping to prove himself worthy.</p>
+    <p>For Draupadi's swayamvara, her father King Drupada set the fish-eye trial as the deciding contest, in part as a quiet challenge aimed at a very specific archer he hoped would attend — though the trial was, on its face, open to anyone who dared attempt it.</p>
+    <p>The hall would have been a spectacle in itself: rows of assembled royalty, a mighty bow few could even lift, and above it all, that slowly turning fish, daring anyone to try. It's this setting — public, high-stakes, and crowded with people who had every reason to succeed and no idea how — that gives the story its dramatic weight.</p>
+    <p>Swayamvara ceremonies appear repeatedly across Indian epic literature, not just in the Mahabharata, and they consistently serve the same narrative purpose: turning a marriage decision into a public demonstration of merit rather than a private arrangement. That structure is part of why these episodes translate so well into stories about skill and character — the contest itself becomes the real subject, and the marriage almost a formality decided by it.</p>
+    <p>Unlike a private wedding, a swayamvara placed enormous social pressure on both the princess and the assembled suitors — a failed attempt happened in full public view, in front of rival kingdoms, which is part of why so many characters in these stories either refuse to attempt the trial at all or attempt it only reluctantly. The fish-eye trial's brutal difficulty wasn't incidental to that dynamic; it was what made the eventual winner's success mean something to everyone watching.</p>
+  </article>
+
+  <article class="blog-post" id="blog3">
+    <div class="eyebrow">Chapter 3 of 10</div>
+    <h3>Who Was Arjuna?</h3>
+    <p>Arjuna is one of the five Pandava brothers and widely regarded as the finest archer of his generation in the Mahabharata. Trained from childhood by the guru Dronacharya, Arjuna is portrayed throughout the epic not just as physically skilled, but as someone whose real strength is concentration — the ability to shut out everything except the task directly in front of him.</p>
+    <p>At the time of Draupadi's swayamvara, Arjuna and his brothers were living in exile, disguised as Brahmins (a priestly, scholarly class) rather than revealing their royal identity. So when Arjuna steps forward to attempt the trial, he does so as an apparent stranger — unrecognized, doubted, and dismissed by a hall full of kings who assume a wandering ascetic has no business touching the bow.</p>
+    <p>That contrast is part of what makes the moment land: the person nobody expected to succeed is, in fact, the one person in the room actually capable of it — not because of hidden strength, but because of a discipline he'd spent years building quietly, away from any audience.</p>
+    <p>Arjuna's role in the Mahabharata extends far beyond this one trial — he's a central figure through the epic's central war, and later the primary listener of the Bhagavad Gita, the philosophical dialogue delivered to him on the battlefield. That larger context matters here too: the same capacity for focused, undistracted attention that wins him the swayamvara trial is portrayed, throughout the epic, as core to his character rather than a one-time trick.</p>
+    <p>It's worth noting that the epic doesn't present Arjuna as flawless or naturally gifted beyond effort — he's shown doubting himself, training obsessively, and at points losing confidence entirely. The swayamvara trial works dramatically precisely because it arrives after years of that groundwork, not instead of it, which is part of why later retellings, including this game, tend to frame his success as earned rather than magical.</p>
+  </article>
+
+  <article class="blog-post" id="blog4">
+    <div class="eyebrow">Chapter 4 of 10</div>
+    <h3>The Rules of the Impossible Test</h3>
+    <p>Strip the legend down to its mechanics and the trial has three parts, each harder than the last. First, the bow itself: an intentionally difficult weapon that many suitors cannot even string, let alone draw — an early filter that eliminates most of the hall before a single arrow is fired.</p>
+    <p>Second, the target: a fish figure fixed to a wheel in constant rotation, never sitting still long enough for a lazy shot. Timing matters as much as aim.</p>
+    <p>Third, and by far the cruelest condition: the archer cannot look at the target directly. They must judge distance, timing, and alignment entirely from a reflection in water — an image that ripples, distorts, and never sits perfectly still. It's the equivalent of asking someone to thread a needle while only looking at its shadow.</p>
+    <p>Stacked together, these three rules explain why so many capable warriors fail in the story before Arjuna ever steps forward — and why this game treats the reflection mechanic as its centerpiece rather than a decoration.</p>
+    <p>Translating three narrative rules into a working game meant deciding which ones could be simulated directly and which needed a stand-in. The rotating, shrinking fish captures the wheel and its difficulty; the water strip mirroring the whole arena captures the reflection rule almost literally. The bow's legendary weight became the hold-to-draw mechanic instead — since a browser game can't make a mouse physically heavy, the draw time stands in for the strength the trial originally demanded.</p>
+    <p>Reading the trial as three stacked filters also explains its dramatic pacing in the original story: the crowd narrows itself down first by the bow, then by the moving target, and only a tiny handful of attempts ever reach the third and hardest condition at all. Most retellings, this one included, spend more narrative time on that final filter than the first two combined, because it's the one that actually decides the outcome.</p>
+  </article>
+
+  <article class="blog-post" id="blog5">
+    <div class="eyebrow">Chapter 5 of 10</div>
+    <h3>Why Only the Reflection?</h3>
+    <p>The "look only at the reflection" rule is the most retold detail of this legend, and it's retold so often because it works as more than plot — it works as a metaphor. Direct sight is easy and instinctive; anyone can stare at a target. Indirect sight, watching something once removed from reality, forces a kind of discipline that pure instinct can't supply.</p>
+    <p>Many traditional readings of this episode treat it as a lesson in single-minded focus, or <em>ekagrata</em> in Sanskrit — the capacity to hold one's attention on one point without being pulled away by everything moving around it: the crowd, the doubt, the rippling water itself, even the difficulty of the reflection.</p>
+    <p>It's also, in a quieter way, a story about trusting an imperfect view. The reflection is never a clean, stable image — it moves with the water. Success doesn't come from waiting for a perfect, still picture; it comes from reading a moving, imperfect one accurately anyway. That idea shows up constantly outside archery too — in any skill where you have to act on incomplete information rather than wait for certainty.</p>
+    <p>Indirect sight as a narrative device isn't unique to Indian mythology either. In Greek mythology, Perseus defeats the gorgon Medusa — whose direct gaze turns onlookers to stone — by viewing her only through the polished reflection of his shield. Different culture, different stakes, but the same underlying structure: a task made survivable, or in Arjuna's case winnable, only by refusing to look at the thing directly.</p>
+  </article>
+
+  <article class="blog-post" id="blog6">
+    <div class="eyebrow">Chapter 6 of 10</div>
+    <h3>Dronacharya and the Guru-Shishya Tradition</h3>
+    <p>Arjuna's skill didn't appear from nowhere — it was built under Dronacharya, the royal teacher (guru) responsible for training both the Pandava and Kaurava princes in archery and warfare. Dronacharya is a central figure in the Mahabharata, and the guru-shishya (teacher-student) relationship he represents was a foundational part of how skills, including combat and archery, were transmitted in ancient Indian tradition.</p>
+    <p>In several well-known episodes, Dronacharya tests his students' focus directly — in one famous scene, he asks each prince in turn what they see when aiming at a target bird, and only Arjuna answers correctly: he sees nothing but the bird's eye, not the tree, the branch, or the bird's body. It's the same principle that governs the fish-eye trial, taught years earlier as a training exercise before it's ever tested for real.</p>
+    <p>This idea — that mastery is inseparable from a dedicated teacher and years of deliberate practice — runs through much of classical Indian storytelling, and it's part of why Arjuna's success at the swayamvara doesn't read as luck. It reads as the payoff of training the story has already shown us.</p>
+    <p>Dronacharya's academy produced more than one legendary archer across the Mahabharata's many characters and side stories, a reminder that the era placed enormous cultural weight on formal, sustained training rather than raw natural talent. Skill, in these stories, is almost never presented as innate — it's presented as the visible result of years spent under a demanding teacher, which is exactly the backstory the fish-eye trial assumes its audience already knows about Arjuna before he ever picks up the bow.</p>
+    <p>The guru-shishya model itself extended well beyond archery in classical Indian tradition, shaping how music, dance, philosophy, and countless other disciplines were passed down for generations — typically through close, long-term mentorship rather than formal institutions. Reading Dronacharya's role through that wider lens makes the fish-eye trial feel less like an isolated feat of luck and more like the visible tip of a much longer, quieter education the story trusts its audience to already understand.</p>
+  </article>
+
+  <article class="blog-post" id="blog7">
+    <div class="eyebrow">Chapter 7 of 10</div>
+    <h3>Other Trials of Skill in Indian Mythology</h3>
+    <p>Matsya-Vedh isn't the only contest-of-skill story in Indian epic literature — trials that separate the worthy from the merely willing are a recurring device. In the Ramayana, Sita's swayamvara features a similar test: suitors must string and draw the bow of Shiva, an act so demanding that most cannot even move it. Rama, hero of the epic, not only strings it but breaks it in the process, winning Sita's hand.</p>
+    <p>Archery, in particular, recurs as a marker of both skill and character throughout these epics — not simply a battlefield tool, but a kind of moral test. How a character handles a bow, a target, or a rival often says as much about their discipline and intent as any speech they give.</p>
+    <p>What connects these stories isn't the weapon itself, but the shape of the test: an obstacle that filters out strength alone, and rewards something closer to composure, training, or restraint. Matsya-Vedh is simply the version built most explicitly around that idea, since the "obstacle" here isn't the bow's weight — it's the archer's own eyes.</p>
+    <p>The Mahabharata contains its own earlier archery showcase too, at a martial tournament held to display the Pandava and Kaurava princes' training before Draupadi's swayamvara ever takes place. Several young warriors, including Arjuna, demonstrate feats of precision there in front of a similarly assembled crowd — establishing, well before the fish-eye trial occurs, exactly why no one in that later hall should have been surprised by what he was capable of.</p>
+  </article>
+
+  <article class="blog-post" id="blog8">
+    <div class="eyebrow">Chapter 8 of 10</div>
+    <h3>Focus, Flow, and the Psychology of the Single Point</h3>
+    <p>It's hard to read the Matsya-Vedh legend today without noticing how closely it maps onto modern ideas about focus and performance. Sports psychologists often describe elite performance under pressure using the concept of a "flow state" — a mental mode where attention narrows entirely onto the task, self-consciousness fades, and everything irrelevant simply stops registering.</p>
+    <p>Archers, in particular, are frequently studied for this: the sport rewards almost nothing except stillness and singular attention, since any stray thought at full draw shows up immediately as a miss. That's strikingly close to what the ancient story describes without the modern vocabulary — a mind that has stopped reacting to the crowd, the doubt, and even the difficulty of the task, and has narrowed to one small, moving point.</p>
+    <p>Whether or not the original storytellers had anything like "flow state" in mind, the overlap is part of why the legend still resonates outside religious or literary contexts — it describes a mental skill that shows up in sports, music, surgery, and plenty of ordinary high-pressure moments, long before psychologists gave it a name.</p>
+    <p>Modern competitive archers train this state deliberately, through breathing routines, consistent pre-shot rituals, and repeated practice designed to make the physical motion automatic enough that conscious attention can stay entirely on the target — or, as the legend would put it, on the reflection. It's a training philosophy that would have been entirely recognizable to Dronacharya, even if the vocabulary around it has changed.</p>
+    <p>This is also, arguably, why the legend works so well as a game rather than staying purely as a text on a page. Reading about focus is passive; a hold-to-draw mechanic that punishes a wandering hand or a rushed release asks the player to actually practice a small version of the same discipline the story describes, rather than simply being told about it.</p>
+  </article>
+
+  <article class="blog-post" id="blog9">
+    <div class="eyebrow">Chapter 9 of 10</div>
+    <h3>Archery in Ancient India: A Short History</h3>
+    <p>Archery held a central place in ancient Indian warfare and training, particularly among the Kshatriya (warrior) class, for whom skill with the bow was as much a marker of identity as of combat readiness. Classical texts describe extensive training regimens for princes and warriors, covering not just archery but chariot warfare, wrestling, and weapons craft more broadly — with the bow consistently treated as the most prestigious of these skills.</p>
+    <p>Bows of the era were typically composite constructions — wood, horn, and sinew layered for power and flex — and warriors trained for years before ever entering battle, often under a single dedicated guru in a residential training arrangement, much like Dronacharya's role for the Pandava and Kaurava princes.</p>
+    <p>Archery contests and demonstrations, like the fish-eye trial or the tournament that opens the Pandava-Kaurava rivalry in the Mahabharata, also served a social function beyond combat readiness: they were public proof of a warrior's training, discipline, and right to be taken seriously — which is exactly the role Matsya-Vedh plays in the swayamvara story.</p>
+    <p>That legacy hasn't disappeared. Archery remains a recognized competitive sport in India today, and imagery of bow-wielding heroes — Arjuna and Rama chief among them — still appears widely in festival art, temple carvings, and public celebrations, including Dussehra, which marks a mythological archer's decisive victory. The bow, in other words, never really stopped being a cultural shorthand for discipline and righteous skill.</p>
+  </article>
+
+  <article class="blog-post" id="blog10">
+    <div class="eyebrow">Chapter 10 of 10</div>
+    <h3>From Myth to Mechanic: Designing This Game</h3>
+    <p>Turning this legend into a playable game meant picking one detail to build everything else around — and the obvious choice was the reflection. Everything in the game's arena, from the archer to the fish to every arrow in flight, is mirrored in real time in a water strip at the bottom of the stage, distorted with a gentle wave effect, as a direct nod to the rule that you're meant to watch the reflection, not the target itself.</p>
+    <p>The hold-to-draw bowstring mechanic was added for a similar reason: the legend isn't about a quick reflex, it's about a held, controlled moment of focus before release. A simple click-to-shoot didn't capture that pause, so the bow now visibly draws back the longer you hold, with a strength meter tracking the pull.</p>
+    <p>Difficulty scales the way the legend implies success should feel earned: each level shrinks the fish and speeds up its rotation, so staying accurate requires the same growing discipline the story describes — not more strength, just steadier focus. None of this is meant as a literal historical reconstruction; it's a small, original interpretation built as a tribute to a story that's been retold for a very long time, and will likely be retold for a lot longer.</p>
+    <p>The game is also built to work the same way on a phone as on a desktop, since touch-and-hold maps naturally onto the same draw-and-release motion as a mouse. That was a deliberate choice — a trial about patience and focus felt like it should be playable anywhere, in a spare minute, rather than locked to a single device or a dedicated gaming setup.</p>
+  </article>
+
+  <div class="story-cta">
+    <h3>Ready to try the trial yourself?</h3>
+    <p>Watch the reflection. Hold your draw. See if your focus is steady enough to strike the eye.</p>
+    <button id="storyPlayBtn">Play Matsya-Vedh</button>
+  </div>
+
+</div>
+</div>
+
+<div class="footer">
+  <div class="hint">Aim · Hold to draw · Release to shoot</div>
+  <div class="legend-note">Inspired by the legend of the fish-eye test from the Mahabharata</div>
+  <div style="margin-top:14px; font-size:12px; font-family:'Work Sans',sans-serif; letter-spacing:0.06em; display:flex; flex-wrap:wrap; justify-content:center; gap:4px 0;">
+    <a href="about-us.html" style="color:#af8d11; text-decoration:none;">About Us</a>
+    <span style="color:#af8d11; opacity:0.4; margin:0 8px;">·</span>
+    <a href="contact-us.html" style="color:#af8d11; text-decoration:none;">Contact Us</a>
+    <span style="color:#af8d11; opacity:0.4; margin:0 8px;">·</span>
+    <a href="privacy-policy.html" style="color:#af8d11; text-decoration:none;">Privacy Policy</a>
+    <span style="color:#af8d11; opacity:0.4; margin:0 8px;">·</span>
+    <a href="terms.html" style="color:#af8d11; text-decoration:none;">Terms of Use</a>
+    <span style="color:#af8d11; opacity:0.4; margin:0 8px;">·</span>
+    <a href="disclaimer.html" style="color:#af8d11; text-decoration:none;">Disclaimer</a>
+  </div>
+</div>
+
+<div class="privacy-banner" id="privacyBanner">
+  <p>
+    This game <b>does not use cookies</b> or save anything on your device.
+    It loads its fonts from Google, and — only if you accept — checks your general country
+    (via your IP address) so it can show the right title for your region.
+  </p>
+  <div class="btn-row">
+    <button class="decline" id="privacyDecline">Decline</button>
+    <button class="accept" id="privacyAccept">Accept</button>
+  </div>
+</div>
+
+<script>
+// ---------- Tab switching ----------
+(function() {
+  const btnPlay = document.getElementById('tabBtnPlay');
+  const btnStory = document.getElementById('tabBtnStory');
+  const panelPlay = document.getElementById('tabPlay');
+  const panelStory = document.getElementById('tabStory');
+  const storyPlayBtn = document.getElementById('storyPlayBtn');
+
+  function showPlay() {
+    btnPlay.classList.add('active'); btnStory.classList.remove('active');
+    panelPlay.classList.add('active'); panelStory.classList.remove('active');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+  function showStory() {
+    btnStory.classList.add('active'); btnPlay.classList.remove('active');
+    panelStory.classList.add('active'); panelPlay.classList.remove('active');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  btnPlay.addEventListener('click', showPlay);
+  btnStory.addEventListener('click', showStory);
+  if (storyPlayBtn) storyPlayBtn.addEventListener('click', showPlay);
+})();
+</script>
+
+<script>
+// ---------- Region-based title localization ----------
+// India sees the Sanskrit name "Matsya-Vedh"; everywhere else sees a
+// plain-English title so an international audience instantly understands
+// the game without knowing the mythology term.
+(function() {
+  const mainTitle = document.getElementById('mainTitle');
+  const topTag = document.getElementById('topTag');
+
+  const COPY = {
+    in:  { title: 'Matsya-Vedh',       tag: "The Archer's Trial · Mahabharata",              docTitle: 'Matsya-Vedh — The Archer\'s Trial' },
+    intl: { title: 'Aim the Fish Eye', tag: 'An Archery Trial from Indian Mythology',         docTitle: 'Aim the Fish Eye — Archery Trial' }
+  };
+
+  function applyRegion(isIndia) {
+    const c = isIndia ? COPY.in : COPY.intl;
+    mainTitle.textContent = c.title;
+    topTag.textContent = c.tag;
+    document.title = c.docTitle;
+  }
+
+  // 1. Instant guess (no network, nothing leaves the device):
+  //    timezone + browser language. Keeps the title correct
+  //    immediately, no flash of wrong text, and needs no consent
+  //    since it never contacts anyone.
+  let guessedIndia = false;
+  try {
+    const tz = Intl.DateTimeFormat().resolvedOptions().timeZone || '';
+    const lang = (navigator.language || '').toLowerCase();
+    guessedIndia = tz.includes('Kolkata') || tz.includes('Calcutta') || lang === 'hi' || lang.endsWith('-in');
+  } catch (e) {}
+  applyRegion(guessedIndia);
+
+  // 2. Optional refinement via IP geolocation, in case the quick
+  //    guess above was wrong (e.g. an NRI browsing with an English
+  //    locale, or a foreign visitor with an Indian timezone set).
+  //    This is the one call that shares the visitor's IP address
+  //    with a third party (ipapi.co) — so it only runs after the
+  //    person clicks "Accept" on the privacy banner. Declining or
+  //    ignoring the banner means the site keeps using the instant
+  //    guess from step 1 only.
+  window.__runGeoRefinement = function() {
+    fetch('https://ipapi.co/json/', { cache: 'no-store' })
+      .then(r => r.ok ? r.json() : null)
+      .then(data => {
+        if (data && typeof data.country_code === 'string') {
+          applyRegion(data.country_code.toUpperCase() === 'IN');
+        }
+      })
+      .catch(() => {});
+  };
+})();
+
+// ---------- Privacy banner logic ----------
+(function() {
+  const banner = document.getElementById('privacyBanner');
+  const acceptBtn = document.getElementById('privacyAccept');
+  const declineBtn = document.getElementById('privacyDecline');
+
+  function dismiss() {
+    banner.classList.add('hidden');
+  }
+
+  acceptBtn.addEventListener('click', () => {
+    if (typeof window.__runGeoRefinement === 'function') window.__runGeoRefinement();
+    dismiss();
+  });
+
+  declineBtn.addEventListener('click', dismiss);
+})();
+</script>
+
+<script>
+(function() {
+  const canvas = document.getElementById('gameCanvas');
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+  const ARENA_H = 430;
+  const WATER_H = H - ARENA_H;
+
+  const reflectBuffer = document.createElement('canvas');
+  reflectBuffer.width = W;
+  reflectBuffer.height = ARENA_H;
+  const rctx = reflectBuffer.getContext('2d');
+
+  const scoreDisplay = document.getElementById('scoreDisplay');
+  const levelDisplay = document.getElementById('levelDisplay');
+  const arrowPips = document.getElementById('arrowPips');
+  const scorePill = document.getElementById('scorePill');
+  const levelPill = document.getElementById('levelPill');
+  const arrowsPill = document.getElementById('arrowsPill');
+  const modalVeil = document.getElementById('modalVeil');
+  const modalTitle = document.getElementById('modalTitle');
+  const modalTagline = document.getElementById('modalTagline');
+  const modalText = document.getElementById('modalText');
+  const modalStats = document.getElementById('modalStats');
+  const finalScoreEl = document.getElementById('finalScore');
+  const finalLevelEl = document.getElementById('finalLevel');
+  const startBtn = document.getElementById('startBtn');
+  const stageInner = document.getElementById('stageInner');
+  const flashEl = document.getElementById('flashEl');
+  const levelBanner = document.getElementById('levelBanner');
+  const levelBannerBig = document.getElementById('levelBannerBig');
+  const soundBtn = document.getElementById('soundBtn');
+  const soundIconOn = document.getElementById('soundIconOn');
+  const soundIconOff = document.getElementById('soundIconOff');
+  const drawStrength = document.getElementById('drawStrength');
+  const drawFill = document.getElementById('drawFill');
+
+  let score = 0, level = 1, arrowsLeft = 5, maxArrows = 5;
+  let gameActive = false;
+  let mouseX = W/2, mouseY = ARENA_H - 60;
+  let hasPointer = false;
+
+  const bowX = W/2, bowY = ARENA_H - 34;
+  let fishAngle = 0;
+  let fishSpeed = 0.018;
+  const fishCenterX = W/2, fishCenterY = 168;
+  const fishRadiusX = 210, fishRadiusY = 26;
+  let fishSize = 74;
+
+  let flyingArrows = [];
+  let particles = [];
+  let floatingTexts = [];
+  let ripples = [];
+  let reflectTime = 0;
+  let slowMoTimer = 0;
+
+  let isDrawing = false;
+  let drawStart = 0;
+  const MAX_DRAW_MS = 480;
+
+  let audioCtx = null;
+  let muted = false;
+  function ensureAudio() {
+    if (!audioCtx) {
+      try { audioCtx = new (window.AudioContext || window.webkitAudioContext)(); } catch(e) {}
+    }
+  }
+  function playTwang() {
+    if (muted || !audioCtx) return;
+    const t = audioCtx.currentTime;
+    const o = audioCtx.createOscillator();
+    const g = audioCtx.createGain();
+    o.type = 'triangle';
+    o.frequency.setValueAtTime(220, t);
+    o.frequency.exponentialRampToValueAtTime(90, t + 0.15);
+    g.gain.setValueAtTime(0.18, t);
+    g.gain.exponentialRampToValueAtTime(0.001, t + 0.18);
+    o.connect(g); g.connect(audioCtx.destination);
+    o.start(t); o.stop(t + 0.2);
+  }
+  function playBell() {
+    if (muted || !audioCtx) return;
+    const t = audioCtx.currentTime;
+    [660, 990, 1320].forEach((freq, i) => {
+      const o = audioCtx.createOscillator();
+      const g = audioCtx.createGain();
+      o.type = 'sine';
+      o.frequency.value = freq;
+      g.gain.setValueAtTime(0.001, t);
+      g.gain.linearRampToValueAtTime(0.12 / (i+1), t + 0.02);
+      g.gain.exponentialRampToValueAtTime(0.001, t + 1.1);
+      o.connect(g); g.connect(audioCtx.destination);
+      o.start(t); o.stop(t + 1.2);
+    });
+  }
+  function playThud() {
+    if (muted || !audioCtx) return;
+    const t = audioCtx.currentTime;
+    const o = audioCtx.createOscillator();
+    const g = audioCtx.createGain();
+    o.type = 'sine';
+    o.frequency.setValueAtTime(140, t);
+    o.frequency.exponentialRampToValueAtTime(55, t + 0.2);
+    g.gain.setValueAtTime(0.16, t);
+    g.gain.exponentialRampToValueAtTime(0.001, t + 0.22);
+    o.connect(g); g.connect(audioCtx.destination);
+    o.start(t); o.stop(t + 0.25);
+  }
+
+  soundBtn.addEventListener('click', () => {
+    muted = !muted;
+    soundIconOn.style.display = muted ? 'none' : 'block';
+    soundIconOff.style.display = muted ? 'block' : 'none';
+  });
+
+  function pulse(el) { el.classList.remove('is-pulsing'); void el.offsetWidth; el.classList.add('is-pulsing'); }
+
+  function renderPips() {
+    arrowPips.innerHTML = '';
+    for (let i = 0; i < maxArrows; i++) {
+      const p = document.createElement('div');
+      p.className = 'pip' + (i < arrowsLeft ? ' filled' : '');
+      arrowPips.appendChild(p);
+    }
+  }
+
+  function updateHUD() {
+    scoreDisplay.textContent = score;
+    levelDisplay.textContent = level;
+    renderPips();
+  }
+
+  function resetLevel() {
+    arrowsLeft = 5;
+    fishSpeed = 0.016 + (level - 1) * 0.007;
+    fishSize = Math.max(38, 74 - (level - 1) * 6);
+    updateHUD();
+  }
+
+  function getFishPos() {
+    const x = fishCenterX + Math.cos(fishAngle) * fishRadiusX;
+    const y = fishCenterY + Math.sin(fishAngle) * fishRadiusY;
+    return { x, y };
+  }
+
+  function drawBackground() {
+    const skyGrad = ctx.createLinearGradient(0, 0, 0, ARENA_H);
+    skyGrad.addColorStop(0, '#1c1c0d');
+    skyGrad.addColorStop(0.55, '#131407');
+    skyGrad.addColorStop(1, '#0a0a04');
+    ctx.fillStyle = skyGrad;
+    ctx.fillRect(0, 0, W, ARENA_H);
+
+    ctx.fillStyle = 'rgba(255,255,255,0.5)';
+    for (let i = 0; i < 34; i++) {
+      const sx = (i * 137.5) % W;
+      const sy = (i * 71.3) % (ARENA_H * 0.5);
+      const tw = 0.4 + 0.6 * Math.abs(Math.sin(fishAngle * 3 + i));
+      ctx.globalAlpha = tw * 0.5;
+      ctx.fillRect(sx, sy, 1.4, 1.4);
+    }
+    ctx.globalAlpha = 1;
+
+    const pillarW = 26;
+    const pGrad = ctx.createLinearGradient(0, 0, pillarW, 0);
+    pGrad.addColorStop(0, '#241d08');
+    pGrad.addColorStop(0.5, '#4a3a10');
+    pGrad.addColorStop(1, '#1c1706');
+    ctx.fillStyle = pGrad;
+    ctx.fillRect(0, 0, pillarW, ARENA_H);
+    ctx.save(); ctx.scale(-1, 1);
+    ctx.fillRect(-W, 0, pillarW, ARENA_H);
+    ctx.restore();
+
+    ctx.strokeStyle = 'rgba(233,195,73,0.22)';
+    ctx.lineWidth = 1;
+    for (let y = 20; y < ARENA_H; y += 26) {
+      ctx.beginPath(); ctx.moveTo(4, y); ctx.lineTo(pillarW - 4, y); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(W - pillarW + 4, y); ctx.lineTo(W - 4, y); ctx.stroke();
+    }
+
+    drawTorch(pillarW * 0.5, 46);
+    drawTorch(W - pillarW * 0.5, 46);
+
+    ctx.strokeStyle = '#5c4a16';
+    ctx.lineWidth = 8;
+    ctx.beginPath(); ctx.moveTo(pillarW, 34); ctx.lineTo(W - pillarW, 34); ctx.stroke();
+    ctx.strokeStyle = '#8a7020';
+    ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.moveTo(pillarW, 30); ctx.lineTo(W - pillarW, 30); ctx.stroke();
+
+    ctx.strokeStyle = 'rgba(160,150,90,0.5)';
+    ctx.lineWidth = 1.5;
+    ctx.setLineDash([3, 3]);
+    ctx.beginPath(); ctx.moveTo(fishCenterX, 34); ctx.lineTo(fishCenterX, fishCenterY); ctx.stroke();
+    ctx.setLineDash([]);
+
+    ctx.save();
+    ctx.translate(fishCenterX, fishCenterY);
+    ctx.strokeStyle = 'rgba(233,195,73,0.25)';
+    ctx.lineWidth = 1.4;
+    ctx.beginPath();
+    ctx.ellipse(0, 0, fishRadiusX, fishRadiusY, 0, 0, Math.PI * 2);
+    ctx.stroke();
+    for (let s = 0; s < 8; s++) {
+      const a = fishAngle * 0.6 + (s / 8) * Math.PI * 2;
+      ctx.beginPath();
+      ctx.moveTo(0, 0);
+      ctx.lineTo(Math.cos(a) * fishRadiusX, Math.sin(a) * fishRadiusY);
+      ctx.strokeStyle = 'rgba(233,195,73,0.10)';
+      ctx.stroke();
+    }
+    ctx.restore();
+  }
+
+  function drawTorch(x, y) {
+    ctx.fillStyle = '#4a3a18';
+    ctx.fillRect(x - 3, y, 6, 30);
+    const flicker = 9 + Math.sin(fishAngle * 20 + x) * 2 + Math.random() * 2;
+    const grad = ctx.createRadialGradient(x, y - 6, 1, x, y - 6, flicker);
+    grad.addColorStop(0, '#fff2c0');
+    grad.addColorStop(0.4, '#e9c349');
+    grad.addColorStop(1, 'rgba(233,120,73,0)');
+    ctx.fillStyle = grad;
+    ctx.beginPath(); ctx.arc(x, y - 6, flicker, 0, Math.PI * 2); ctx.fill();
+  }
+
+  function fishEyeLocal(scale) {
+    const s = scale / 74;
+    return { x: 24 * s, y: -3 * s, r: 8.5 * s };
+  }
+
+  function drawFish(x, y, scale) {
+    const wiggle = Math.sin(fishAngle * 4.2) * 0.10;
+    ctx.save();
+    ctx.translate(x, y);
+    ctx.rotate(wiggle);
+    const s = scale / 74;
+
+    ctx.fillStyle = 'rgba(0,0,0,0.25)';
+    ctx.beginPath(); ctx.ellipse(2*s, 30*s, 34*s, 6*s, 0, 0, Math.PI*2); ctx.fill();
+
+    ctx.fillStyle = '#c9822f';
+    ctx.beginPath();
+    ctx.moveTo(-42 * s, 0);
+    ctx.quadraticCurveTo(-58 * s, -20 * s, -66 * s, -24 * s);
+    ctx.quadraticCurveTo(-52 * s, 0, -66 * s, 24 * s);
+    ctx.quadraticCurveTo(-58 * s, 20 * s, -42 * s, 0);
+    ctx.fill();
+
+    const bodyGrad = ctx.createLinearGradient(-38*s, -26*s, 38*s, 26*s);
+    bodyGrad.addColorStop(0, '#ffdf8f');
+    bodyGrad.addColorStop(0.55, '#f0ae3f');
+    bodyGrad.addColorStop(1, '#c9822f');
+    ctx.fillStyle = bodyGrad;
+    ctx.beginPath();
+    ctx.ellipse(0, 0, 42 * s, 26 * s, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(90,60,10,0.7)';
+    ctx.lineWidth = 1.2;
+    ctx.stroke();
+
+    ctx.strokeStyle = 'rgba(150,90,10,0.35)';
+    ctx.lineWidth = 0.8;
+    for (let r = -20; r <= 20; r += 8) {
+      ctx.beginPath();
+      ctx.arc(r * s, 0, 9 * s, 0.3, Math.PI - 0.3);
+      ctx.stroke();
+    }
+
+    ctx.fillStyle = '#f6cd70';
+    ctx.beginPath();
+    ctx.moveTo(-2 * s, -22 * s);
+    ctx.quadraticCurveTo(6 * s, -46 * s, 16 * s, -22 * s);
+    ctx.closePath();
+    ctx.fill();
+
+    ctx.strokeStyle = 'rgba(233,195,73,0.9)';
+    ctx.lineWidth = 1.4 * s;
+    ctx.beginPath();
+    ctx.arc(24 * s, -3 * s, 12 * s, 0, Math.PI * 2);
+    ctx.stroke();
+
+    ctx.fillStyle = '#fffdf5';
+    ctx.beginPath(); ctx.arc(24 * s, -3 * s, 8.5 * s, 0, Math.PI * 2); ctx.fill();
+    ctx.strokeStyle = '#4a3300'; ctx.lineWidth = 1; ctx.stroke();
+    ctx.fillStyle = '#1a0d00';
+    ctx.beginPath(); ctx.arc(26 * s, -3 * s, 4.2 * s, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = 'rgba(255,255,255,0.9)';
+    ctx.beginPath(); ctx.arc(24.5 * s, -5 * s, 1.4 * s, 0, Math.PI * 2); ctx.fill();
+
+    ctx.restore();
+
+    const eye = fishEyeLocal(scale);
+    const ex = x + eye.x * Math.cos(wiggle) - eye.y * Math.sin(wiggle);
+    const ey = y + eye.x * Math.sin(wiggle) + eye.y * Math.cos(wiggle);
+    return { eyeX: ex, eyeY: ey, eyeR: eye.r };
+  }
+
+  function drawArcher() {
+    const groundY = ARENA_H - 6;
+    const hipY = bowY + 26;
+    const shoulderY = bowY - 24;
+    const headY = shoulderY - 16;
+    const lean = Math.max(-0.12, Math.min(0.12, (mouseX - bowX) / 900));
+
+    ctx.save();
+    ctx.translate(bowX, 0);
+    ctx.rotate(lean);
+    ctx.translate(-bowX, 0);
+
+    ctx.fillStyle = 'rgba(0,0,0,0.3)';
+    ctx.beginPath();
+    ctx.ellipse(bowX, groundY + 4, 26, 5, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.strokeStyle = '#5a3a20';
+    ctx.lineWidth = 9;
+    ctx.lineCap = 'round';
+    ctx.beginPath();
+    ctx.moveTo(bowX - 8, hipY);
+    ctx.lineTo(bowX - 22, groundY);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(bowX + 6, hipY);
+    ctx.lineTo(bowX + 18, groundY);
+    ctx.stroke();
+
+    const garmentGrad = ctx.createLinearGradient(bowX - 20, hipY, bowX + 20, hipY + 30);
+    garmentGrad.addColorStop(0, '#e74b38');
+    garmentGrad.addColorStop(1, '#9c2f1f');
+    ctx.fillStyle = garmentGrad;
+    ctx.beginPath();
+    ctx.moveTo(bowX - 16, hipY - 4);
+    ctx.lineTo(bowX + 16, hipY - 4);
+    ctx.lineTo(bowX + 10, hipY + 30);
+    ctx.lineTo(bowX - 10, hipY + 30);
+    ctx.closePath();
+    ctx.fill();
+
+    const torsoGrad = ctx.createLinearGradient(bowX - 16, shoulderY, bowX + 16, hipY);
+    torsoGrad.addColorStop(0, '#d68a4f');
+    torsoGrad.addColorStop(1, '#a8642f');
+    ctx.fillStyle = torsoGrad;
+    ctx.beginPath();
+    ctx.moveTo(bowX - 13, shoulderY);
+    ctx.lineTo(bowX + 13, shoulderY);
+    ctx.lineTo(bowX + 15, hipY - 2);
+    ctx.lineTo(bowX - 15, hipY - 2);
+    ctx.closePath();
+    ctx.fill();
+
+    ctx.strokeStyle = 'rgba(233,195,73,0.85)';
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.moveTo(bowX - 13, shoulderY + 6);
+    ctx.lineTo(bowX + 13, hipY - 8);
+    ctx.stroke();
+
+    ctx.save();
+    ctx.translate(bowX - 14, shoulderY - 4);
+    ctx.rotate(-0.3);
+    ctx.fillStyle = '#5a4018';
+    ctx.fillRect(-5, 0, 10, 30);
+    for (let i = -1; i <= 1; i++) {
+      ctx.strokeStyle = '#c9822f';
+      ctx.lineWidth = 1.6;
+      ctx.beginPath(); ctx.moveTo(i * 2.4, 0); ctx.lineTo(i * 2.4, -14); ctx.stroke();
+    }
+    ctx.restore();
+
+    ctx.strokeStyle = '#c1873f';
+    ctx.lineWidth = 6.5;
+    ctx.lineCap = 'round';
+    ctx.beginPath();
+    ctx.moveTo(bowX + 10, shoulderY + 2);
+    ctx.lineTo(bowX, bowY - 6);
+    ctx.stroke();
+
+    ctx.fillStyle = '#d68a4f';
+    ctx.beginPath();
+    ctx.arc(bowX, headY, 10, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.fillStyle = '#241a08';
+    ctx.beginPath();
+    ctx.arc(bowX, headY - 3, 9.5, Math.PI, Math.PI * 2);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.arc(bowX - 2, headY - 12, 4, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(233,195,73,0.9)';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.arc(bowX, headY - 1, 9.6, Math.PI * 1.15, Math.PI * 1.85);
+    ctx.stroke();
+
+    ctx.strokeStyle = 'rgba(60,30,10,0.4)';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(bowX + 6, headY + 2);
+    ctx.lineTo(bowX + 9, headY + 6);
+    ctx.stroke();
+
+    ctx.restore();
+  }
+
+  function drawArcherFrontArm(pull) {
+    const shoulderY = bowY - 24;
+    ctx.strokeStyle = '#c1873f';
+    ctx.lineWidth = 6.5;
+    ctx.lineCap = 'round';
+    const elbowX = bowX - 6 - pull * 10;
+    const elbowY = shoulderY + 10;
+    ctx.beginPath();
+    ctx.moveTo(bowX - 11, shoulderY + 3);
+    ctx.lineTo(elbowX, elbowY);
+    ctx.lineTo(bowX - 2, bowY - 16 - pull * 22);
+    ctx.stroke();
+  }
+
+  function drawBow() {
+    const dx = mouseX - bowX, dy = mouseY - bowY;
+    const angle = Math.atan2(dy, dx);
+
+    let pull = 0;
+    if (isDrawing) pull = Math.min(1, (performance.now() - drawStart) / MAX_DRAW_MS);
+
+    drawStrength.classList.toggle('active', isDrawing);
+    drawFill.style.width = (pull * 100) + '%';
+
+    drawArcher();
+
+    ctx.save();
+    ctx.translate(bowX, bowY);
+    ctx.rotate(angle + Math.PI / 2);
+
+    ctx.strokeStyle = '#8a5a2b';
+    ctx.lineWidth = 5;
+    ctx.lineCap = 'round';
+    ctx.beginPath();
+    ctx.arc(0, 0, 36, -Math.PI * 0.46, Math.PI * 0.46);
+    ctx.stroke();
+    ctx.strokeStyle = 'rgba(233,195,73,0.55)';
+    ctx.lineWidth = 1.4;
+    ctx.beginPath();
+    ctx.arc(0, 0, 36, -Math.PI * 0.46, Math.PI * 0.46);
+    ctx.stroke();
+
+    const nockY = -18 - pull * 22;
+    ctx.strokeStyle = '#e8dcc0';
+    ctx.lineWidth = 1.4;
+    ctx.beginPath();
+    ctx.moveTo(36 * Math.cos(-Math.PI * 0.46), 36 * Math.sin(-Math.PI * 0.46));
+    ctx.lineTo(0, nockY);
+    ctx.lineTo(36 * Math.cos(Math.PI * 0.46), 36 * Math.sin(Math.PI * 0.46));
+    ctx.stroke();
+
+    if (arrowsLeft > 0 && flyingArrows.length === 0) {
+      ctx.strokeStyle = '#3a2510';
+      ctx.lineWidth = 2.6;
+      ctx.beginPath();
+      ctx.moveTo(0, nockY);
+      ctx.lineTo(0, nockY - 48);
+      ctx.stroke();
+      ctx.fillStyle = '#333';
+      ctx.beginPath();
+      ctx.moveTo(0, nockY - 48);
+      ctx.lineTo(-4, nockY - 39);
+      ctx.lineTo(4, nockY - 39);
+      ctx.closePath();
+      ctx.fill();
+      ctx.strokeStyle = '#c9822f';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(-3, nockY - 4); ctx.lineTo(-7, nockY + 2);
+      ctx.moveTo(3, nockY - 4); ctx.lineTo(7, nockY + 2);
+      ctx.stroke();
+    }
+
+    ctx.restore();
+
+    drawArcherFrontArm(pull);
+
+    if (hasPointer) {
+      ctx.save();
+      ctx.strokeStyle = `rgba(233,195,73,${0.18 + pull * 0.25})`;
+      ctx.setLineDash([3, 7]);
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(bowX, bowY - 60);
+      ctx.lineTo(bowX + dx * 4, bowY + dy * 4);
+      ctx.stroke();
+      ctx.restore();
+
+      ctx.save();
+      ctx.strokeStyle = 'rgba(233,195,73,0.9)';
+      ctx.lineWidth = 1.2;
+      ctx.beginPath(); ctx.arc(mouseX, mouseY, 9, 0, Math.PI*2); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(mouseX-14, mouseY); ctx.lineTo(mouseX-4, mouseY); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(mouseX+4, mouseY); ctx.lineTo(mouseX+14, mouseY); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(mouseX, mouseY-14); ctx.lineTo(mouseX, mouseY-4); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(mouseX, mouseY+4); ctx.lineTo(mouseX, mouseY+14); ctx.stroke();
+      ctx.fillStyle = 'rgba(231,75,56,0.9)';
+      ctx.beginPath(); ctx.arc(mouseX, mouseY, 1.4, 0, Math.PI*2); ctx.fill();
+      ctx.restore();
+    }
+  }
+
+  function shoot() {
+    if (!gameActive || arrowsLeft <= 0 || flyingArrows.length > 0) return;
+    const originY = bowY - 66;
+    const dx = mouseX - bowX, dy = mouseY - originY;
+    const dist = Math.sqrt(dx*dx + dy*dy) || 1;
+    const speed = 20;
+    flyingArrows.push({
+      x: bowX, y: originY,
+      vx: (dx/dist) * speed, vy: (dy/dist) * speed,
+      angle: Math.atan2(dy, dx)
+    });
+    arrowsLeft--;
+    updateHUD();
+    pulse(arrowsPill);
+    playTwang();
+  }
+
+  function spawnParticles(x, y, color, count) {
+    for (let i = 0; i < count; i++) {
+      const ang = Math.random() * Math.PI * 2;
+      const spd = 1.5 + Math.random() * 6;
+      particles.push({ x, y, vx: Math.cos(ang)*spd, vy: Math.sin(ang)*spd, life: 34, maxLife: 34, color });
+    }
+  }
+  function spawnRipple(x, y) { ripples.push({ x, y, r: 4, life: 40 }); }
+  function showFloatingText(text, x, y, color, big) {
+    floatingTexts.push({ text, x, y, life: 62, color, big });
+  }
+  function triggerFlash(x, y) {
+    flashEl.style.setProperty('--fx', x + 'px');
+    flashEl.style.setProperty('--fy', y + 'px');
+    flashEl.classList.remove('hit'); void flashEl.offsetWidth; flashEl.classList.add('hit');
+  }
+  function triggerShake() {
+    stageInner.classList.remove('shake'); void stageInner.offsetWidth; stageInner.classList.add('shake');
+  }
+  function showLevelBanner(text) {
+    levelBannerBig.textContent = text;
+    levelBanner.classList.remove('show'); void levelBanner.offsetWidth; levelBanner.classList.add('show');
+  }
+
+  function checkArrows() {
+    const fpos = getFishPos();
+    const wiggle = Math.sin(fishAngle * 4.2) * 0.10;
+    const eyeLocal = fishEyeLocal(fishSize);
+    const eyeX = fpos.x + eyeLocal.x * Math.cos(wiggle) - eyeLocal.y * Math.sin(wiggle);
+    const eyeY = fpos.y + eyeLocal.x * Math.sin(wiggle) + eyeLocal.y * Math.cos(wiggle);
+
+    for (let i = flyingArrows.length - 1; i >= 0; i--) {
+      const a = flyingArrows[i];
+      a.x += a.vx; a.y += a.vy;
+      a.angle = Math.atan2(a.vy, a.vx);
+
+      if (a.x < -30 || a.x > W + 30 || a.y > ARENA_H + 10) {
+        flyingArrows.splice(i, 1);
+        checkOutOfArrows();
+        continue;
+      }
+
+      const dxE = a.x - eyeX, dyE = a.y - eyeY;
+      const distToEye = Math.sqrt(dxE*dxE + dyE*dyE);
+
+      const bdx = a.x - fpos.x, bdy = a.y - fpos.y;
+      const rX = 46 * (fishSize/74), rY = 28 * (fishSize/74);
+      const bodyHit = (bdx*bdx)/(rX*rX) + (bdy*bdy)/(rY*rY) <= 1;
+
+      if (distToEye <= eyeLocal.r + 6) {
+        const gained = 100 * level;
+        score += gained;
+        spawnParticles(a.x, a.y, '#e9c349', 30);
+        spawnRipple(bowX, ARENA_H + 20);
+        flyingArrows.splice(i, 1);
+        updateHUD();
+        pulse(scorePill); pulse(levelPill);
+        showFloatingText('BULLSEYE · +' + gained, fpos.x, fpos.y - 68, '#e9c349', true);
+        triggerFlash(a.x, a.y);
+        triggerShake();
+        playBell();
+        slowMoTimer = 26;
+        setTimeout(() => { level++; resetLevel(); showLevelBanner('Level ' + level); }, 750);
+        return;
+      } else if (bodyHit) {
+        spawnParticles(a.x, a.y, '#e74b38', 12);
+        flyingArrows.splice(i, 1);
+        showFloatingText('Miss', fpos.x, fpos.y - 60, '#e74b38', false);
+        playThud();
+        checkOutOfArrows();
+      }
+    }
+  }
+
+  function checkOutOfArrows() {
+    if (arrowsLeft <= 0 && flyingArrows.length === 0) {
+      setTimeout(() => { if (arrowsLeft <= 0) endGame(); }, 500);
+    }
+  }
+
+  function endGame() {
+    gameActive = false;
+    modalTitle.textContent = 'Trial Ended';
+    modalTagline.textContent = score > 0 ? 'Well drawn, archer' : 'Try again';
+    modalStats.style.display = 'flex';
+    finalScoreEl.textContent = score;
+    finalLevelEl.textContent = level;
+    modalText.innerHTML = score >= 400
+      ? 'You held Arjuna\'s focus — eyes fixed on the reflection, mind fixed on the mark.'
+      : 'Patience and a steady eye make the marksman. Try again.';
+    startBtn.textContent = 'Try Again';
+    modalVeil.style.display = 'flex';
+  }
+
+  function drawReflection() {
+    reflectTime += 0.035;
+
+    rctx.clearRect(0, 0, W, ARENA_H);
+    rctx.drawImage(canvas, 0, 0, W, ARENA_H, 0, 0, W, ARENA_H);
+
+    const waterTop = ARENA_H;
+    const sliceH = 2;
+    for (let y = 0; y < WATER_H; y += sliceH) {
+      const t = y / WATER_H;
+      const srcY = (ARENA_H - 1) * (1 - t);
+      const wobble = Math.sin(y * 0.11 + reflectTime * 2.2) * (1.5 + t * 5);
+      ctx.drawImage(reflectBuffer, 0, srcY, W, 2, wobble, waterTop + y, W, sliceH + 1);
+    }
+
+    const tintGrad = ctx.createLinearGradient(0, waterTop, 0, H);
+    tintGrad.addColorStop(0, 'rgba(6,20,25,0.22)');
+    tintGrad.addColorStop(1, 'rgba(2,8,10,0.8)');
+    ctx.fillStyle = tintGrad;
+    ctx.fillRect(0, waterTop, W, WATER_H);
+
+    for (let i = ripples.length - 1; i >= 0; i--) {
+      const r = ripples[i];
+      r.r += 2.4; r.life--;
+      if (r.life <= 0) { ripples.splice(i, 1); continue; }
+      ctx.strokeStyle = `rgba(233,195,73,${r.life/40*0.5})`;
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.ellipse(r.x, waterTop + 14, r.r, r.r*0.28, 0, 0, Math.PI*2);
+      ctx.stroke();
+    }
+
+    ctx.strokeStyle = 'rgba(233,195,73,0.5)';
+    ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(0, waterTop); ctx.lineTo(W, waterTop); ctx.stroke();
+    ctx.fillStyle = 'rgba(233,195,73,0.06)';
+    ctx.fillRect(0, waterTop, W, 3);
+  }
+
+  function gameLoop() {
+    ctx.clearRect(0, 0, W, H);
+    drawBackground();
+
+    if (gameActive) {
+      const speedMul = slowMoTimer > 0 ? 0.12 : 1;
+      fishAngle += fishSpeed * speedMul;
+      if (slowMoTimer > 0) slowMoTimer--;
+    }
+
+    const fpos = getFishPos();
+    const scale = fishSize * (0.9 + 0.1 * Math.cos(fishAngle * 0.5));
+    drawFish(fpos.x, fpos.y, scale);
+
+    for (const a of flyingArrows) {
+      ctx.save();
+      ctx.translate(a.x, a.y);
+      ctx.rotate(a.angle);
+      ctx.strokeStyle = 'rgba(233,195,73,0.5)';
+      ctx.lineWidth = 6;
+      ctx.beginPath(); ctx.moveTo(-26, 0); ctx.lineTo(4, 0); ctx.stroke();
+      ctx.strokeStyle = '#3a2510';
+      ctx.lineWidth = 2.6;
+      ctx.beginPath(); ctx.moveTo(-20, 0); ctx.lineTo(9, 0); ctx.stroke();
+      ctx.fillStyle = '#666';
+      ctx.beginPath(); ctx.moveTo(9,0); ctx.lineTo(3,-3); ctx.lineTo(3,3); ctx.closePath(); ctx.fill();
+      ctx.strokeStyle = '#c9822f'; ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.moveTo(-20,-2); ctx.lineTo(-25,-5); ctx.moveTo(-20,2); ctx.lineTo(-25,5); ctx.stroke();
+      ctx.restore();
+    }
+
+    if (!gameActive) drawArcher();
+    if (gameActive) checkArrows();
+
+    for (let i = particles.length - 1; i >= 0; i--) {
+      const p = particles[i];
+      p.x += p.vx; p.y += p.vy; p.vy += 0.12; p.life--;
+      if (p.life <= 0) { particles.splice(i, 1); continue; }
+      ctx.globalAlpha = p.life / p.maxLife;
+      ctx.fillStyle = p.color;
+      ctx.beginPath(); ctx.arc(p.x, p.y, 2.6, 0, Math.PI*2); ctx.fill();
+      ctx.globalAlpha = 1;
+    }
+
+    for (let i = floatingTexts.length - 1; i >= 0; i--) {
+      const t = floatingTexts[i];
+      t.y -= 0.55; t.life--;
+      if (t.life <= 0) { floatingTexts.splice(i, 1); continue; }
+      ctx.globalAlpha = Math.min(1, t.life / 22);
+      ctx.fillStyle = t.color;
+      ctx.font = (t.big ? '700 18px' : '600 15px') + ` 'Cinzel', serif`;
+      ctx.textAlign = 'center';
+      ctx.fillText(t.text, t.x, t.y);
+      ctx.globalAlpha = 1;
+    }
+
+    if (gameActive) drawBow();
+    else drawStrength.classList.remove('active');
+
+    drawReflection();
+
+    requestAnimationFrame(gameLoop);
+  }
+
+  function setPointerFromEvent(e, rect) {
+    mouseX = (e.clientX - rect.left) * (W / rect.width);
+    mouseY = (e.clientY - rect.top) * (H / rect.height);
+    mouseY = Math.min(mouseY, ARENA_H - 4);
+  }
+
+  canvas.addEventListener('mousemove', (e) => {
+    hasPointer = true;
+    const rect = canvas.getBoundingClientRect();
+    setPointerFromEvent(e, rect);
+  });
+  canvas.addEventListener('mouseleave', () => { hasPointer = false; });
+
+  canvas.addEventListener('mousedown', () => {
+    if (!gameActive) return;
+    ensureAudio();
+    isDrawing = true;
+    drawStart = performance.now();
+  });
+  window.addEventListener('mouseup', () => {
+    if (isDrawing) { isDrawing = false; shoot(); }
+  });
+
+  canvas.addEventListener('touchstart', (e) => {
+    e.preventDefault();
+    if (!gameActive) return;
+    ensureAudio();
+    hasPointer = true;
+    const rect = canvas.getBoundingClientRect();
+    setPointerFromEvent(e.touches[0], rect);
+    isDrawing = true;
+    drawStart = performance.now();
+  }, { passive: false });
+  canvas.addEventListener('touchmove', (e) => {
+    e.preventDefault();
+    const rect = canvas.getBoundingClientRect();
+    setPointerFromEvent(e.touches[0], rect);
+  }, { passive: false });
+  canvas.addEventListener('touchend', (e) => {
+    e.preventDefault();
+    if (isDrawing) { isDrawing = false; shoot(); }
+  }, { passive: false });
+
+  startBtn.addEventListener('click', () => {
+    ensureAudio();
+    score = 0; level = 1;
+    flyingArrows = []; particles = []; floatingTexts = []; ripples = [];
+    resetLevel();
+    gameActive = true;
+    modalVeil.style.display = 'none';
+  });
+
+  renderPips();
+  updateHUD();
+  requestAnimationFrame(gameLoop);
+})();
+</script>
+
+</body>
+</html>

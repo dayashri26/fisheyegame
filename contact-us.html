@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Contact Us — Matsya-Vedh</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Manrope:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root { --bg-2:#0e0f03; --surface-1:#1f2111; --gold:#e9c349; --gold-dim:#af8d11; --text:#e4e4cc; --text-dim:#c4c6ce; }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:'Manrope',sans-serif; background:var(--bg-2); color:var(--text); line-height:1.75; padding:48px 20px 80px; }
+  .wrap { max-width:640px; margin:0 auto; }
+  a { color:var(--gold); text-decoration:none; }
+  a:hover { text-decoration:underline; }
+  .back { display:inline-block; margin-bottom:28px; font-size:13px; color:var(--gold-dim); }
+  h1 { font-family:'Cinzel',serif; font-size:30px; color:var(--gold); margin-bottom:16px; }
+  p { font-size:16px; color:var(--text-dim); margin-bottom:16px; }
+  .contact-card {
+    background:var(--surface-1); border:1px solid rgba(233,195,73,0.25); border-radius:12px;
+    padding:26px 24px; margin:26px 0; display:flex; align-items:center; gap:16px;
+  }
+  .contact-card .icon {
+    width:40px; height:40px; border-radius:50%; background:rgba(233,195,73,0.12);
+    border:1px solid rgba(233,195,73,0.4); display:flex; align-items:center; justify-content:center;
+    color:var(--gold); font-size:18px; flex-shrink:0;
+  }
+  .contact-card .label { font-size:12px; letter-spacing:0.1em; text-transform:uppercase; color:var(--gold-dim); margin-bottom:4px; }
+  .contact-card .value { font-size:16px; color:var(--text); font-weight:600; }
+  .note { font-size:14px; color:var(--text-dim); opacity:0.75; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="back" href="index.html">← Back to the game</a>
+  <h1>Contact Us</h1>
+  <p>Have a question, found a bug, or want to share feedback about Matsya-Vedh? We'd like to hear from you.</p>
+
+  <div class="contact-card">
+    <div class="icon">✉</div>
+    <div>
+      <div class="label">Email</div>
+      <div class="value"><a href="mailto:youremail@example.com">youremail@example.com</a></div>
+    </div>
+  </div>
+
+  <p class="note"><em>(Replace the placeholder email address above with your real contact email before publishing this site. A working contact method is one of the things Google's AdSense review looks for.)</em></p>
+
+  <p>We aim to respond to genuine queries within a reasonable time. For privacy or data-related questions specifically, please also see our <a href="privacy-policy.html">Privacy Policy</a>.</p>
+</div>
+</body>
+</html>
