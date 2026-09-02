@@ -30,11 +30,21 @@
       "inLanguage": "en"
     },
     {
-      "@type": "Article",
-      "headline": "The Piercing of the Fish's Eye",
+      "@type": "ItemList",
+      "name": "The Piercing of the Fish's Eye — Ten Chapters",
       "description": "The full ten-chapter story of the Matsya-Vedh trial from the Mahabharata — Draupadi's swayamvara, Arjuna's feat, and the history and ideas behind it.",
-      "about": "Mahabharata, Matsya Vedh, Arjuna, Draupadi Swayamvara",
-      "inLanguage": "en"
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1,  "name": "What Is Matsya-Vedh?", "url": "what-is-matsya-vedh.html" },
+        { "@type": "ListItem", "position": 2,  "name": "Draupadi's Swayamvara Explained", "url": "draupadis-swayamvara-explained.html" },
+        { "@type": "ListItem", "position": 3,  "name": "Who Was Arjuna?", "url": "who-was-arjuna.html" },
+        { "@type": "ListItem", "position": 4,  "name": "The Rules of the Impossible Test", "url": "rules-of-the-impossible-test.html" },
+        { "@type": "ListItem", "position": 5,  "name": "Why Only the Reflection?", "url": "why-only-the-reflection.html" },
+        { "@type": "ListItem", "position": 6,  "name": "Dronacharya and the Guru-Shishya Tradition", "url": "dronacharya-guru-shishya-tradition.html" },
+        { "@type": "ListItem", "position": 7,  "name": "Other Trials of Skill in Indian Mythology", "url": "trials-of-skill-in-indian-mythology.html" },
+        { "@type": "ListItem", "position": 8,  "name": "Focus, Flow, and the Psychology of the Single Point", "url": "focus-flow-psychology-of-the-single-point.html" },
+        { "@type": "ListItem", "position": 9,  "name": "Archery in Ancient India: A Short History", "url": "archery-in-ancient-india-history.html" },
+        { "@type": "ListItem", "position": 10, "name": "From Myth to Mechanic: Designing This Game", "url": "from-myth-to-mechanic-designing-this-game.html" }
+      ]
     }
   ]
 }
@@ -728,7 +738,7 @@
   }
   .story-intro p { font-size: 16.5px; color: var(--text-dim); max-width: 560px; margin: 0 auto; line-height: 1.75; }
 
-  /* ---------- Story tiles: thumbnail grid, each expands to a full chapter ---------- */
+  /* ---------- Story tiles: thumbnail grid, each links to its own chapter page ---------- */
   .story-tiles {
     width: 100%; display: grid;
     grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
@@ -736,6 +746,7 @@
   }
 
   .story-tile {
+    display: block; text-decoration: none;
     background: linear-gradient(160deg, rgba(42,43,27,0.55), var(--surface-1));
     border: 1px solid rgba(233,195,73,0.22);
     border-radius: 14px;
@@ -743,17 +754,14 @@
     overflow: hidden;
     transition: transform 0.3s var(--ease-premium), box-shadow 0.3s var(--ease-premium), border-color 0.3s ease;
   }
-  .story-tile:hover { transform: translateY(-3px); box-shadow: var(--shadow-card), var(--glow-gold-soft); border-color: rgba(233,195,73,0.4); }
-  .story-tile[open] { grid-column: 1 / -1; }
-  .story-tile[open]:hover { transform: none; }
+  .story-tile:hover { transform: translateY(-3px); box-shadow: var(--shadow-card), var(--glow-gold-soft); border-color: rgba(233,195,73,0.4); text-decoration: none; }
+  .story-tile:hover .tile-chevron { transform: translateX(3px); background: rgba(233,195,73,0.15); }
 
   .tile-summary {
-    list-style: none; cursor: pointer; position: relative;
+    position: relative;
     padding: 22px 54px 20px 22px;
     display: flex; flex-direction: column; gap: 9px;
   }
-  .tile-summary::-webkit-details-marker { display: none; }
-  .tile-summary::marker { content: ''; }
 
   .tile-num {
     font-family: var(--font-label); font-size: 11px; letter-spacing: 0.14em;
@@ -768,44 +776,12 @@
     font-weight: 600; line-height: 1.35;
   }
   .tile-teaser { display: block; font-size: 13.5px; color: var(--text-dim); line-height: 1.6; }
-  .tile-meta {
-    font-family: var(--font-label); font-size: 10px; letter-spacing: 0.1em;
-    text-transform: uppercase; color: var(--gold-dim); opacity: 0.75; margin-top: 4px;
-  }
   .tile-chevron {
     position: absolute; top: 20px; right: 20px; width: 26px; height: 26px; border-radius: 50%;
     border: 1px solid rgba(233,195,73,0.4); display: flex; align-items: center; justify-content: center;
     font-size: 15px; color: var(--gold); line-height: 1;
     transition: transform 0.35s var(--ease-premium), background 0.3s ease;
   }
-  .story-tile[open] .tile-chevron { transform: rotate(45deg); background: rgba(233,195,73,0.15); }
-
-  .tile-body {
-    padding: 4px 26px 32px; margin-top: 2px;
-    border-top: 1px solid rgba(233,195,73,0.14);
-    padding-top: 22px;
-    scroll-margin-top: 90px;
-  }
-
-  /* Magazine-style two-column body text on wide screens */
-  @media (min-width: 700px) {
-    .blog-columns { column-count: 2; column-gap: 40px; }
-    .blog-columns p { break-inside: avoid-column; }
-  }
-  .blog-columns p { font-size: 16px; color: var(--text-dim); line-height: 1.85; margin-bottom: 15px; }
-  .blog-columns p:last-child { margin-bottom: 0; }
-
-  /* Signature editorial touch: a drop cap opens every chapter */
-  .blog-columns p:first-of-type::first-letter {
-    font-family: var(--font-display-bold);
-    font-size: 52px;
-    float: left;
-    line-height: 0.8;
-    padding: 6px 8px 0 0;
-    color: var(--gold);
-    text-shadow: 0 0 18px rgba(233,195,73,0.4);
-  }
-
 
   .story-cta {
     width: 100%; text-align: center; margin: 50px 0 10px; padding: 36px 24px;
@@ -1082,299 +1058,105 @@
 
   <div class="story-tiles" id="storyTiles">
 
-    <details class="story-tile" id="blog1">
-      <summary class="tile-summary">
+    <a class="story-tile" href="what-is-matsya-vedh.html">
+      <span class="tile-summary">
         <span class="tile-num">01</span>
         <span class="tile-eyebrow">Chapter 1 of 10</span>
         <h3 class="tile-title">What Is Matsya-Vedh?</h3>
         <span class="tile-teaser">The Sanskrit trial behind this entire game — and why "vedh" means far more than just archery.</span>
-        <span class="tile-meta">~1,000 words</span>
-        <span class="tile-chevron" aria-hidden="true">+</span>
-      </summary>
-      <div class="tile-body">
-        <div class="blog-columns">
-          <p><em>Matsya-Vedh</em> translates roughly to "the piercing of the fish," and it names one of the most celebrated trials of skill in the Mahabharata, the great Sanskrit epic of ancient India traditionally attributed to the sage Vyasa. In its most famous telling, a king sets an archery contest to decide his daughter's marriage: a heavy bow must be strung, and an arrow sent through the eye of a golden or wooden fish mounted on a wheel turning high above a pool of water.</p>
-          <p>What makes the trial legendary isn't the distance or the size of the target — it's a single restriction that turns the contest from difficult into nearly impossible. The archer is forbidden from looking directly at the fish. They may only aim by watching its reflection, rippling and inverted, in the water below.</p>
-          <p>This single rule transforms a test of strength into a test of mind. It rewards patience and stillness over raw power, which is exactly why the story has been retold for centuries — and why it forms the entire premise of this game. Every mechanic here, from the water strip that mirrors the arena to the hold-and-release bowstring, is built around that one idea: look at the reflection, not the target.</p>
-          <p>The word "vedh" itself means piercing or penetration, and it appears in the names of several other trial-like episodes across Indian epic literature — a small linguistic clue that these tests of skill were understood as a distinct genre of story even in their own time. Matsya-Vedh sits within a Mahabharata full of such trials, each one designed less to showcase strength than to reveal something about the character attempting it.</p>
-          <p>Read this way, the episode functions almost like a compressed origin story: a single afternoon that tells an entire hall — and, centuries later, an entire audience of readers — exactly who Arjuna is, without needing a single line of exposition to explain it.</p>
-          <p>The Mahabharata itself is enormous by any measure — traditionally described as one of the longest epic poems composed anywhere, made up of roughly a hundred thousand verses divided into eighteen major sections called parvas. Matsya-Vedh appears fairly early, in the Adi Parva, the "book of beginnings," where the poem is still introducing its central characters and setting the long chain of events in motion that eventually leads to the Kurukshetra war. Placing the trial this early matters: everything the epic later asks of Arjuna — as a warrior, a brother, a reluctant participant in a war against his own relatives — is quietly foreshadowed by the discipline he shows in this one afternoon.</p>
-          <p>Like much of the Mahabharata, Matsya-Vedh has been passed down through both a fixed textual tradition and a living oral one — retold by generations of storytellers, dramatized in regional theater and dance traditions, and illustrated in temple art and manuscript paintings long before anyone thought to turn it into a browser game. Details shift slightly between regional versions — the exact construction of the wheel, the height of the pool, small narrative flourishes — but the core shape of the trial, and its central rule about the reflection, remains remarkably consistent across tellings.</p>
-          <p>That consistency is worth noting on its own. Trial-of-skill narratives appear across almost every storytelling tradition in the world, from Greek epic to Arthurian legend, and they tend to survive retelling precisely because their central obstacle is simple enough to explain in a sentence and rich enough to sustain an entire episode. Matsya-Vedh belongs to that same family of stories, but its specific twist — succeeding by refusing to look directly at what you're trying to hit — gives it a distinct identity that keeps drawing new audiences back to it, this game included.</p>
-          <p>The Mahabharata's traditional attribution to the sage Vyasa sits alongside a broader scholarly understanding that the epic, like most ancient works of this scale, likely grew over centuries through both written transmission and oral performance before settling into the form most readers encounter today. In sheer scale, it dwarfs most other epics in world literature — several times the combined length of the Iliad and the Odyssey — and Matsya-Vedh is just one of hundreds of episodes, subplots, and digressions woven through its eighteen parvas.</p>
-          <p>Despite being a comparatively short episode within that vast structure, Matsya-Vedh has had an outsized afterlife. It's one of the handful of Mahabharata scenes that regularly appears independently of the full epic — in children's story collections, in classical dance repertoires, in painted temple panels — precisely because it's self-contained enough to tell on its own: a clear setup, a clear rule, a clear and satisfying resolution, all inside a single sitting.</p>
-          <p>That self-contained quality is also what made it a workable foundation for a browser game in the first place. Not every episode from a sprawling epic translates into a single, focused piece of interactive design, but Matsya-Vedh essentially arrives with its core mechanic already built in: aim, watch the reflection, wait for the right moment, release. The ten chapters that follow this one work outward from that same starting point — first through the specific people and rules involved, then into the ideas the trial has come to represent, and finally into how all of it shaped the actual design decisions behind this game.</p>
-          <p>It's also worth situating Matsya-Vedh within the specific narrative arc of the Adi Parva itself, which spends considerable time establishing not just the Pandavas' childhood and training but the political tensions with their Kaurava cousins that will eventually erupt into open war. The swayamvara arrives at a pivotal hinge point in that arc: the Pandavas have survived an assassination attempt, are living in hiding, and have not yet reclaimed any part of their birthright. Arjuna's victory at the trial is, among other things, the first moment in the epic where the exiled family regains any visible standing at all — a public, undeniable demonstration of worth that begins reversing their fortunes, well before any battle is fought.</p>
-          <p>Even the smallest structural choices in this game trace back to that same origin story. The decision to split the legend across ten separate chapters, rather than one long continuous essay, mirrors the episodic way the Mahabharata itself has always been consumed — one story at a time, often out of strict sequence, each piece capable of standing on its own while still belonging to something much larger. Reading these chapters in order is one way to experience the legend; jumping straight to whichever title catches your interest is, in its own way, closer to how audiences have actually engaged with this epic for thousands of years.</p>
+        <span class="tile-chevron" aria-hidden="true">→</span>
+      </span>
+    </a>
 
-
-
-        </div>
-      </div>
-    </details>
-
-    <details class="story-tile" id="blog2">
-      <summary class="tile-summary">
+    <a class="story-tile" href="draupadis-swayamvara-explained.html">
+      <span class="tile-summary">
         <span class="tile-num">02</span>
         <span class="tile-eyebrow">Chapter 2 of 10</span>
         <h3 class="tile-title">Draupadi's Swayamvara Explained</h3>
         <span class="tile-teaser">The public ceremony that turned one afternoon into the hinge the rest of the epic turns on.</span>
-        <span class="tile-meta">~1,000 words</span>
-        <span class="tile-chevron" aria-hidden="true">+</span>
-      </summary>
-      <div class="tile-body">
-        <div class="blog-columns">
-          <p>The fish-eye trial is most famously remembered as part of Draupadi's <em>swayamvara</em> — a ceremony in ancient Indian tradition where a princess would choose her own husband from among assembled suitors, often by setting a contest of skill. A swayamvara wasn't a private family matter; it was a public event, drawing kings, princes, and warriors from across the land, each hoping to prove himself worthy.</p>
-          <p>For Draupadi's swayamvara, her father King Drupada, ruler of the kingdom of Panchala, set the fish-eye trial as the deciding contest, in part as a quiet challenge aimed at a very specific archer he hoped would attend — though the trial was, on its face, open to anyone who dared attempt it.</p>
-          <p>The hall would have been a spectacle in itself: rows of assembled royalty, a mighty bow few could even lift, and above it all, that slowly turning fish, daring anyone to try. It's this setting — public, high-stakes, and crowded with people who had every reason to succeed and no idea how — that gives the story its dramatic weight.</p>
-          <p>Swayamvara ceremonies appear repeatedly across Indian epic literature, not just in the Mahabharata, and they consistently serve the same narrative purpose: turning a marriage decision into a public demonstration of merit rather than a private arrangement. That structure is part of why these episodes translate so well into stories about skill and character — the contest itself becomes the real subject, and the marriage almost a formality decided by it.</p>
-          <p>Unlike a private wedding, a swayamvara placed enormous social pressure on both the princess and the assembled suitors — a failed attempt happened in full public view, in front of rival kingdoms, which is part of why so many characters in these stories either refuse to attempt the trial at all or attempt it only reluctantly. The fish-eye trial's brutal difficulty wasn't incidental to that dynamic; it was what made the eventual winner's success mean something to everyone watching.</p>
-          <p>Traditional tellings describe the hall itself as an engineered space built specifically for this contest — a raised platform for the bow, a mechanized wheel overhead to keep the fish in constant rotation, and the reflecting pool positioned so that any archer who tried to cheat by glancing upward would immediately disqualify themselves in front of the entire court. Among those said to be present was Krishna, already a significant figure in the wider epic, watching alongside kings and warriors as suitor after suitor stepped up and failed.</p>
-          <p>The trial's aftermath is one of the more well-known — and more complex — turns in the entire epic: Arjuna's success leads, through a chain of events involving his mother Kunti, to Draupadi becoming married to all five Pandava brothers rather than Arjuna alone, a detail regional and textual versions of the Mahabharata treat with varying emphasis. Whatever view a particular telling takes of that outcome, it's this swayamvara that permanently ties Draupadi's fate to the Pandavas, setting up her role as one of the epic's central figures through everything that follows, including the events that eventually lead to the Kurukshetra war.</p>
-          <p>For a story that starts as a single archery contest, it's a striking reminder of how much narrative weight these trial-of-skill episodes are often asked to carry — Matsya-Vedh isn't just about who could shoot straight; structurally, it's the hinge the rest of the epic's central relationships turn on.</p>
-          <p>Panchala, the kingdom Drupada ruled, was one of the more prominent kingdoms in the Mahabharata's political landscape, and Drupada himself is portrayed as a shrewd, politically minded king whose decisions are rarely accidental. Setting an unusually difficult trial for his daughter's swayamvara — rather than a more easily won contest — fits that characterization: a harder test meant a more capable, better-connected son-in-law, whoever ultimately succeeded.</p>
-          <p>Swayamvara ceremonies existed in tension with the more common practice of arranged marriage in ancient Indian society, where family and political considerations typically dominated marriage decisions. A swayamvara didn't remove those pressures entirely — plenty of tellings show fathers quietly hoping for a specific outcome — but it did formally hand the deciding moment to a contest witnessed by everyone, rather than to private negotiation. That public, contest-based structure is a large part of why these episodes work so well as stories in their own right, independent of their marriage-plot function.</p>
-          <p>Krishna's presence at the swayamvara is significant beyond simple attendance. As a cousin and close ally of the Pandavas, and already established elsewhere in the epic as an unusually perceptive figure, his quiet recognition of Arjuna beneath the Brahmin disguise — in versions where that recognition is depicted — adds another layer to the scene: the one person in the hall who could see past the disguise chooses not to reveal it, letting Arjuna's own skill speak for itself in front of a crowd that had already dismissed him.</p>
-          <p>It's also worth noting how differently this particular swayamvara unfolds compared to others described elsewhere in the epic. Some swayamvaras in the wider Mahabharata involve far more straightforward contests, or even permit the princess to simply walk among the suitors and choose freely without any test of skill at all. Drupada's decision to attach the single hardest trial found anywhere in the epic to his own daughter's ceremony says as much about his specific ambitions as it does about any general custom — he wasn't following convention so much as engineering an outcome, hoping the difficulty itself would filter for exactly the son-in-law he had in mind.</p>
-          <p>The number of suitors who attempt and fail before Arjuna's turn also varies somewhat by telling — some versions linger on a long procession of named kings and princes, each given a brief moment of failure, while others move through the crowd more quickly to keep the pacing tight before Arjuna's own attempt. Either approach serves the same dramatic function: by the time Arjuna steps forward, the audience has already absorbed just how thoroughly the trial has humbled everyone who came before him, which is exactly what makes his eventual success land as hard as it does.</p>
+        <span class="tile-chevron" aria-hidden="true">→</span>
+      </span>
+    </a>
 
-
-
-        </div>
-      </div>
-    </details>
-
-    <details class="story-tile" id="blog3">
-      <summary class="tile-summary">
+    <a class="story-tile" href="who-was-arjuna.html">
+      <span class="tile-summary">
         <span class="tile-num">03</span>
         <span class="tile-eyebrow">Chapter 3 of 10</span>
         <h3 class="tile-title">Who Was Arjuna?</h3>
         <span class="tile-teaser">The disguised prince nobody in the hall expected to succeed — and why that's the whole point.</span>
-        <span class="tile-meta">~1,000 words</span>
-        <span class="tile-chevron" aria-hidden="true">+</span>
-      </summary>
-      <div class="tile-body">
-        <div class="blog-columns">
-          <p>Arjuna is one of the five Pandava brothers and widely regarded as the finest archer of his generation in the Mahabharata. Trained from childhood by the guru Dronacharya, Arjuna is portrayed throughout the epic not just as physically skilled, but as someone whose real strength is concentration — the ability to shut out everything except the task directly in front of him.</p>
-          <p>At the time of Draupadi's swayamvara, Arjuna and his brothers were living in exile, disguised as Brahmins (a priestly, scholarly class) rather than revealing their royal identity. So when Arjuna steps forward to attempt the trial, he does so as an apparent stranger — unrecognized, doubted, and dismissed by a hall full of kings who assume a wandering ascetic has no business touching the bow.</p>
-          <p>That contrast is part of what makes the moment land: the person nobody expected to succeed is, in fact, the one person in the room actually capable of it — not because of hidden strength, but because of a discipline he'd spent years building quietly, away from any audience.</p>
-          <p>Arjuna's role in the Mahabharata extends far beyond this one trial — he's a central figure through the epic's central war, and later the primary listener of the Bhagavad Gita, the philosophical dialogue delivered to him on the battlefield. That larger context matters here too: the same capacity for focused, undistracted attention that wins him the swayamvara trial is portrayed, throughout the epic, as core to his character rather than a one-time trick.</p>
-          <p>It's worth noting that the epic doesn't present Arjuna as flawless or naturally gifted beyond effort — he's shown doubting himself, training obsessively, and at points losing confidence entirely. The swayamvara trial works dramatically precisely because it arrives after years of that groundwork, not instead of it, which is part of why later retellings, including this game, tend to frame his success as earned rather than magical.</p>
-          <p>Arjuna carries several epithets across the Mahabharata, each highlighting a different facet of his character: Partha, a patronymic referencing his mother Kunti (also called Pritha); Dhananjaya, meaning "winner of wealth," earned through his military conquests; Savyasachi, "ambidextrous archer," a title referring to his ability to shoot with either hand; and Vijaya, simply "victorious." Traditional accounts also describe him as the son of Kunti and the god Indra, king of the heavens — a detail that places him, alongside his brothers, within the epic's broader pattern of framing its central characters as having partly divine origins.</p>
-          <p>His relationship with Krishna, who serves as his charioteer and closest confidant through much of the epic, is arguably as important to his character as his skill with a bow. It's Krishna's counsel to a doubting, grief-stricken Arjuna at the start of the Kurukshetra war that forms the entire Bhagavad Gita — a text concerned, among other things, with exactly the kind of steady, undistracted focus the fish-eye trial demands, applied instead to duty and action under far graver circumstances.</p>
-          <p>Taken together, the swayamvara trial functions as an early, almost playful demonstration of a quality the epic will spend thousands of verses examining in far more serious terms: what it actually looks like to act with a completely undivided mind, whether the target is a fish's reflection or a far harder decision entirely.</p>
-          <p>Arjuna was one of five Pandava brothers, each remembered for a distinct trait: Yudhishthira, the eldest, for his commitment to truth and righteousness; Bhima for his immense physical strength; Arjuna himself for archery and discipline; and the twins Nakula and Sahadeva for their skill with horses and, in Sahadeva's case, knowledge and foresight. Together they form one of the epic's central units, and the swayamvara trial is, in a sense, the first moment the wider world gets to see just how formidable that unit actually is.</p>
-          <p>The brothers' exile at the time of the swayamvara traces back to an earlier plot against their lives — an attempt by their cousins, the Kauravas, to have them killed in a flammable house built specifically for that purpose, an episode often referred to as the house of lac. Escaping that plot, the Pandavas and their mother Kunti lived in hiding, which is why Arjuna arrives at Draupadi's swayamvara not as a recognized prince but as an anonymous, disguised traveler — a detail that only makes sense once this earlier backstory is in view.</p>
-          <p>Arjuna's story continues well past this single trial, through years of further exile, a long buildup to the Kurukshetra war, and his own central role in that war as narrated across the Bhagavad Gita and the battle books that follow. Read against that larger arc, the fish-eye trial is a small, early proof of concept for exactly the qualities — discipline, focus, the ability to act despite doubt — that the rest of the epic will ask him to draw on under far higher stakes.</p>
-          <p>What's striking, reading the swayamvara scene against Arjuna's later characterization in the Bhagavad Gita, is how consistent his core temperament actually is across the two moments, despite how different the stakes are. At the swayamvara he is calm, focused, and unmoved by a hostile, doubting crowd. On the battlefield years later, faced with a far heavier moral weight, that same steadiness is what Krishna's counsel is ultimately trying to restore in him after grief and doubt threaten to overwhelm it. The fish-eye trial, in hindsight, reads almost like an early sketch of the same inner discipline the rest of the epic will spend far more time examining.</p>
+        <span class="tile-chevron" aria-hidden="true">→</span>
+      </span>
+    </a>
 
-
-        </div>
-      </div>
-    </details>
-
-    <details class="story-tile" id="blog4">
-      <summary class="tile-summary">
+    <a class="story-tile" href="rules-of-the-impossible-test.html">
+      <span class="tile-summary">
         <span class="tile-num">04</span>
         <span class="tile-eyebrow">Chapter 4 of 10</span>
         <h3 class="tile-title">The Rules of the Impossible Test</h3>
         <span class="tile-teaser">Three stacked filters, each harder than the last, and how a game turns them into real mechanics.</span>
-        <span class="tile-meta">~1,000 words</span>
-        <span class="tile-chevron" aria-hidden="true">+</span>
-      </summary>
-      <div class="tile-body">
-        <div class="blog-columns">
-          <p>Strip the legend down to its mechanics and the trial has three parts, each harder than the last. First, the bow itself: an intentionally difficult weapon that many suitors cannot even string, let alone draw — an early filter that eliminates most of the hall before a single arrow is fired.</p>
-          <p>Second, the target: a fish figure fixed to a wheel in constant rotation, never sitting still long enough for a lazy shot. Timing matters as much as aim.</p>
-          <p>Third, and by far the cruelest condition: the archer cannot look at the target directly. They must judge distance, timing, and alignment entirely from a reflection in water — an image that ripples, distorts, and never sits perfectly still. It's the equivalent of asking someone to thread a needle while only looking at its shadow.</p>
-          <p>Stacked together, these three rules explain why so many capable warriors fail in the story before Arjuna ever steps forward — and why this game treats the reflection mechanic as its centerpiece rather than a decoration.</p>
-          <p>Translating three narrative rules into a working game meant deciding which ones could be simulated directly and which needed a stand-in. The rotating, shrinking fish captures the wheel and its difficulty; the water strip mirroring the whole arena captures the reflection rule almost literally. The bow's legendary weight became the hold-to-draw mechanic instead — since a browser game can't make a mouse physically heavy, the draw time stands in for the strength the trial originally demanded.</p>
-          <p>Reading the trial as three stacked filters also explains its dramatic pacing in the original story: the crowd narrows itself down first by the bow, then by the moving target, and only a tiny handful of attempts ever reach the third and hardest condition at all. Most retellings, this one included, spend more narrative time on that final filter than the first two combined, because it's the one that actually decides the outcome.</p>
-          <p>Different regional and textual tellings vary in the specific details they attach to the apparatus itself — some describe the fish as golden, others as carved wood; some emphasize the height of the wheel above the hall, others the narrowness of the pool below it. What almost none of them vary on is the core sequence: bow, then motion, then reflection. That consistency suggests the three-part structure isn't incidental set dressing — it's the actual architecture the story depends on, each layer designed to strip away a different kind of advantage (raw strength, quick reflexes, and finally, direct sensory confidence) until only genuine discipline is left standing.</p>
-          <p>There's also a practical storytelling logic to stacking the filters in that order. A contest that opened with the hardest condition first would end the story too quickly — nobody would even reach the bow. By making the first two filters merely very difficult rather than impossible, the narrative buys enough time to walk a full hall of suitors through failure before the real test even begins, which is exactly the shape this game's difficulty curve tries to echo: early levels are demanding but fair, and only the later, faster-spinning fish approaches the kind of near-impossibility the legend describes for its final rule.</p>
-          <p>Different tellings of the legend vary in how explicitly they describe the bow's weight or the wheel's height, and scholars generally treat these specifics as narrative color rather than fixed, literal measurements — the point was always that the difficulty was extraordinary, not that it could be quantified precisely. That looseness actually made adapting the trial into a game easier: rather than trying to reconstruct one "correct" version of the apparatus, this game was free to design a wheel, a pool, and a bow that served the mechanic well, while staying true to the trial's spirit.</p>
-          <p>Modern game design faces a very similar problem to the one the original story solves with its three-stage structure: how do you make a challenge feel fair to a first-time player while still being genuinely difficult to master? Escalating difficulty in stages — easy enough to hook a player early, hard enough to reward continued practice — is such a common pattern in game design today that it can feel like a purely modern invention. Matsya-Vedh's three-part filter suggests the underlying idea is a great deal older than video games themselves.</p>
-          <p>It's worth noting, too, that the trial's difficulty is never framed as arbitrary cruelty on Drupada's part. Every version of the story treats the impossible conditions as intentional — a deliberate attempt to ensure that whoever won had genuinely earned the outcome, not simply gotten lucky. That same principle shaped this game's own difficulty tuning: later levels are hard because the legend insists success should be hard-won, not because difficulty alone makes for a compelling game.</p>
-          <p>One detail worth dwelling on is how the trial handles failure itself. Unlike some contest narratives where a single failed attempt permanently disqualifies a suitor, several tellings of Matsya-Vedh imply that anyone technically capable of stringing the bow could keep attempting the shot — the real barrier was never a strict one-try rule, but the sheer difficulty of the third condition itself. That distinction matters for how this game was built too: rather than a strict one-arrow game over, players are given a small quiver per level, reflecting the idea that the trial's difficulty, not an arbitrary attempt limit, was always meant to be the real obstacle.</p>
+        <span class="tile-chevron" aria-hidden="true">→</span>
+      </span>
+    </a>
 
-
-        </div>
-      </div>
-    </details>
-
-    <details class="story-tile" id="blog5">
-      <summary class="tile-summary">
+    <a class="story-tile" href="why-only-the-reflection.html">
+      <span class="tile-summary">
         <span class="tile-num">05</span>
         <span class="tile-eyebrow">Chapter 5 of 10</span>
         <h3 class="tile-title">Why Only the Reflection?</h3>
         <span class="tile-teaser">Why refusing to look at the target directly is the entire point of the trial.</span>
-        <span class="tile-meta">~1,000 words</span>
-        <span class="tile-chevron" aria-hidden="true">+</span>
-      </summary>
-      <div class="tile-body">
-        <div class="blog-columns">
-          <p>The "look only at the reflection" rule is the most retold detail of this legend, and it's retold so often because it works as more than plot — it works as a metaphor. Direct sight is easy and instinctive; anyone can stare at a target. Indirect sight, watching something once removed from reality, forces a kind of discipline that pure instinct can't supply.</p>
-          <p>Many traditional readings of this episode treat it as a lesson in single-minded focus, or <em>ekagrata</em> in Sanskrit — the capacity to hold one's attention on one point without being pulled away by everything moving around it: the crowd, the doubt, the rippling water itself, even the difficulty of the reflection.</p>
-          <p>It's also, in a quieter way, a story about trusting an imperfect view. The reflection is never a clean, stable image — it moves with the water. Success doesn't come from waiting for a perfect, still picture; it comes from reading a moving, imperfect one accurately anyway. That idea shows up constantly outside archery too — in any skill where you have to act on incomplete information rather than wait for certainty.</p>
-          <p>Indirect sight as a narrative device isn't unique to Indian mythology either. In Greek mythology, Perseus defeats the gorgon Medusa — whose direct gaze turns onlookers to stone — by viewing her only through the polished reflection of his shield. Different culture, different stakes, but the same underlying structure: a task made survivable, or in Arjuna's case winnable, only by refusing to look at the thing directly.</p>
-          <p>The concept of ekagrata that many commentators connect to this episode isn't unique to this one story either — it's a recurring term in classical Indian philosophical and yogic literature, most notably in the tradition associated with Patanjali's Yoga Sutras, where <em>dharana</em>, or concentrated focus on a single point, is described as an essential stage on the path toward deeper meditative states. Whether or not the original tellers of Matsya-Vedh had that specific philosophical vocabulary in mind, the trial's central demand — an unwavering mind fixed on one point despite every reason to waver — sits comfortably inside that same broader tradition of thought about attention and discipline.</p>
-          <p>It's worth contrasting this with a very different reflection myth from Greek tradition: Narcissus, who becomes so transfixed by his own reflection in a pool that he's unable to look away at all, to his own ruin. Where Narcissus's reflection traps him in self-absorption, Arjuna's reflection does the opposite — it's a tool that requires him to set aside self-consciousness entirely and attend only to the task. Placed side by side, the two stories make a useful pair: one about a reflection that consumes attention destructively, the other about a reflection that disciplines it productively.</p>
-          <p>Many commentators over the centuries have read the trial as a broader statement about approaching truth indirectly — the idea that certainty rarely arrives in a clean, direct form, and that real skill often means acting decisively on a partial, distorted picture rather than waiting for a clarity that may never come. That reading is one interpretation among several the story supports, not a single settled meaning, but it's part of why this particular trial has outlasted countless other tests of strength across the wider epic tradition.</p>
-          <p>Water carries its own symbolic weight in Indian literary and philosophical tradition well beyond this one trial. Reflections in still water are a recurring poetic image across Sanskrit literature, often used to represent how the mind perceives a reality it cannot access directly — the moon reflected in a pond being one of the most common such images, standing in for truths that can only be approached indirectly, through a medium that inevitably distorts them somewhat. Matsya-Vedh's reflection rule fits naturally into that broader poetic tradition, even if it's rarely discussed explicitly alongside it.</p>
-          <p>Contemporary discussions of mindfulness and meditation, largely popularized outside India over the past several decades, describe a mental posture that overlaps substantially with what ekagrata describes in its original context: sustained, non-reactive attention on a single point, whether that point is a breath, a mantra, or — in this considerably more literal case — a reflection in a pool of water. The vocabulary is modern; the underlying discipline the story describes is not.</p>
-          <p>None of this is meant to suggest the legend was written as a philosophy lesson dressed up as an archery contest — first and foremost, it's a dramatic, satisfying story about an underestimated hero succeeding where everyone else failed. But it's worth sitting with the reflection rule for a moment before dismissing it as a colorful plot device, because it's rare for a story this old to hand its audience a metaphor this clean, and rarer still for that metaphor to still feel this relevant, whether you're stringing an ancient bow or simply trying to hold your attention on one difficult thing in a noisy world.</p>
-          <p>There's a reason this particular chapter tends to be the one readers and commentators linger on longest across centuries of retelling, more than the mechanics of the bow or the specifics of the hall. Trials of pure strength are relatively easy to understand and, honestly, somewhat easy to forget — audiences intuitively grasp what it means to lift something heavy. A trial that hinges on refusing direct perception asks something stranger and more memorable of both the character and the audience: it asks what it actually means to see clearly, and quietly suggests that the answer isn't always as simple as looking straight at the thing in front of you.</p>
+        <span class="tile-chevron" aria-hidden="true">→</span>
+      </span>
+    </a>
 
-
-        </div>
-      </div>
-    </details>
-
-    <details class="story-tile" id="blog6">
-      <summary class="tile-summary">
+    <a class="story-tile" href="dronacharya-guru-shishya-tradition.html">
+      <span class="tile-summary">
         <span class="tile-num">06</span>
         <span class="tile-eyebrow">Chapter 6 of 10</span>
         <h3 class="tile-title">Dronacharya and the Guru-Shishya Tradition</h3>
         <span class="tile-teaser">The teacher behind the archer, and the rivalry that quietly shaped the whole contest.</span>
-        <span class="tile-meta">~1,000 words</span>
-        <span class="tile-chevron" aria-hidden="true">+</span>
-      </summary>
-      <div class="tile-body">
-        <div class="blog-columns">
-          <p>Arjuna's skill didn't appear from nowhere — it was built under Dronacharya, the royal teacher (guru) responsible for training both the Pandava and Kaurava princes in archery and warfare. Dronacharya is a central figure in the Mahabharata, and the guru-shishya (teacher-student) relationship he represents was a foundational part of how skills, including combat and archery, were transmitted in ancient Indian tradition.</p>
-          <p>In several well-known episodes, Dronacharya tests his students' focus directly — in one famous scene, he asks each prince in turn what they see when aiming at a target bird, and only Arjuna answers correctly: he sees nothing but the bird's eye, not the tree, the branch, or the bird's body. It's the same principle that governs the fish-eye trial, taught years earlier as a training exercise before it's ever tested for real.</p>
-          <p>This idea — that mastery is inseparable from a dedicated teacher and years of deliberate practice — runs through much of classical Indian storytelling, and it's part of why Arjuna's success at the swayamvara doesn't read as luck. It reads as the payoff of training the story has already shown us.</p>
-          <p>Dronacharya's academy produced more than one legendary archer across the Mahabharata's many characters and side stories, a reminder that the era placed enormous cultural weight on formal, sustained training rather than raw natural talent. Skill, in these stories, is almost never presented as innate — it's presented as the visible result of years spent under a demanding teacher, which is exactly the backstory the fish-eye trial assumes its audience already knows about Arjuna before he ever picks up the bow.</p>
-          <p>The guru-shishya model itself extended well beyond archery in classical Indian tradition, shaping how music, dance, philosophy, and countless other disciplines were passed down for generations — typically through close, long-term mentorship rather than formal institutions. Reading Dronacharya's role through that wider lens makes the fish-eye trial feel less like an isolated feat of luck and more like the visible tip of a much longer, quieter education the story trusts its audience to already understand.</p>
-          <p>Dronacharya's own backstory adds an interesting layer to his role as teacher. Born to the sage Bharadwaja, he grew up in relative poverty alongside Drupada — the very king who, years later, sets the fish-eye trial as the deciding contest for his daughter's swayamvara. Their childhood friendship soured after Drupada, having become king, refused to acknowledge Drona as an equal; Drona later used the Pandava and Kaurava princes he trained to defeat Drupada in battle as a form of retribution, splitting Drupada's kingdom in two. That rivalry, playing out years before Draupadi's swayamvara, adds a layer of dramatic irony to Drupada's later hope that Arjuna specifically would attend and win the trial — the king effectively hoping to gain, through marriage alliance, the very warrior whose training under his old rival had once been used against him.</p>
-          <p>Beyond its role in this one story, the guru-shishya tradition Dronacharya represents remained a defining feature of Indian education for centuries afterward, particularly in classical music and dance, where lineages of teachers and students (known as gharanas or parampara in different traditions) are still traced back many generations. The fish-eye trial, in that sense, isn't just a moment of individual triumph — it's a small, dramatized case study in exactly the kind of long-term, disciplined mentorship that tradition valued above almost anything else.</p>
-          <p>Dronacharya wasn't the only sage-teacher figure of his kind in Indian epic tradition — mentor figures like Vashishta and Vishwamitra appear across other epics and texts in similarly central roles, shaping kings and heroes through years of disciplined instruction rather than a single dramatic intervention. Placed alongside these other teacher figures, Dronacharya fits a recognizable archetype in classical Indian storytelling: the sage whose quiet, sustained investment in a student ultimately shapes the entire trajectory of the wider story.</p>
-          <p>Traditional guru-shishya relationships in this period were often sealed by guru dakshina, a customary offering made by a student to their teacher, typically once training was complete, as a gesture of gratitude rather than a fixed fee. Dronacharya's own request for guru dakshina from his students — asking the Pandavas and Kauravas to help him settle his old rivalry with Drupada — is itself one of the more consequential guru dakshina requests in the entire epic, since it's what puts Drupada and Drona's families on a collision course years before the swayamvara ever takes place.</p>
-          <p>The broader guru-shishya framework Dronacharya represents remained culturally significant in India long after the Mahabharata was composed, and elements of it are still recognizable today in how classical arts are taught — a level of personal, long-term investment between teacher and student that formal classroom instruction doesn't always replicate. Whatever else the fish-eye trial is about, it's hard to separate Arjuna's success from that model of teaching entirely; the story simply wouldn't work without it.</p>
-          <p>Dronacharya's own conduct as a teacher isn't presented as uncomplicated in every retelling — the epic is generally willing to sit with morally complex figures rather than flatten them into pure heroes or villains, and Dronacharya is no exception. Even so, his impact on Arjuna specifically is treated with remarkable consistency across tellings: whatever else is debated about him, his role in shaping Arjuna's singular focus and discipline is rarely questioned, which is precisely why this game frames him, in the story pages at least, primarily through that one lens.</p>
+        <span class="tile-chevron" aria-hidden="true">→</span>
+      </span>
+    </a>
 
-
-        </div>
-      </div>
-    </details>
-
-    <details class="story-tile" id="blog7">
-      <summary class="tile-summary">
+    <a class="story-tile" href="trials-of-skill-in-indian-mythology.html">
+      <span class="tile-summary">
         <span class="tile-num">07</span>
         <span class="tile-eyebrow">Chapter 7 of 10</span>
         <h3 class="tile-title">Other Trials of Skill in Indian Mythology</h3>
         <span class="tile-teaser">From the Ramayana to the Odyssey — the ancient trial-of-skill pattern Matsya-Vedh belongs to.</span>
-        <span class="tile-meta">~1,000 words</span>
-        <span class="tile-chevron" aria-hidden="true">+</span>
-      </summary>
-      <div class="tile-body">
-        <div class="blog-columns">
-          <p>Matsya-Vedh isn't the only contest-of-skill story in Indian epic literature — trials that separate the worthy from the merely willing are a recurring device. In the Ramayana, Sita's swayamvara features a similar test: suitors must string and draw the bow of Shiva, an act so demanding that most cannot even move it. Rama, hero of the epic, not only strings it but breaks it in the process, winning Sita's hand.</p>
-          <p>Archery, in particular, recurs as a marker of both skill and character throughout these epics — not simply a battlefield tool, but a kind of moral test. How a character handles a bow, a target, or a rival often says as much about their discipline and intent as any speech they give.</p>
-          <p>What connects these stories isn't the weapon itself, but the shape of the test: an obstacle that filters out strength alone, and rewards something closer to composure, training, or restraint. Matsya-Vedh is simply the version built most explicitly around that idea, since the "obstacle" here isn't the bow's weight — it's the archer's own eyes.</p>
-          <p>The Mahabharata contains its own earlier archery showcase too, at a martial tournament held to display the Pandava and Kaurava princes' training before Draupadi's swayamvara ever takes place. Several young warriors, including Arjuna, demonstrate feats of precision there in front of a similarly assembled crowd — establishing, well before the fish-eye trial occurs, exactly why no one in that later hall should have been surprised by what he was capable of.</p>
-          <p>This kind of trial-of-skill narrative isn't limited to Indian epic tradition either. In Homer's Odyssey, Penelope sets her own suitors a nearly identical test while awaiting her husband's return: string Odysseus's great bow and shoot an arrow through a row of twelve axe heads, a feat none of her suitors can manage. Odysseus himself, returned home in disguise and unrecognized by the assembled crowd, is the only one able to complete it — a structural echo of Arjuna's own disguised, doubted entrance into Draupadi's hall, separated by an ocean and an entirely different literary tradition, yet built from strikingly similar narrative bones.</p>
-          <p>Why this pattern recurs across so many unrelated storytelling traditions is worth pausing on. There's a particular kind of narrative satisfaction in watching an assembled crowd of the powerful and the celebrated fail one by one, only for the story's true hero — often disguised, doubted, or dismissed — to succeed where everyone else could not. It rewards the audience's own instinct to root for the underestimated, while giving the eventual hero's victory far more weight than it would carry if it arrived without a hall full of failed attempts first.</p>
-          <p>For a game built around one specific version of that pattern, it's worth remembering that Matsya-Vedh's real distinction isn't the "hidden hero triumphs" structure itself — that's almost universal — but the specific, unusually cerebral condition placed on the test: not raw strength, not blind luck, but the discipline to aim at something you're forbidden from looking at directly.</p>
-          <p>The "true worth revealed through an impossible task" pattern extends into storytelling traditions well beyond epic poetry too. The sword-in-the-stone motif from later Arthurian legend — where only the rightful king can draw a sword lodged in solid stone, after it defeats every other claimant who tries — runs on essentially the same narrative logic as Matsya-Vedh and the Ramayana's bow of Shiva: an object or task calibrated to be unliftable, unbeatable, or unbreakable by anyone except the one person the story has already decided deserves to succeed.</p>
-          <p>Archery specifically recurs across so many of these trial narratives, rather than swordsmanship or wrestling, partly because a bow rewards exactly the qualities these stories want to dramatize: patience, precision, and a steady mind, rather than pure physical dominance. A trial built around brute strength alone tends to produce a fairly predictable winner — the strongest person in the room. A trial built around archery leaves room for someone physically unremarkable, or even disguised and dismissed, to win through discipline instead, which is a far more interesting story to tell.</p>
-          <p>Taken together, this comparative view doesn't diminish Matsya-Vedh's originality so much as it places the legend in good company. Stories about underestimated heroes proving themselves through an impossible, carefully calibrated test appear to be something close to a narrative universal — and Matsya-Vedh remains one of the most distinctive versions of that pattern precisely because of how specific and cerebral its particular impossible condition is.</p>
-          <p>It's worth being careful not to overstate the connections between these traditions — the Mahabharata, the Ramayana, and the Odyssey developed independently, in different regions and periods, without evidence of direct influence on one another. What they share isn't a common source but a common narrative instinct: storytellers across unrelated cultures independently arriving at strikingly similar solutions to the same underlying problem, which is how to make a hero's worth feel earned and provable rather than simply asserted. That convergence, arrived at separately by different traditions, arguably says more about how deeply this kind of story satisfies an audience than any single version of it could on its own.</p>
+        <span class="tile-chevron" aria-hidden="true">→</span>
+      </span>
+    </a>
 
-
-        </div>
-      </div>
-    </details>
-
-    <details class="story-tile" id="blog8">
-      <summary class="tile-summary">
+    <a class="story-tile" href="focus-flow-psychology-of-the-single-point.html">
+      <span class="tile-summary">
         <span class="tile-num">08</span>
         <span class="tile-eyebrow">Chapter 8 of 10</span>
         <h3 class="tile-title">Focus, Flow, and the Psychology of the Single Point</h3>
         <span class="tile-teaser">What sports psychology calls "flow" looks a lot like what this legend described first.</span>
-        <span class="tile-meta">~1,000 words</span>
-        <span class="tile-chevron" aria-hidden="true">+</span>
-      </summary>
-      <div class="tile-body">
-        <div class="blog-columns">
-          <p>It's hard to read the Matsya-Vedh legend today without noticing how closely it maps onto modern ideas about focus and performance. Sports psychologists often describe elite performance under pressure using the concept of a "flow state" — a mental mode where attention narrows entirely onto the task, self-consciousness fades, and everything irrelevant simply stops registering.</p>
-          <p>Archers, in particular, are frequently studied for this: the sport rewards almost nothing except stillness and singular attention, since any stray thought at full draw shows up immediately as a miss. That's strikingly close to what the ancient story describes without the modern vocabulary — a mind that has stopped reacting to the crowd, the doubt, and even the difficulty of the task, and has narrowed to one small, moving point.</p>
-          <p>Whether or not the original storytellers had anything like "flow state" in mind, the overlap is part of why the legend still resonates outside religious or literary contexts — it describes a mental skill that shows up in sports, music, surgery, and plenty of ordinary high-pressure moments, long before psychologists gave it a name.</p>
-          <p>Modern competitive archers train this state deliberately, through breathing routines, consistent pre-shot rituals, and repeated practice designed to make the physical motion automatic enough that conscious attention can stay entirely on the target — or, as the legend would put it, on the reflection. It's a training philosophy that would have been entirely recognizable to Dronacharya, even if the vocabulary around it has changed.</p>
-          <p>This is also, arguably, why the legend works so well as a game rather than staying purely as a text on a page. Reading about focus is passive; a hold-to-draw mechanic that punishes a wandering hand or a rushed release asks the player to actually practice a small version of the same discipline the story describes, rather than simply being told about it.</p>
-          <p>The term "flow" itself was popularized by the psychologist Mihaly Csikszentmihalyi, whose research in the latter half of the twentieth century studied what people across wildly different fields — rock climbers, chess players, surgeons, musicians — reported experiencing during their best performances: a total absorption in the task, a loss of self-conscious thought, and time itself seeming to distort. Around the same period, researcher Anders Ericsson's work on expert performance introduced the closely related idea of "deliberate practice" — the observation that expertise isn't simply a product of raw talent or hours logged, but of focused, feedback-driven repetition aimed squarely at the specific skill in question.</p>
-          <p>Both ideas map unusually well onto the fish-eye trial's own internal logic. Arjuna's success isn't framed as a lucky flash of talent; it's framed as the visible result of exactly the kind of long, deliberate training Ericsson's research describes, arriving at exactly the kind of narrowed, effortless-seeming focus Csikszentmihalyi's research describes. The specific pressure moments modern sports psychology studies most closely — a free throw with the game on the line, a golf putt to win a tournament, a penalty kick in a packed stadium — all share that same basic shape: a single, simple physical action, made nearly impossible by the weight of everyone watching and the cost of failure. Matsya-Vedh, several thousand years earlier, told essentially the same story about a bow and a reflection.</p>
-          <p>Some of this territory has entered mainstream conversation recently under the banner of "deep work" — a term popularized by writer Cal Newport to describe the increasingly rare ability to focus without distraction on a single cognitively demanding task for an extended period. The obstacles Newport describes as working against deep focus today (notifications, multitasking, constant partial attention) are obviously very different from a crowded royal hall three thousand years ago, but the underlying skill being described — sustained, undivided attention on one thing — is recognizably the same one the fish-eye trial dramatizes.</p>
-          <p>Competitive archers today train this capacity through remarkably specific techniques: controlled breathing timed to the draw and release, consistent physical routines performed identically before every single shot regardless of the stakes, and extensive mental-rehearsal practice designed to make the technical execution close to automatic, freeing conscious attention for aim alone. None of these techniques are about trying harder in the moment — they're about removing as many variables as possible ahead of time, so that the one moment that matters can be met with a calm, practiced mind rather than a strained one.</p>
-          <p>This game's hold-to-draw mechanic is a small, deliberately imperfect echo of that same idea. It can't replicate years of training, obviously, but it does ask for a brief, held moment of attention before every shot rather than an instant reflexive click — a small, repeatable practice of exactly the pause the legend keeps insisting matters more than raw speed or strength ever could.</p>
-          <p>It's also worth acknowledging what flow state research doesn't claim — it isn't a switch that can be flipped on demand, and even highly trained performers report inconsistent access to it under real pressure. Csikszentmihalyi's own research emphasized that flow tends to emerge under fairly specific conditions: a task difficult enough to demand full attention but not so difficult it produces anxiety, combined with clear goals and immediate feedback on performance. An archery trial with a visible target, an obvious pass-or-fail outcome, and a difficulty precisely calibrated to the archer's skill happens to satisfy nearly all of those conditions almost perfectly — which may be part of why this particular legend, among countless ancient trial narratives, keeps getting cited in conversations about focus and performance that have nothing to do with mythology at all.</p>
-          <p>There's a useful lesson in that gap between theory and practice for anyone drawing inspiration from this legend for their own work or study, not just for archers or game players. Arjuna's success isn't framed anywhere in the story as effortless serenity — it's framed as the visible result of a very specific kind of preparation meeting a very specific kind of moment. Flow, in other words, isn't the reward for wanting to focus badly enough; it's closer to a byproduct of having already done the harder, less glamorous work of practice long before the moment that actually counts arrives.</p>
+        <span class="tile-chevron" aria-hidden="true">→</span>
+      </span>
+    </a>
 
-
-
-        </div>
-      </div>
-    </details>
-
-    <details class="story-tile" id="blog9">
-      <summary class="tile-summary">
+    <a class="story-tile" href="archery-in-ancient-india-history.html">
+      <span class="tile-summary">
         <span class="tile-num">09</span>
         <span class="tile-eyebrow">Chapter 9 of 10</span>
         <h3 class="tile-title">Archery in Ancient India: A Short History</h3>
         <span class="tile-teaser">Dhanurveda, Dussehra, and a very long throughline connecting myth to modern sport.</span>
-        <span class="tile-meta">~1,000 words</span>
-        <span class="tile-chevron" aria-hidden="true">+</span>
-      </summary>
-      <div class="tile-body">
-        <div class="blog-columns">
-          <p>Archery held a central place in ancient Indian warfare and training, particularly among the Kshatriya (warrior) class, for whom skill with the bow was as much a marker of identity as of combat readiness. Classical texts describe extensive training regimens for princes and warriors, covering not just archery but chariot warfare, wrestling, and weapons craft more broadly — with the bow consistently treated as the most prestigious of these skills.</p>
-          <p>Bows of the era were typically composite constructions — wood, horn, and sinew layered for power and flex — and warriors trained for years before ever entering battle, often under a single dedicated guru in a residential training arrangement, much like Dronacharya's role for the Pandava and Kaurava princes.</p>
-          <p>Archery contests and demonstrations, like the fish-eye trial or the tournament that opens the Pandava-Kaurava rivalry in the Mahabharata, also served a social function beyond combat readiness: they were public proof of a warrior's training, discipline, and right to be taken seriously — which is exactly the role Matsya-Vedh plays in the swayamvara story.</p>
-          <p>That legacy hasn't disappeared. Archery remains a recognized competitive sport in India today, and imagery of bow-wielding heroes — Arjuna and Rama chief among them — still appears widely in festival art, temple carvings, and public celebrations, including Dussehra, which marks a mythological archer's decisive victory. The bow, in other words, never really stopped being a cultural shorthand for discipline and righteous skill.</p>
-          <p>This body of training knowledge was formalized, at least in later periods, under the umbrella term Dhanurveda — literally "the science of the bow" — a traditional body of texts and teachings concerned with archery, weaponry, and martial training more broadly, sometimes described as an auxiliary discipline connected to the four Vedas. While the surviving textual record on Dhanurveda is fragmentary and its exact historical scope is debated by scholars, the term itself reflects how seriously archery and martial skill were treated as a formal, teachable body of knowledge, rather than an informal or purely instinctive skill.</p>
-          <p>Dussehra, also known as Vijayadashami, is one of the clearest examples of archery's lasting symbolic weight in Indian culture. Celebrated across much of India, the festival traditionally marks the god Rama's victory over the demon king Ravana in the Ramayana — a triumph achieved, fittingly, through disciplined archery — and is marked in many regions by public performances, effigy burnings, and reenactments that keep that image of the righteous archer visibly present in popular culture year after year, long after the original epics were composed.</p>
-          <p>In the modern era, archery has continued as both a competitive sport and a point of national pride in India, with Indian archers competing at international events including the Olympics and World Archery Championships. It's a long throughline — from Dhanurveda's formal training texts, through Dronacharya's fictionalized academy, to Dussehra's yearly public celebrations, to contemporary competitive sport — but the connective thread running through all of it is the same one Matsya-Vedh dramatizes in a single afternoon: that a bow, handled well, has always been treated in this tradition as evidence of something more than physical strength.</p>
-          <p>Historical accounts of Indian archery describe a range of techniques and grips beyond the composite bow construction itself, including different draw and release methods suited to different bow types and combat contexts — mounted archery from horseback or chariot demanded a different technique than archery on foot, for instance, and classical texts on martial training treat these as distinct, teachable skills in their own right rather than interchangeable variations.</p>
-          <p>Archery's symbolic importance is far from confined to the Mahabharata either. The Ramayana's climactic confrontation, the earlier bow-of-Shiva trial at Sita's swayamvara, and numerous shorter episodes across other Puranic and epic texts all lean on archery as a recurring shorthand for righteous, disciplined power — usually contrasted against opponents who rely on deception, brute force, or overwhelming numbers instead.</p>
-          <p>India's modern archery tradition carries a version of that legacy forward in a considerably more secular, competitive form. Organized archery in India today operates through a national federation, feeds into international competition including the Olympic Games and World Archery Championships, and continues to draw some of its cultural resonance from exactly the mythological figures this chapter has traced — Arjuna and Rama chief among them — even in contexts that have nothing to do with mythology at all. Few sports carry quite as long or as continuous a cultural throughline as archery does in the Indian context.</p>
-          <p>Beyond formal military and sporting contexts, archery also carried spiritual and ritual significance in some traditions, with references to ceremonial or symbolic archery appearing alongside its practical combat role in various classical texts. The bow, in that sense, occupied a somewhat unusual cultural position for a weapon — treated not only as a tool of war but as a legitimate symbol of order, discipline, and rightful authority, invoked in contexts well beyond the battlefield. That dual identity, as both practical weapon and symbolic marker of character, is part of what made it such durable material for storytelling across so many centuries and so many different tellers.</p>
-          <p>Comparing ancient descriptions of archery training to what's known about other classical martial traditions worldwide, one consistent theme stands out: virtually every culture that placed the bow at the center of its warrior training also treated it as unusually demanding to master compared to other weapons, requiring years rather than months of disciplined practice before real competence developed. That shared difficulty across unrelated traditions may be part of why archery, more than almost any other ancient weapon, kept being chosen by storytellers as the natural test for separating genuine mastery from mere claim to it.</p>
+        <span class="tile-chevron" aria-hidden="true">→</span>
+      </span>
+    </a>
 
-
-
-        </div>
-      </div>
-    </details>
-
-    <details class="story-tile" id="blog10">
-      <summary class="tile-summary">
+    <a class="story-tile" href="from-myth-to-mechanic-designing-this-game.html">
+      <span class="tile-summary">
         <span class="tile-num">10</span>
         <span class="tile-eyebrow">Chapter 10 of 10</span>
         <h3 class="tile-title">From Myth to Mechanic: Designing This Game</h3>
         <span class="tile-teaser">The specific design choices built to make an ancient trial feel earned in a browser game.</span>
-        <span class="tile-meta">~1,000 words</span>
-        <span class="tile-chevron" aria-hidden="true">+</span>
-      </summary>
-      <div class="tile-body">
-        <div class="blog-columns">
-          <p>Turning this legend into a playable game meant picking one detail to build everything else around — and the obvious choice was the reflection. Everything in the game's arena, from the archer to the fish to every arrow in flight, is mirrored in real time in a water strip at the bottom of the stage, distorted with a gentle wave effect, as a direct nod to the rule that you're meant to watch the reflection, not the target itself.</p>
-          <p>The hold-to-draw bowstring mechanic was added for a similar reason: the legend isn't about a quick reflex, it's about a held, controlled moment of focus before release. A simple click-to-shoot didn't capture that pause, so the bow now visibly draws back the longer you hold, with a strength meter tracking the pull.</p>
-          <p>Difficulty scales the way the legend implies success should feel earned: each level shrinks the fish and speeds up its rotation, so staying accurate requires the same growing discipline the story describes — not more strength, just steadier focus. None of this is meant as a literal historical reconstruction; it's a small, original interpretation built as a tribute to a story that's been retold for a very long time, and will likely be retold for a lot longer.</p>
-          <p>The game is also built to work the same way on a phone as on a desktop, since touch-and-hold maps naturally onto the same draw-and-release motion as a mouse. That was a deliberate choice — a trial about patience and focus felt like it should be playable anywhere, in a spare minute, rather than locked to a single device or a dedicated gaming setup.</p>
-          <p>Sound was handled deliberately too, generated entirely in the browser rather than loaded from external audio files — a soft bowstring twang on release, a rising bell chime on a successful hit, a low thud on a miss. Keeping every sound synthesized rather than pre-recorded keeps the page lightweight and avoids the licensing questions that come with using found or purchased sound effects, while still giving each action a distinct, satisfying piece of feedback.</p>
-          <p>The difficulty curve was tuned deliberately rather than scaled by a single flat multiplier: early levels are meant to be genuinely learnable on a first attempt, so a new player can succeed almost immediately and understand the core mechanic, while later levels — smaller fish, faster rotation — are tuned to demand real, repeated practice, echoing the way the legend itself only gets harder as the narrative's stakes rise. Visual and audio feedback scale with that difficulty too: hits at higher levels trigger a brief slow-motion moment and a stronger screen flash, giving even a well-earned success on a hard level a sense of weight that an early, easy hit doesn't need.</p>
-          <p>None of these choices were an attempt to definitively "solve" how to represent an ancient legend in an interactive medium — there's no single correct way to do that. They were simply the choices that felt most faithful to the parts of the story that seemed to matter most: a moment of stillness, an imperfect reflection, and a single, earned shot. If the legend has survived this long by being retold in whatever form each generation had available — spoken, written, painted, performed — a small browser game asking players to actually practice a sliver of that same discipline felt like a reasonable next form for it to take.</p>
-          <p>Visual style was treated as seriously as the mechanics themselves. The gold-and-deep-indigo palette running through the entire site was chosen to evoke a torch-lit royal hall at night — warm metallic light against a dark, cool background — rather than a bright, cartoonish game aesthetic, since the legend itself is a fairly solemn, high-stakes moment rather than a lighthearted one. Typography followed the same logic: a bold serif for headings meant to feel carved or formal, paired with a cleaner body font for readability, echoing the contrast between ceremonial grandeur and plain, practical storytelling.</p>
-          <p>Treating this as a living project rather than a finished one also shaped a lot of smaller decisions along the way — keeping the codebase simple enough to extend, favoring mechanics that could scale in difficulty rather than one-off gimmicks, and leaving room for the story content itself to grow over time rather than treating ten chapters as a hard ceiling. Some of that room has already been used to expand this very page.</p>
-          <p>Ultimately, the goal was never to claim a definitive last word on how to adapt a several-thousand-year-old legend into an interactive medium — there isn't one. It was simply to build something that took the story seriously enough to let its central idea, a moment of complete, hard-won focus, actually be felt rather than just read about, and to do that with enough craft that the tribute feels earned rather than superficial.</p>
-          <p>Feedback and iteration shaped the game well past its initial version too — the hold-to-draw mechanic, the water reflection effect, and the tile-based structure of this very story section were none of them part of the very first build. Each was added in response to the same underlying question, asked over and over throughout development: does this choice make the legend's central idea more felt, or is it just decoration? Features that couldn't clear that bar tended to get cut, even when they were interesting on their own.</p>
-          <p>Taken as a whole, these ten chapters are meant to work as a companion piece to the game itself rather than a replacement for playing it — background for anyone curious enough to ask "wait, where does this actually come from?" after their first successful shot, or their fifth failed one. The legend gave the game its entire premise; hopefully the game, in turn, gives the legend a small, new way of being experienced rather than just read.</p>
-
-
-
-        </div>
-      </div>
-    </details>
+        <span class="tile-chevron" aria-hidden="true">→</span>
+      </span>
+    </a>
 
   </div>
 
@@ -1429,16 +1211,25 @@
   if (storyPlayBtn) storyPlayBtn.addEventListener('click', showPlay);
 })();
 
-// ---------- Story tile deep-linking ----------
-// If the page is opened with a #blogN hash (e.g. a shared link), switch
-// to the Full Story tab, open that specific tile, and scroll to it.
+// ---------- Old #blogN deep-link redirect ----------
+// Story chapters used to expand inline via #blogN hashes; they now live on
+// their own dedicated pages (for real, indexable URLs). Send any old links
+// straight to the matching chapter page so nothing breaks.
 (function() {
-  function openTileFromHash() {
-    const hash = window.location.hash.replace('#', '');
-    if (!hash) return;
-    const tile = document.getElementById(hash);
-    if (!tile || tile.tagName !== 'DETAILS') return;
-
+  const OLD_HASH_TO_SLUG = {
+    blog1: 'what-is-matsya-vedh.html',
+    blog2: 'draupadis-swayamvara-explained.html',
+    blog3: 'who-was-arjuna.html',
+    blog4: 'rules-of-the-impossible-test.html',
+    blog5: 'why-only-the-reflection.html',
+    blog6: 'dronacharya-guru-shishya-tradition.html',
+    blog7: 'trials-of-skill-in-indian-mythology.html',
+    blog8: 'focus-flow-psychology-of-the-single-point.html',
+    blog9: 'archery-in-ancient-india-history.html',
+    blog10: 'from-myth-to-mechanic-designing-this-game.html',
+  };
+  const hash = window.location.hash.replace('#', '');
+  if (hash === 'tabStory') {
     const btnStory = document.getElementById('tabBtnStory');
     const btnPlay = document.getElementById('tabBtnPlay');
     const panelStory = document.getElementById('tabStory');
@@ -1447,11 +1238,9 @@
       btnStory.classList.add('active'); if (btnPlay) btnPlay.classList.remove('active');
       panelStory.classList.add('active'); if (panelPlay) panelPlay.classList.remove('active');
     }
-    tile.open = true;
-    setTimeout(() => tile.scrollIntoView({ behavior: 'smooth', block: 'start' }), 60);
+  } else if (OLD_HASH_TO_SLUG[hash]) {
+    window.location.replace(OLD_HASH_TO_SLUG[hash]);
   }
-  window.addEventListener('hashchange', openTileFromHash);
-  openTileFromHash();
 })();
 
 // ---------- Ambient signature layer: cursor glow + rising embers ----------
