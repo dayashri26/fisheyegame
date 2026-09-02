@@ -1715,6 +1715,16 @@
     if (audioCtx && audioCtx.state === 'suspended') { audioCtx.resume().catch(()=>{}); }
     startMusic();
   }
+  /* Browsers auto-suspend the AudioContext when the tab is backgrounded
+     (switching apps, another tab, etc). Resume it as soon as the tab is
+     visible again so music/sound keep playing instead of staying silent
+     until the next click -- no user gesture is needed to resume an
+     already-running context, only to create one in the first place. */
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible' && audioCtx && audioCtx.state === 'suspended') {
+      audioCtx.resume().catch(() => {});
+    }
+  });
   function startMusic() {
     if (musicStarted || !audioCtx) return;
     musicStarted = true;
