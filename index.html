@@ -3,10 +3,43 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
-<title>Matsya-Vedh — The Archer's Trial</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Cinzel+Decorative:wght@700;900&family=Manrope:wght@400;500;600;700&family=Work+Sans:wght@600&display=swap" rel="stylesheet"><style>
+<title>Matsya-Vedh: Free Online Archery Game | Aim the Fish's Eye</title>
+<meta name="description" content="Play Matsya-Vedh, a free online archery game inspired by the Mahabharata's legendary fish-eye trial. Aim only at the reflection, pierce the target, and read the full ten-chapter story of Arjuna and Draupadi's swayamvara.">
+<meta name="keywords" content="matsya vedh, matsya vedh game, fish eye archery game, arjuna fish eye, piercing the fish eye, mahabharata game, draupadi swayamvara, online archery game, free archery game, bow and arrow game, mythology game, HTML5 archery game">
+<meta name="robots" content="index, follow">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Matsya-Vedh: Free Online Archery Game | Aim the Fish's Eye">
+<meta property="og:description" content="Aim only at the reflection, never the target. Play the free browser archery game inspired by Arjuna's legendary trial from the Mahabharata, and read the full story behind it.">
+<meta property="og:site_name" content="Matsya-Vedh">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Matsya-Vedh: Free Online Archery Game | Aim the Fish's Eye">
+<meta name="twitter:description" content="Aim only at the reflection, never the target. Play the free browser archery game inspired by Arjuna's legendary trial from the Mahabharata.">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "VideoGame",
+      "name": "Matsya-Vedh",
+      "alternateName": "Aim the Fish's Eye",
+      "description": "A free browser-based archery game inspired by the Mahabharata's legendary fish-eye trial, where players must aim at a reflection rather than the target itself.",
+      "genre": ["Archery", "Skill", "Mythology"],
+      "gamePlatform": "Web Browser",
+      "applicationCategory": "Game",
+      "isAccessibleForFree": true,
+      "inLanguage": "en"
+    },
+    {
+      "@type": "Article",
+      "headline": "The Piercing of the Fish's Eye",
+      "description": "The full ten-chapter story of the Matsya-Vedh trial from the Mahabharata — Draupadi's swayamvara, Arjuna's feat, and the history and ideas behind it.",
+      "about": "Mahabharata, Matsya Vedh, Arjuna, Draupadi Swayamvara",
+      "inLanguage": "en"
+    }
+  ]
+}
+</script>
+<style>
   :root {
     --bg:            #131407;
     --bg-2:          #0e0f03;
@@ -21,10 +54,10 @@
     --text:          #e4e4cc;
     --text-dim:      #c4c6ce;
 
-    --font-display: 'Cinzel', serif;
-    --font-display-bold: 'Cinzel Decorative', serif;
-    --font-body:    'Manrope', sans-serif;
-    --font-label:   'Work Sans', sans-serif;
+    --font-display: 'Palatino Linotype', 'Book Antiqua', Palatino, Georgia, 'Times New Roman', serif;
+    --font-display-bold: 'Palatino Linotype', 'Book Antiqua', Palatino, Georgia, 'Times New Roman', serif;
+    --font-body:    -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    --font-label:   -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
 
     --ease-premium: cubic-bezier(0.22, 1, 0.36, 1);
     --glow-gold-soft: 0 0 22px rgba(233,195,73,0.18);
@@ -33,7 +66,7 @@
     --shadow-card: 0 1px 2px rgba(0,0,0,0.4), 0 8px 20px -6px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.04);
   }
 
-  * { margin: 0; padding: 0; box-sizing: border-box; }
+  * { margin: 0; padding: 0; box-sizing: border-box; overflow-anchor: none !important; }
 
   @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after {
@@ -57,8 +90,7 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
-    justify-content: safe center;
+    justify-content: flex-start;
     color: var(--text);
     padding: 26px 16px;
     overflow-x: hidden;
@@ -248,6 +280,52 @@
   }
   .record-badge .icon-svg { width: 15px; height: 15px; color: inherit; filter: none; }
 
+  .leaderboard-list { display: flex; flex-direction: column; gap: 4px; }
+  .lb-row {
+    display: flex; align-items: center; gap: 8px;
+    padding: 5px 6px; border-radius: 3px 8px 3px 8px;
+    background: rgba(0,0,0,0.18);
+  }
+  .lb-row.you { background: linear-gradient(155deg, rgba(233,195,73,0.16), rgba(233,195,73,0.04)); box-shadow: inset 0 0 0 1px rgba(233,195,73,0.3); }
+  .lb-rank {
+    flex-shrink: 0; width: 18px; height: 18px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--font-display); font-size: 10px; font-weight: 700;
+    background: rgba(233,195,73,0.1); color: var(--text-dim);
+  }
+  .lb-row.rank-1 .lb-rank { background: #e9c349; color: #2a1f04; box-shadow: 0 0 6px rgba(233,195,73,0.6); }
+  .lb-row.rank-2 .lb-rank { background: #c7cdd6; color: #1f2226; }
+  .lb-row.rank-3 .lb-rank { background: #cf8d55; color: #2a1a08; }
+  .lb-name {
+    flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    font-family: var(--font-label); font-size: 11.5px; color: var(--text-main);
+  }
+  .lb-score { font-family: var(--font-display); font-size: 13px; font-weight: 600; color: var(--gold-light); }
+  .lb-empty { font-family: var(--font-label); font-size: 11px; color: var(--text-dim); opacity: 0.7; padding: 6px 2px; }
+
+  .lb-entry { display: none; margin: 4px 0 14px; }
+  .lb-entry.show { display: block; }
+  .lb-entry .lb-entry-label {
+    font-family: var(--font-label); font-size: 11px; letter-spacing: 0.05em; color: var(--gold);
+    text-transform: uppercase; margin-bottom: 8px;
+  }
+  .lb-entry-row { display: flex; gap: 8px; }
+  .lb-name-input {
+    flex: 1; min-width: 0; background: rgba(0,0,0,0.3); border: 1px solid rgba(233,195,73,0.32);
+    border-radius: 3px 8px 3px 8px; color: var(--text-main); font-family: var(--font-label);
+    font-size: 13px; padding: 9px 12px; outline: none;
+  }
+  .lb-name-input:focus { border-color: var(--gold); }
+  .lb-save-btn {
+    flex-shrink: 0; background: linear-gradient(160deg, var(--gold-light), var(--gold));
+    color: #241a04; border: none; font-family: var(--font-label); font-weight: 700;
+    font-size: 12px; letter-spacing: 0.04em; text-transform: uppercase; padding: 0 16px;
+    border-radius: 3px 8px 3px 8px; cursor: pointer;
+  }
+  .lb-save-btn:hover { filter: brightness(1.08); }
+  .lb-saved-note { font-family: var(--font-label); font-size: 11.5px; color: var(--gold-light); margin: 4px 0 14px; display: none; }
+  .lb-saved-note.show { display: block; }
+
   @media (max-width: 980px) {
     .record-panel { width: min(92vw, 780px); order: 2; }
   }
@@ -408,8 +486,11 @@
     font-family: var(--font-label); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--gold-light);
   }
 
-  .sound-btn {
+  .audio-controls {
     position: absolute; top: 68px; left: 50%; transform: translateX(-50%); z-index: 5;
+    display: flex; gap: 8px;
+  }
+  .sound-btn {
     background: linear-gradient(155deg, rgba(52,54,37,0.75), rgba(19,20,7,0.8));
     border: 1px solid rgba(233,195,73,0.35); border-radius: 50%;
     width: 30px; height: 30px; display: flex; align-items: center; justify-content: center;
@@ -419,9 +500,10 @@
   }
   .sound-btn:hover {
     background: linear-gradient(155deg, rgba(233,195,73,0.2), rgba(52,54,37,0.7));
-    transform: translateX(-50%) scale(1.1) rotate(-6deg);
+    transform: scale(1.1) rotate(-6deg);
     box-shadow: var(--shadow-card), var(--glow-gold-soft);
   }
+  .sound-btn.is-off { color: rgba(233,195,73,0.4); }
   .sound-btn .icon-svg { width: 16px; height: 16px; color: var(--gold); }
   .sound-btn:focus-visible, button:focus-visible { outline: 2px solid var(--vermilion); outline-offset: 2px; }
 
@@ -602,6 +684,31 @@
     .achv-toast .icon-svg { width: 22px; height: 22px; }
   }
 
+  /* ---------- Mobile: put the game itself front and center on first load ---------- */
+  @media (max-width: 640px) {
+    body { padding: 0 0 20px; }
+    .site-header-inner { height: 48px; padding: 0 14px; }
+    .header-spacer { height: 48px; }
+    .brand { gap: 9px; }
+    .brand .mark { width: 30px; height: 30px; }
+    .brand-text h1 { font-size: 12px; letter-spacing: 0.1em; }
+    .nav-link { padding: 7px 8px; font-size: 10.5px; }
+
+    .play-hero { display: none; }
+    .tab-panel#tabPlay { padding-top: 10px; }
+    .play-layout { gap: 14px; }
+
+    .stage-wrap { width: 100%; }
+    .stage { border-radius: 0; padding: 0; border-left: none; border-right: none; }
+    .stage-inner { border-radius: 0; }
+    canvas#gameCanvas {
+      width: 100%; height: 74vh; max-height: 74vh; min-height: 360px;
+      display: block; object-fit: cover; object-position: center center;
+    }
+    .draw-strength { bottom: 10px; }
+    .record-panel { margin-top: 4px; }
+  }
+
   /* ---------- Tab panels ---------- */
   .tab-panel { display: none; width: 100%; }
   .tab-panel.active { display: flex; flex-direction: column; align-items: center; animation: tabFadeIn 0.4s var(--ease-premium); }
@@ -746,6 +853,8 @@
     <symbol id="ic-quiver" viewBox="0 0 24 24"><path d="M7 21 10 3M12 21V3M17 21 14 3" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M5 14.5c2.2 1 9.8 1 14 0" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></symbol>
     <symbol id="ic-sound-on" viewBox="0 0 24 24"><path d="M4 10v4h4l5 4V6L8 10H4Z" fill="currentColor" opacity="0.9"/><path d="M16 9.2c1 .9 1.6 2 1.6 2.8s-.6 1.9-1.6 2.8M18.6 6.6c2 1.7 3 3.7 3 5.4s-1 3.7-3 5.4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></symbol>
     <symbol id="ic-sound-off" viewBox="0 0 24 24"><path d="M4 10v4h4l5 4V6L8 10H4Z" fill="currentColor" opacity="0.9"/><path d="M15.5 9.5l5 5M20.5 9.5l-5 5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></symbol>
+    <symbol id="ic-music-on" viewBox="0 0 24 24"><path d="M9 18a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5Z" fill="currentColor"/><path d="M18 16a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5Z" fill="currentColor"/><path d="M11.5 15.5V6.2l9-1.7v9" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="ic-music-off" viewBox="0 0 24 24"><path d="M9 18a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5Z" fill="currentColor" opacity="0.9"/><path d="M11.5 15.5V6.2l9-1.7v6.4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" opacity="0.9"/><path d="M4 4l16 16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></symbol>
     <symbol id="ic-flame" viewBox="0 0 24 24"><path d="M12 2c1 3-2.5 4.4-2.5 7.6 0 1.2.7 2 1.6 2.4-1-1.4-.3-2.6.5-3.2.2 1 .9 1.6 1.2 2 1.4 1.7 1.2 3.5-.2 5A6 6 0 0 0 18 11c0-3.4-3.6-4.6-3.6-7.6 0 1.6-.7 2.6-1.6 3.2C13.2 4.8 12.6 3.3 12 2Z" fill="currentColor" stroke="currentColor" stroke-width="0.6" stroke-linejoin="round"/></symbol>
     <symbol id="ic-eye" viewBox="0 0 24 24"><path d="M2 12s3.8-6.5 10-6.5S22 12 22 12s-3.8 6.5-10 6.5S2 12 2 12Z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><circle cx="12" cy="12" r="3" fill="currentColor"/></symbol>
     <symbol id="ic-bolt" viewBox="0 0 24 24"><path d="M13 2 4 14h6l-1 8 9-12h-6l1-8Z" fill="currentColor" stroke="currentColor" stroke-width="0.8" stroke-linejoin="round"/></symbol>
@@ -825,10 +934,16 @@
         </div>
       </div>
 
-      <button class="sound-btn" id="soundBtn" aria-label="Toggle sound" title="Sound on/off">
-        <svg class="icon-svg" id="soundIconOn"><use href="#ic-sound-on"/></svg>
-        <svg class="icon-svg" id="soundIconOff" style="display:none"><use href="#ic-sound-off"/></svg>
-      </button>
+      <div class="audio-controls">
+        <button class="sound-btn" id="soundBtn" aria-label="Toggle sound effects" title="Sound effects on/off">
+          <svg class="icon-svg" id="soundIconOn"><use href="#ic-sound-on"/></svg>
+          <svg class="icon-svg" id="soundIconOff" style="display:none"><use href="#ic-sound-off"/></svg>
+        </button>
+        <button class="sound-btn" id="musicBtn" aria-label="Toggle background music" title="Background music on/off">
+          <svg class="icon-svg" id="musicIconOn"><use href="#ic-music-on"/></svg>
+          <svg class="icon-svg" id="musicIconOff" style="display:none"><use href="#ic-music-off"/></svg>
+        </button>
+      </div>
 
       <div class="flash" id="flashEl"></div>
 
@@ -864,6 +979,14 @@
             Watch only the fish's reflection in the water below — fix your mind on its eye alone.<br>
             Move to aim. Hold to draw the bowstring. Release to loose the arrow.
           </p>
+          <div class="lb-entry" id="lbEntry">
+            <div class="lb-entry-label">A score worthy of the record — sign it</div>
+            <div class="lb-entry-row">
+              <input class="lb-name-input" id="lbNameInput" maxlength="16" placeholder="Your name">
+              <button class="lb-save-btn" id="lbSaveBtn" type="button">Save</button>
+            </div>
+          </div>
+          <div class="lb-saved-note" id="lbSavedNote">Saved to the leaderboard.</div>
           <button class="primary" id="startBtn">Begin the Trial</button>
         </div>
       </div>
@@ -896,9 +1019,15 @@
   <div class="record-divider"></div>
   <div class="record-heading small">
     <svg class="icon-svg"><use href="#ic-crown"/></svg>
-    <span>Honors <span id="rpAchvCount">0</span>/8</span>
+    <span>Honors <span id="rpAchvCount">0</span>/<span id="rpAchvTotal">8</span></span>
   </div>
   <div class="record-badges" id="recordBadges"></div>
+  <div class="record-divider"></div>
+  <div class="record-heading small">
+    <svg class="icon-svg"><use href="#ic-crown"/></svg>
+    <span>Leaderboard</span>
+  </div>
+  <div class="leaderboard-list" id="leaderboardList"></div>
 </aside>
 </div>
 </div>
@@ -957,7 +1086,7 @@
       <summary class="tile-summary">
         <span class="tile-num">01</span>
         <span class="tile-eyebrow">Chapter 1 of 10</span>
-        <span class="tile-title">What Is Matsya-Vedh?</span>
+        <h3 class="tile-title">What Is Matsya-Vedh?</h3>
         <span class="tile-teaser">The Sanskrit trial behind this entire game — and why "vedh" means far more than just archery.</span>
         <span class="tile-meta">~1,000 words</span>
         <span class="tile-chevron" aria-hidden="true">+</span>
@@ -988,7 +1117,7 @@
       <summary class="tile-summary">
         <span class="tile-num">02</span>
         <span class="tile-eyebrow">Chapter 2 of 10</span>
-        <span class="tile-title">Draupadi's Swayamvara Explained</span>
+        <h3 class="tile-title">Draupadi's Swayamvara Explained</h3>
         <span class="tile-teaser">The public ceremony that turned one afternoon into the hinge the rest of the epic turns on.</span>
         <span class="tile-meta">~1,000 words</span>
         <span class="tile-chevron" aria-hidden="true">+</span>
@@ -1019,7 +1148,7 @@
       <summary class="tile-summary">
         <span class="tile-num">03</span>
         <span class="tile-eyebrow">Chapter 3 of 10</span>
-        <span class="tile-title">Who Was Arjuna?</span>
+        <h3 class="tile-title">Who Was Arjuna?</h3>
         <span class="tile-teaser">The disguised prince nobody in the hall expected to succeed — and why that's the whole point.</span>
         <span class="tile-meta">~1,000 words</span>
         <span class="tile-chevron" aria-hidden="true">+</span>
@@ -1048,7 +1177,7 @@
       <summary class="tile-summary">
         <span class="tile-num">04</span>
         <span class="tile-eyebrow">Chapter 4 of 10</span>
-        <span class="tile-title">The Rules of the Impossible Test</span>
+        <h3 class="tile-title">The Rules of the Impossible Test</h3>
         <span class="tile-teaser">Three stacked filters, each harder than the last, and how a game turns them into real mechanics.</span>
         <span class="tile-meta">~1,000 words</span>
         <span class="tile-chevron" aria-hidden="true">+</span>
@@ -1077,7 +1206,7 @@
       <summary class="tile-summary">
         <span class="tile-num">05</span>
         <span class="tile-eyebrow">Chapter 5 of 10</span>
-        <span class="tile-title">Why Only the Reflection?</span>
+        <h3 class="tile-title">Why Only the Reflection?</h3>
         <span class="tile-teaser">Why refusing to look at the target directly is the entire point of the trial.</span>
         <span class="tile-meta">~1,000 words</span>
         <span class="tile-chevron" aria-hidden="true">+</span>
@@ -1105,7 +1234,7 @@
       <summary class="tile-summary">
         <span class="tile-num">06</span>
         <span class="tile-eyebrow">Chapter 6 of 10</span>
-        <span class="tile-title">Dronacharya and the Guru-Shishya Tradition</span>
+        <h3 class="tile-title">Dronacharya and the Guru-Shishya Tradition</h3>
         <span class="tile-teaser">The teacher behind the archer, and the rivalry that quietly shaped the whole contest.</span>
         <span class="tile-meta">~1,000 words</span>
         <span class="tile-chevron" aria-hidden="true">+</span>
@@ -1133,7 +1262,7 @@
       <summary class="tile-summary">
         <span class="tile-num">07</span>
         <span class="tile-eyebrow">Chapter 7 of 10</span>
-        <span class="tile-title">Other Trials of Skill in Indian Mythology</span>
+        <h3 class="tile-title">Other Trials of Skill in Indian Mythology</h3>
         <span class="tile-teaser">From the Ramayana to the Odyssey — the ancient trial-of-skill pattern Matsya-Vedh belongs to.</span>
         <span class="tile-meta">~1,000 words</span>
         <span class="tile-chevron" aria-hidden="true">+</span>
@@ -1161,7 +1290,7 @@
       <summary class="tile-summary">
         <span class="tile-num">08</span>
         <span class="tile-eyebrow">Chapter 8 of 10</span>
-        <span class="tile-title">Focus, Flow, and the Psychology of the Single Point</span>
+        <h3 class="tile-title">Focus, Flow, and the Psychology of the Single Point</h3>
         <span class="tile-teaser">What sports psychology calls "flow" looks a lot like what this legend described first.</span>
         <span class="tile-meta">~1,000 words</span>
         <span class="tile-chevron" aria-hidden="true">+</span>
@@ -1191,7 +1320,7 @@
       <summary class="tile-summary">
         <span class="tile-num">09</span>
         <span class="tile-eyebrow">Chapter 9 of 10</span>
-        <span class="tile-title">Archery in Ancient India: A Short History</span>
+        <h3 class="tile-title">Archery in Ancient India: A Short History</h3>
         <span class="tile-teaser">Dhanurveda, Dussehra, and a very long throughline connecting myth to modern sport.</span>
         <span class="tile-meta">~1,000 words</span>
         <span class="tile-chevron" aria-hidden="true">+</span>
@@ -1221,7 +1350,7 @@
       <summary class="tile-summary">
         <span class="tile-num">10</span>
         <span class="tile-eyebrow">Chapter 10 of 10</span>
-        <span class="tile-title">From Myth to Mechanic: Designing This Game</span>
+        <h3 class="tile-title">From Myth to Mechanic: Designing This Game</h3>
         <span class="tile-teaser">The specific design choices built to make an ancient trial feel earned in a browser game.</span>
         <span class="tile-meta">~1,000 words</span>
         <span class="tile-chevron" aria-hidden="true">+</span>
@@ -1434,6 +1563,9 @@
   const soundBtn = document.getElementById('soundBtn');
   const soundIconOn = document.getElementById('soundIconOn');
   const soundIconOff = document.getElementById('soundIconOff');
+  const musicBtn = document.getElementById('musicBtn');
+  const musicIconOn = document.getElementById('musicIconOn');
+  const musicIconOff = document.getElementById('musicIconOff');
   const drawStrength = document.getElementById('drawStrength');
   const drawFill = document.getElementById('drawFill');
   const drawLabel = document.getElementById('drawLabel');
@@ -1449,7 +1581,13 @@
   const rpCombo = document.getElementById('rpCombo');
   const rpStreak = document.getElementById('rpStreak');
   const rpAchvCount = document.getElementById('rpAchvCount');
+  const rpAchvTotal = document.getElementById('rpAchvTotal');
   const recordBadges = document.getElementById('recordBadges');
+  const leaderboardList = document.getElementById('leaderboardList');
+  const lbEntry = document.getElementById('lbEntry');
+  const lbNameInput = document.getElementById('lbNameInput');
+  const lbSaveBtn = document.getElementById('lbSaveBtn');
+  const lbSavedNote = document.getElementById('lbSavedNote');
 
   let score = 0, level = 1, arrowsLeft = 5, maxArrows = 5;
   let gameActive = false;
@@ -1462,7 +1600,7 @@
   /* ---------- Persistence: high score, streak, achievements ---------- */
   const SAVE_KEY = 'matsyaVedhSave_v1';
   function defaultSave() {
-    return { highScore: 0, bestLevel: 1, bestCombo: 0, gamesPlayed: 0, totalHits: 0, streakDays: 0, lastPlayedDate: null, achievements: [] };
+    return { highScore: 0, bestLevel: 1, bestCombo: 0, gamesPlayed: 0, totalHits: 0, streakDays: 0, lastPlayedDate: null, achievements: [], leaderboard: [], playerName: '' };
   }
   function loadSave() {
     try {
@@ -1495,15 +1633,39 @@
 
   /* ---------- Achievements ---------- */
   const ACHIEVEMENTS = [
-    { id: 'first_hit',    icon: 'ic-eye',   title: 'First Blood',        desc: 'Struck the reflected eye for the first time.' },
-    { id: 'combo3',       icon: 'ic-flame', title: 'On Fire',            desc: '3-hit combo without a miss.' },
-    { id: 'combo5',       icon: 'ic-bolt',  title: 'Unshaken Focus',     desc: '5-hit combo — Arjuna would be proud.' },
-    { id: 'perfect_draw', icon: 'ic-spark', title: 'Perfect Draw',       desc: 'Released the arrow at full draw strength.' },
-    { id: 'level5',       icon: 'ic-steps', title: "Guru's Approval",    desc: 'Reached Level 5.' },
-    { id: 'level10',      icon: 'ic-crown', title: 'Master Archer',      desc: 'Reached Level 10.' },
-    { id: 'high_score',   icon: 'ic-medal', title: 'New High Score',     desc: 'You beat your own personal best.' },
-    { id: 'streak3',      icon: 'ic-lotus', title: 'Devoted Disciple',   desc: '3-day play streak.' },
+    { id: 'first_hit',    icon: 'ic-eye',    title: 'First Blood',        desc: 'Struck the reflected eye for the first time.' },
+    { id: 'combo3',       icon: 'ic-flame',  title: 'On Fire',            desc: '3-hit combo without a miss.' },
+    { id: 'combo5',       icon: 'ic-bolt',   title: 'Unshaken Focus',     desc: '5-hit combo — Arjuna would be proud.' },
+    { id: 'perfect_draw', icon: 'ic-spark',  title: 'Perfect Draw',       desc: 'Released the arrow at full draw strength.' },
+    { id: 'level5',       icon: 'ic-steps',  title: "Guru's Approval",    desc: 'Reached Level 5 — the Disciple\'s Trial.' },
+    { id: 'level10',      icon: 'ic-crown',  title: 'Master Archer',      desc: 'Reached Level 10 — the Kshatriya\'s Trial.' },
+    { id: 'level15',      icon: 'ic-bow',    title: "Dronacharya's Pupil", desc: 'Reached Level 15 — the Adept\'s Trial.' },
+    { id: 'level20',      icon: 'ic-quiver', title: 'Unerring Aim',       desc: 'Reached Level 20 — the Champion\'s Trial.' },
+    { id: 'level25',      icon: 'ic-medal',  title: 'Legend of Panchala', desc: 'Reached Level 25 — the Hero\'s Trial.' },
+    { id: 'level30',      icon: 'ic-lotus',  title: "Arjuna's Equal",     desc: 'Reached Level 30 — the Trial Eternal.' },
+    { id: 'high_score',   icon: 'ic-medal',  title: 'New High Score',     desc: 'You beat your own personal best.' },
+    { id: 'streak3',      icon: 'ic-lotus',  title: 'Devoted Disciple',   desc: '3-day play streak.' },
   ];
+  if (rpAchvTotal) rpAchvTotal.textContent = ACHIEVEMENTS.length;
+
+  /* Named level tiers: every 5 levels the trial takes on a new name, a
+     subtle arena color shift, and (past level 30) the difficulty formula
+     keeps scaling indefinitely so there is always a next tier to reach. */
+  const LEVEL_TIERS = [
+    { min: 1,  name: "Novice's Trial",     tint: '#e9c349' },
+    { min: 5,  name: "Disciple's Trial",   tint: '#e0a83f' },
+    { min: 10, name: "Kshatriya's Trial",  tint: '#e74b38' },
+    { min: 15, name: "Adept's Trial",      tint: '#c9822f' },
+    { min: 20, name: "Champion's Trial",   tint: '#b1c8e9' },
+    { min: 25, name: "Hero's Trial",       tint: '#8a5adf' },
+    { min: 30, name: 'The Trial Eternal',  tint: '#f6dd8a' },
+  ];
+  function getLevelTier(lv) {
+    let tier = LEVEL_TIERS[0];
+    for (const t of LEVEL_TIERS) { if (lv >= t.min) tier = t; else break; }
+    return tier;
+  }
+  let currentTier = LEVEL_TIERS[0];
   function unlock(id) {
     if (save.achievements.includes(id)) return;
     const a = ACHIEVEMENTS.find(x => x.id === id);
@@ -1540,14 +1702,202 @@
   const MAX_DRAW_MS = 480;
 
   let audioCtx = null;
-  let muted = false;
+  let sfxMuted = false;
+  let musicMuted = false;
+  let musicGain = null;
+  let musicStarted = false;
+  let musicTimers = [];
+  const MUSIC_LEVEL = 0.27;
   function ensureAudio() {
     if (!audioCtx) {
       try { audioCtx = new (window.AudioContext || window.webkitAudioContext)(); } catch(e) {}
     }
+    if (audioCtx && audioCtx.state === 'suspended') { audioCtx.resume().catch(()=>{}); }
+    startMusic();
+  }
+  function startMusic() {
+    if (musicStarted || !audioCtx) return;
+    musicStarted = true;
+    musicGain = audioCtx.createGain();
+    musicGain.gain.value = musicMuted ? 0 : MUSIC_LEVEL;
+    musicGain.connect(audioCtx.destination);
+    progressChord();
+    scheduleTemplebells();
+    schedulePulse();
+  }
+
+  /* Slow-evolving modal chord bed (quintal harmony — root/4th/5th/octave, no major/minor
+     third, for an ancient, epic, non-Western "temple hall" character) with a soft string-like
+     pad and sub-bass, crossfading into the next chord every 30–36s with a swelling hit. */
+  const CHORDS = [
+    { root: 110,    freqs: [110,    146.83, 164.81, 220] },   // A
+    { root: 98,     freqs: [98,     130.81, 146.83, 196] },   // G
+    { root: 110,    freqs: [110,    130.81, 164.81, 220] },   // A (colored w/ minor 3rd)
+    { root: 87.31,  freqs: [87.31,  116.54, 130.81, 174.61] } // F
+  ];
+  let chordIndex = 0;
+  let currentChordLayer = null;
+
+  function createChordLayer(rootFreq, chordFreqs) {
+    const layerGain = audioCtx.createGain();
+    layerGain.gain.value = 0;
+    layerGain.connect(musicGain);
+    const nodes = [];
+    const weights = [0.30, 0.16, 0.14, 0.09];
+    chordFreqs.forEach((freq, i) => {
+      const o = audioCtx.createOscillator();
+      const g = audioCtx.createGain();
+      o.type = 'sine';
+      o.frequency.value = freq;
+      g.gain.value = weights[i] || 0.12;
+      o.connect(g); g.connect(layerGain);
+      o.start();
+      nodes.push(o, g);
+      const lfo = audioCtx.createOscillator();
+      const lfoGain = audioCtx.createGain();
+      lfo.type = 'sine';
+      lfo.frequency.value = 0.05 + i * 0.012;
+      lfoGain.gain.value = 1 + i * 0.3;
+      lfo.connect(lfoGain); lfoGain.connect(o.frequency);
+      lfo.start();
+      nodes.push(lfo, lfoGain);
+    });
+    const sub = audioCtx.createOscillator();
+    const subGain = audioCtx.createGain();
+    sub.type = 'sine';
+    sub.frequency.value = rootFreq / 2;
+    subGain.gain.value = 0.2;
+    sub.connect(subGain); subGain.connect(layerGain);
+    sub.start();
+    nodes.push(sub, subGain);
+    const padGain = audioCtx.createGain();
+    padGain.gain.value = 0.055;
+    const padFilter = audioCtx.createBiquadFilter();
+    padFilter.type = 'lowpass';
+    padFilter.frequency.value = 900;
+    padFilter.Q.value = 0.5;
+    padGain.connect(padFilter); padFilter.connect(layerGain);
+    [rootFreq, chordFreqs[2]].forEach((freq) => {
+      [-5, 5].forEach(detune => {
+        const o = audioCtx.createOscillator();
+        o.type = 'sawtooth';
+        o.frequency.value = freq;
+        o.detune.value = detune;
+        o.connect(padGain);
+        o.start();
+        nodes.push(o);
+      });
+    });
+    const filterLfo = audioCtx.createOscillator();
+    const filterLfoGain = audioCtx.createGain();
+    filterLfo.type = 'sine';
+    filterLfo.frequency.value = 0.035;
+    filterLfoGain.gain.value = 220;
+    filterLfo.connect(filterLfoGain); filterLfoGain.connect(padFilter.frequency);
+    filterLfo.start();
+    nodes.push(filterLfo, filterLfoGain, padGain, padFilter);
+    return { layerGain, nodes };
+  }
+
+  function playSwellHit(intensity) {
+    if (!audioCtx || !musicGain) return;
+    const amt = intensity || 1;
+    const t = audioCtx.currentTime;
+    const o = audioCtx.createOscillator();
+    const g = audioCtx.createGain();
+    o.type = 'sine';
+    o.frequency.setValueAtTime(58, t);
+    g.gain.setValueAtTime(0.0001, t);
+    g.gain.linearRampToValueAtTime(0.15 * amt, t + 1.1);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + 4.6 * amt);
+    o.connect(g); g.connect(musicGain);
+    o.start(t); o.stop(t + 4.8 * amt);
+  }
+  function playEpicFanfare() {
+    if (!audioCtx || !musicGain) return;
+    const t = audioCtx.currentTime;
+    [220, 293.66, 329.63].forEach((freq, i) => {
+      const o = audioCtx.createOscillator();
+      const g = audioCtx.createGain();
+      o.type = 'sawtooth';
+      o.frequency.setValueAtTime(freq * 0.5, t);
+      o.frequency.exponentialRampToValueAtTime(freq, t + 0.35);
+      const f = audioCtx.createBiquadFilter();
+      f.type = 'lowpass'; f.frequency.value = 1400;
+      g.gain.setValueAtTime(0.0001, t + i * 0.05);
+      g.gain.linearRampToValueAtTime(0.1, t + i * 0.05 + 0.08);
+      g.gain.exponentialRampToValueAtTime(0.0001, t + i * 0.05 + 1.6);
+      o.connect(f); f.connect(g); g.connect(musicGain);
+      o.start(t + i * 0.05); o.stop(t + i * 0.05 + 1.7);
+    });
+    playSwellHit(1.3);
+  }
+
+  function progressChord() {
+    if (!audioCtx || !musicGain) return;
+    const chord = CHORDS[chordIndex % CHORDS.length];
+    chordIndex++;
+    const layer = createChordLayer(chord.root, chord.freqs);
+    const t = audioCtx.currentTime;
+    layer.layerGain.gain.setValueAtTime(0, t);
+    layer.layerGain.gain.linearRampToValueAtTime(1, t + 5);
+    playSwellHit(1);
+
+    const prevLayer = currentChordLayer;
+    currentChordLayer = layer;
+    if (prevLayer) {
+      const pt = audioCtx.currentTime;
+      try {
+        prevLayer.layerGain.gain.cancelScheduledValues(pt);
+        prevLayer.layerGain.gain.setValueAtTime(prevLayer.layerGain.gain.value, pt);
+        prevLayer.layerGain.gain.linearRampToValueAtTime(0, pt + 5);
+      } catch (e) {}
+      setTimeout(() => {
+        prevLayer.nodes.forEach(n => { try { n.stop && n.stop(); } catch (e) {} try { n.disconnect(); } catch (e) {} });
+      }, 5300);
+    }
+    musicTimers.push(setTimeout(progressChord, 30000 + Math.random() * 6000));
+  }
+
+  function scheduleTemplebells() {
+    const scale = [440, 523.25, 587.33, 659.25, 783.99, 880];
+    function playNote() {
+      if (!audioCtx || !musicGain) return;
+      const freq = scale[Math.floor(Math.random() * scale.length)];
+      const t = audioCtx.currentTime;
+      const o = audioCtx.createOscillator();
+      const g = audioCtx.createGain();
+      o.type = 'sine';
+      o.frequency.value = freq;
+      g.gain.setValueAtTime(0.0001, t);
+      g.gain.linearRampToValueAtTime(0.085, t + 0.06);
+      g.gain.exponentialRampToValueAtTime(0.0001, t + 2.8);
+      o.connect(g); g.connect(musicGain);
+      o.start(t); o.stop(t + 2.9);
+      musicTimers.push(setTimeout(playNote, 2800 + Math.random() * 3600));
+    }
+    musicTimers.push(setTimeout(playNote, 1800));
+  }
+  function schedulePulse() {
+    function thump(hard) {
+      if (!audioCtx || !musicGain) return;
+      const t = audioCtx.currentTime;
+      const o = audioCtx.createOscillator();
+      const g = audioCtx.createGain();
+      o.type = 'sine';
+      o.frequency.setValueAtTime(hard ? 70 : 78, t);
+      o.frequency.exponentialRampToValueAtTime(hard ? 36 : 42, t + 0.16);
+      g.gain.setValueAtTime(hard ? 0.13 : 0.09, t);
+      g.gain.exponentialRampToValueAtTime(0.0001, t + 0.32);
+      o.connect(g); g.connect(musicGain);
+      o.start(t); o.stop(t + 0.35);
+      const next = 2400 + Math.random() * 500;
+      musicTimers.push(setTimeout(() => thump(Math.random() < 0.18), next));
+    }
+    musicTimers.push(setTimeout(() => thump(false), 900));
   }
   function playTwang() {
-    if (muted || !audioCtx) return;
+    if (sfxMuted || !audioCtx) return;
     const t = audioCtx.currentTime;
     const o = audioCtx.createOscillator();
     const g = audioCtx.createGain();
@@ -1560,7 +1910,7 @@
     o.start(t); o.stop(t + 0.2);
   }
   function playBell() {
-    if (muted || !audioCtx) return;
+    if (sfxMuted || !audioCtx) return;
     const t = audioCtx.currentTime;
     [660, 990, 1320].forEach((freq, i) => {
       const o = audioCtx.createOscillator();
@@ -1575,7 +1925,7 @@
     });
   }
   function playThud() {
-    if (muted || !audioCtx) return;
+    if (sfxMuted || !audioCtx) return;
     const t = audioCtx.currentTime;
     const o = audioCtx.createOscillator();
     const g = audioCtx.createGain();
@@ -1589,7 +1939,7 @@
   }
 
   function playComboChime(tier) {
-    if (muted || !audioCtx) return;
+    if (sfxMuted || !audioCtx) return;
     const t = audioCtx.currentTime;
     const base = 520 + Math.min(tier, 8) * 60;
     const o = audioCtx.createOscillator();
@@ -1604,7 +1954,7 @@
     o.start(t); o.stop(t + 0.32);
   }
   function playAchievementChime() {
-    if (muted || !audioCtx) return;
+    if (sfxMuted || !audioCtx) return;
     const t = audioCtx.currentTime;
     [523, 659, 784, 1047].forEach((freq, i) => {
       const o = audioCtx.createOscillator();
@@ -1619,7 +1969,7 @@
     });
   }
   function playPerfectTwang() {
-    if (muted || !audioCtx) return;
+    if (sfxMuted || !audioCtx) return;
     const t = audioCtx.currentTime;
     const o = audioCtx.createOscillator();
     const g = audioCtx.createGain();
@@ -1633,10 +1983,20 @@
   }
 
   soundBtn.addEventListener('click', () => {
-    muted = !muted;
-    soundIconOn.style.display = muted ? 'none' : 'block';
-    soundIconOff.style.display = muted ? 'block' : 'none';
+    ensureAudio();
+    sfxMuted = !sfxMuted;
+    soundIconOn.style.display = sfxMuted ? 'none' : 'block';
+    soundIconOff.style.display = sfxMuted ? 'block' : 'none';
   });
+  musicBtn.addEventListener('click', () => {
+    ensureAudio();
+    musicMuted = !musicMuted;
+    musicIconOn.style.display = musicMuted ? 'none' : 'block';
+    musicIconOff.style.display = musicMuted ? 'block' : 'none';
+    if (musicGain && audioCtx) musicGain.gain.setTargetAtTime(musicMuted ? 0 : MUSIC_LEVEL, audioCtx.currentTime, 0.4);
+  });
+  window.addEventListener('pointerdown', ensureAudio, { once: true });
+  window.addEventListener('keydown', ensureAudio, { once: true });
 
   function pulse(el) { el.classList.remove('is-pulsing'); void el.offsetWidth; el.classList.add('is-pulsing'); }
 
@@ -1668,6 +2028,48 @@
       return '<div class="record-badge' + (unlocked ? ' unlocked' : '') + '" title="' + a.title + (unlocked ? '' : ' (locked)') + '">' +
         '<svg class="icon-svg"><use href="#' + a.icon + '"/></svg></div>';
     }).join('');
+    renderLeaderboard();
+  }
+
+  function escapeHtml(s) {
+    return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  }
+
+  function renderLeaderboard(justAddedIndex) {
+    if (!leaderboardList) return;
+    const lb = save.leaderboard || [];
+    if (!lb.length) {
+      leaderboardList.innerHTML = '<div class="lb-empty">No trials recorded yet — be the first.</div>';
+      return;
+    }
+    leaderboardList.innerHTML = lb.slice(0, 8).map((row, i) => {
+      const rank = i + 1;
+      const rankClass = rank <= 3 ? ' rank-' + rank : '';
+      const youClass = i === justAddedIndex ? ' you' : '';
+      return '<div class="lb-row' + rankClass + youClass + '">' +
+        '<div class="lb-rank">' + rank + '</div>' +
+        '<div class="lb-name">' + escapeHtml(row.name || 'Archer') + '</div>' +
+        '<div class="lb-score">' + row.score + '</div>' +
+        '</div>';
+    }).join('');
+  }
+
+  function qualifiesForLeaderboard(score) {
+    const lb = save.leaderboard || [];
+    if (score <= 0) return false;
+    if (lb.length < 8) return true;
+    return score > lb[lb.length - 1].score;
+  }
+
+  function addToLeaderboard(name, score, level, combo) {
+    const clean = (name || '').trim().slice(0, 16) || 'Archer';
+    save.playerName = clean;
+    save.leaderboard = save.leaderboard || [];
+    save.leaderboard.push({ name: clean, score, level, combo, date: Date.now() });
+    save.leaderboard.sort((a, b) => b.score - a.score);
+    save.leaderboard = save.leaderboard.slice(0, 8);
+    persistSave();
+    return save.leaderboard.findIndex(r => r.score === score && r.name === clean && r.date && Date.now() - r.date < 5000);
   }
 
   function updateComboBadge() {
@@ -1686,7 +2088,8 @@
   function resetLevel() {
     arrowsLeft = 5;
     fishSpeed = 0.016 + (level - 1) * 0.007;
-    fishSize = Math.max(38, 74 - (level - 1) * 6);
+    fishSize = Math.max(30, 74 - (level - 1) * 4.6);
+    currentTier = getLevelTier(level);
     updateHUD();
   }
 
@@ -1703,6 +2106,13 @@
     skyGrad.addColorStop(1, '#0a0a04');
     ctx.fillStyle = skyGrad;
     ctx.fillRect(0, 0, W, ARENA_H);
+
+    /* Subtle tint shift so each named level tier reads as a visually
+       distinct stretch of the trial, without altering the core art. */
+    ctx.fillStyle = currentTier.tint;
+    ctx.globalAlpha = 0.05;
+    ctx.fillRect(0, 0, W, ARENA_H);
+    ctx.globalAlpha = 1;
 
     ctx.fillStyle = 'rgba(255,255,255,0.5)';
     for (let i = 0; i < 34; i++) {
@@ -2181,11 +2591,19 @@
         if (save.streakDays >= 3) unlock('streak3');
 
         setTimeout(() => {
+          const prevTier = currentTier;
           level++;
           resetLevel();
-          showLevelBanner('Level ' + level);
+          const newTier = currentTier;
+          const tierJustChanged = newTier !== prevTier;
+          showLevelBanner(tierJustChanged ? newTier.name : ('Level ' + level));
+          playEpicFanfare();
           if (level >= 5) unlock('level5');
           if (level >= 10) unlock('level10');
+          if (level >= 15) unlock('level15');
+          if (level >= 20) unlock('level20');
+          if (level >= 25) unlock('level25');
+          if (level >= 30) unlock('level30');
         }, 750);
         return;
       } else if (bodyHit) {
@@ -2237,8 +2655,30 @@
       streakRow.style.display = 'none';
     }
     refreshBestLine();
+    lbSavedNote.classList.remove('show');
+    if (qualifiesForLeaderboard(score)) {
+      lbEntry.classList.add('show');
+      lbNameInput.value = save.playerName || '';
+      lbSaveBtn.dataset.score = score;
+      lbSaveBtn.dataset.level = level;
+      lbSaveBtn.dataset.combo = save.bestCombo;
+    } else {
+      lbEntry.classList.remove('show');
+    }
     modalVeil.style.display = 'flex';
   }
+
+  function saveLeaderboardEntry() {
+    const s = parseInt(lbSaveBtn.dataset.score || '0', 10);
+    const lvl = parseInt(lbSaveBtn.dataset.level || '1', 10);
+    const cmb = parseInt(lbSaveBtn.dataset.combo || '0', 10);
+    const idx = addToLeaderboard(lbNameInput.value, s, lvl, cmb);
+    renderLeaderboard(idx);
+    lbEntry.classList.remove('show');
+    lbSavedNote.classList.add('show');
+  }
+  lbSaveBtn.addEventListener('click', saveLeaderboardEntry);
+  lbNameInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') saveLeaderboardEntry(); });
 
   function drawReflection() {
     reflectTime += 0.035;
@@ -2344,8 +2784,14 @@
   }
 
   function setPointerFromEvent(e, rect) {
-    mouseX = (e.clientX - rect.left) * (W / rect.width);
-    mouseY = (e.clientY - rect.top) * (H / rect.height);
+    /* Accounts for CSS object-fit: cover (used on mobile, where the canvas box's
+       aspect ratio differs from its internal 760x560 resolution) so aim tracking
+       stays exact even when the display crops the sides to fill a taller box. */
+    const scale = Math.max(rect.width / W, rect.height / H);
+    const offX = (rect.width - W * scale) / 2;
+    const offY = (rect.height - H * scale) / 2;
+    mouseX = (e.clientX - rect.left - offX) / scale;
+    mouseY = (e.clientY - rect.top - offY) / scale;
     mouseY = Math.min(mouseY, ARENA_H - 4);
   }
 
@@ -2386,6 +2832,14 @@
     if (isDrawing) { isDrawing = false; shoot(); }
   }, { passive: false });
 
+  /* The browser natively scrolls a button into view the instant it receives
+     focus (this happens on mousedown/pointerdown, before the click event or
+     any of our JS runs) which is what causes the page to jump on mobile.
+     Prevent default on mousedown/pointerdown so the button never takes focus
+     in the first place -- the click event still fires normally on release. */
+  ['mousedown', 'pointerdown'].forEach(evt => {
+    startBtn.addEventListener(evt, (e) => { e.preventDefault(); }, { passive: false });
+  });
   startBtn.addEventListener('click', () => {
     ensureAudio();
     score = 0; level = 1; combo = 0; hitThisGame = false;
@@ -2394,7 +2848,19 @@
     updateComboBadge();
     bumpStreak();
     gameActive = true;
+    /* Guard against any focus-driven scroll on browsers/devices that do
+       scroll a newly-focused button into view; harmless no-op otherwise. */
+    startBtn.blur();
     modalVeil.style.display = 'none';
+    const keepScrollY = window.scrollY;
+    (function lockScrollFor(ms) {
+      const start = performance.now();
+      function tick() {
+        if (window.scrollY !== keepScrollY) window.scrollTo(0, keepScrollY);
+        if (performance.now() - start < ms) requestAnimationFrame(tick);
+      }
+      requestAnimationFrame(tick);
+    })(600);
   });
 
   renderPips();
