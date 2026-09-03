@@ -2,6 +2,20 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<script>
+  /* Apply the saved/system theme before first paint so there is no flash of
+     the wrong theme. Manual choice (localStorage) wins; otherwise follow
+     prefers-color-scheme; default to dark cinematic (the game's home mode)
+     when neither is available. */
+  (function() {
+    try {
+      var saved = localStorage.getItem('matsyaVedhTheme');
+      var theme = saved === 'light' || saved === 'dark' ? saved
+        : (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
+      document.documentElement.setAttribute('data-theme', theme);
+    } catch (e) { document.documentElement.setAttribute('data-theme', 'dark'); }
+  })();
+</script>
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-DV8G1EMJ7S"></script>
 <script>
@@ -12,7 +26,7 @@
   gtag('config', 'G-DV8G1EMJ7S');
 </script>
 
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5">
 <title>Matsya-Vedh: Free Online Archery Game | Aim the Fish's Eye</title>
 <link rel="canonical" href="https://aimfisheye.com/">
 <link rel="icon" type="image/x-icon" href="/favicon.ico">
@@ -35,6 +49,9 @@
 <meta name="twitter:title" content="Matsya-Vedh: Free Online Archery Game | Aim the Fish's Eye">
 <meta name="twitter:description" content="Aim only at the reflection, never the target. Play the free browser archery game inspired by Arjuna's legendary trial from the Mahabharata.">
 <meta name="twitter:image" content="https://aimfisheye.com/og-image.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700;800&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap" rel="stylesheet">
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -85,8 +102,8 @@
     --text:          #e4e4cc;
     --text-dim:      #c4c6ce;
 
-    --font-display: 'Palatino Linotype', 'Book Antiqua', Palatino, Georgia, 'Times New Roman', serif;
-    --font-display-bold: 'Palatino Linotype', 'Book Antiqua', Palatino, Georgia, 'Times New Roman', serif;
+    --font-display: 'Cormorant Garamond', 'Palatino Linotype', 'Book Antiqua', Palatino, Georgia, serif;
+    --font-display-bold: 'Cinzel', 'Palatino Linotype', 'Book Antiqua', Palatino, Georgia, serif;
     --font-body:    -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
     --font-label:   -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
 
@@ -95,6 +112,79 @@
     --glow-gold-strong: 0 0 34px rgba(233,195,73,0.38);
     --shadow-elevated: 0 2px 4px rgba(0,0,0,0.3), 0 10px 24px -6px rgba(0,0,0,0.55), 0 24px 48px -12px rgba(0,0,0,0.5);
     --shadow-card: 0 1px 2px rgba(0,0,0,0.4), 0 8px 20px -6px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.04);
+
+    --body-bg-wash-1: rgba(233,195,73,0.10);
+    --body-bg-wash-2: rgba(231,75,56,0.07);
+    --body-bg-wash-3: rgba(233,195,73,0.05);
+    --body-bg-hatch:  rgba(233,195,73,0.015);
+
+    --header-bg-1: rgba(19,20,7,0.68);
+    --header-bg-2: rgba(13,14,5,0.72);
+    --header-bg-1-scrolled: rgba(19,20,7,0.94);
+    --header-bg-2-scrolled: rgba(13,14,5,0.97);
+
+    /* Fixed (theme-independent) colors for content painted over permanently-
+       dark surfaces -- the photographic hero image and the gold badge button.
+       These never flip in light mode because the surface under them doesn't
+       either: a photo stays a photo, a brass badge stays brass. */
+    --fixed-gold: #e9c349;
+    --fixed-gold-light: #f6dd8a;
+    --fixed-gold-dim: #af8d11;
+    --fixed-text: #e4e4cc;
+    --fixed-text-dim: #c4c6ce;
+    --fixed-vermilion: #e74b38;
+
+    /* Corner-shadow tint used by a handful of page cards (record panel,
+       how-it-works cards, story tiles, FAQ items) to add a touch of vignette
+       depth into their otherwise theme-reactive gradient. Unlike the
+       --fixed-* set above, this one DOES flip with theme -- these cards sit
+       on the page, not on the permanently-dark canvas, so in light mode the
+       tint has to lighten too or it leaves a muddy patch that swallows text
+       contrast. */
+    --card-corner: rgba(52,54,37,0.55);
+  }
+
+  /* ---------- Light theme: "premium editorial" -- warm parchment/ivory,
+     dark charcoal ink, restrained bronze/gold accents. Not a color inversion:
+     art-directed separately so it reads as luxury print, not a generic white
+     website. The game canvas itself is painted in JS and stays cinematic-dark
+     in both themes -- only the site chrome (nav, panels, HUD frame, modals,
+     text) retheme here. ---------- */
+  :root[data-theme="light"] {
+    --bg:            #f4ecd9;
+    --bg-2:          #eadfc4;
+    --surface-1:     #fbf6ea;
+    --surface-2:     #f1e6cc;
+    --surface-3:     #e6d6ae;
+    --gold:          #7d5408;
+    --gold-light:    #6b4705;
+    --gold-dim:      #7a5c1a;
+    --vermilion:     #b23a26;
+    --ice:           #3d5a80;
+    --text:          #2a2314;
+    --text-dim:      #5c5138;
+
+    --shadow-elevated: 0 2px 4px rgba(90,70,20,0.08), 0 10px 24px -6px rgba(90,70,20,0.14), 0 24px 48px -12px rgba(90,70,20,0.12);
+    --shadow-card: 0 1px 2px rgba(90,70,20,0.1), 0 8px 20px -6px rgba(90,70,20,0.14), inset 0 1px 0 rgba(255,255,255,0.5);
+
+    --body-bg-wash-1: rgba(156,111,14,0.08);
+    --body-bg-wash-2: rgba(178,58,38,0.05);
+    --body-bg-wash-3: rgba(156,111,14,0.04);
+    --body-bg-hatch:  rgba(120,90,20,0.02);
+
+    --header-bg-1: rgba(251,246,234,0.75);
+    --header-bg-2: rgba(241,230,204,0.8);
+    --header-bg-1-scrolled: rgba(251,246,234,0.95);
+    --header-bg-2-scrolled: rgba(241,230,204,0.97);
+
+    --card-corner: rgba(214,188,132,0.4);
+  }
+
+  /* Smooth, restrained cross-fade when the toggle is used -- respects
+     prefers-reduced-motion via the global rule further down. */
+  body, .site-header, .pill, .record-panel, .cinematic-hero, .legend-section,
+  .value-item, .faq-item, .hiw-card, .modal-veil .scroll, .toast-stack .achv-toast {
+    transition: background-color 0.32s var(--ease-premium), border-color 0.32s var(--ease-premium), color 0.32s var(--ease-premium), box-shadow 0.32s var(--ease-premium);
   }
 
   * { margin: 0; padding: 0; box-sizing: border-box; overflow-anchor: none !important; }
@@ -112,11 +202,12 @@
   body {
     font-family: var(--font-body);
     background:
-      radial-gradient(circle at 50% 0%, rgba(233,195,73,0.10), transparent 55%),
-      radial-gradient(circle at 15% 85%, rgba(231,75,56,0.07), transparent 50%),
-      radial-gradient(circle at 85% 70%, rgba(233,195,73,0.05), transparent 50%),
-      repeating-linear-gradient(135deg, rgba(233,195,73,0.015) 0px, rgba(233,195,73,0.015) 1px, transparent 1px, transparent 7px),
+      radial-gradient(circle at 50% 0%, var(--body-bg-wash-1), transparent 55%),
+      radial-gradient(circle at 15% 85%, var(--body-bg-wash-2), transparent 50%),
+      radial-gradient(circle at 85% 70%, var(--body-bg-wash-3), transparent 50%),
+      repeating-linear-gradient(135deg, var(--body-bg-hatch) 0px, var(--body-bg-hatch) 1px, transparent 1px, transparent 7px),
       var(--bg-2);
+    color: var(--text);
     min-height: 100vh;
     display: flex;
     flex-direction: column;
@@ -160,13 +251,20 @@
     90% { opacity: 0.5; }
     100% { transform: translateY(-100vh) translateX(var(--drift, 20px)); opacity: 0; }
   }
-  body > *:not(#cursorGlow):not(.ember):not(.site-header) { position: relative; z-index: 1; }
+  body > *:not(#cursorGlow):not(.ember):not(.site-header):not(#loadCeremony) { position: relative; z-index: 1; }
 
   /* ---------- Site header (full-bleed, sticky) ---------- */
   .site-header {
     position: fixed; top: 0; left: 0; right: 0; z-index: 40;
-    background: linear-gradient(160deg, rgba(19,20,7,0.88), rgba(13,14,5,0.92));
-    backdrop-filter: blur(18px);
+    background: linear-gradient(160deg, var(--header-bg-1), var(--header-bg-2));
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(233,195,73,0.18);
+    box-shadow: none;
+    transition: background 0.4s var(--ease-premium), backdrop-filter 0.4s var(--ease-premium), border-color 0.4s var(--ease-premium), box-shadow 0.4s var(--ease-premium);
+  }
+  .site-header.is-scrolled {
+    background: linear-gradient(160deg, var(--header-bg-1-scrolled), var(--header-bg-2-scrolled));
+    backdrop-filter: blur(22px);
     border-bottom: 1px solid rgba(233,195,73,0.32);
     box-shadow: 0 4px 20px -4px rgba(233,195,73,0.1), 0 10px 30px rgba(0,0,0,0.4);
   }
@@ -259,26 +357,135 @@
   .nav-link:hover { color: var(--gold); }
   .nav-link.active { color: var(--gold); font-weight: 700; }
   .nav-link.active::after { transform: scaleX(1); }
+  a.nav-link.nav-anchor { text-decoration: none; display: inline-block; }
+  @media (max-width: 980px) { a.nav-link.nav-anchor { display: none; } }
 
-  /* ---------- Play-tab hero ---------- */
-  .play-hero { max-width: 620px; text-align: center; margin: 4px 0 26px; }
-  .play-hero-eyebrow {
+  /* ---------- Theme toggle: sun / moon, minimum 44px touch target ---------- */
+  .theme-toggle {
+    display: flex; align-items: center; justify-content: center;
+    width: 38px; height: 38px; min-width: 44px; min-height: 44px;
+    margin-left: 4px;
+    background: transparent;
+    border: 1px solid rgba(233,195,73,0.28);
+    border-radius: 50%;
+    color: var(--gold);
+    cursor: pointer;
+    transition: background 0.25s ease, border-color 0.25s ease, transform 0.25s var(--ease-premium);
+  }
+  .theme-toggle:hover { background: rgba(233,195,73,0.1); border-color: rgba(233,195,73,0.55); transform: translateY(-1px); }
+  .theme-toggle .icon-svg { width: 17px; height: 17px; filter: none; }
+  @media (max-width: 640px) { .theme-toggle { width: 34px; height: 34px; min-width: 36px; min-height: 36px; } }
+
+  /* ---------- Play-tab cinematic hero: full-width artwork, text + live stat cards ---------- */
+  .cinematic-hero {
+    position: relative; width: 100%; max-width: 1400px; margin: 4px auto 34px;
+    border-radius: 18px; overflow: hidden;
+    box-shadow: var(--shadow-elevated), inset 0 1px 0 rgba(255,255,255,0.05);
+    border: 1px solid rgba(233,195,73,0.2);
+  }
+  .cinematic-hero-media { position: absolute; inset: 0; z-index: 0; }
+  .cinematic-hero-media img { width: 100%; height: 100%; object-fit: cover; object-position: 32% center; display: block; }
+  .cinematic-hero-scrim {
+    position: absolute; inset: 0;
+    background:
+      linear-gradient(90deg, rgba(10,10,4,0.94) 0%, rgba(10,10,4,0.72) 32%, rgba(10,10,4,0.28) 58%, rgba(10,10,4,0.5) 100%),
+      linear-gradient(180deg, rgba(10,10,4,0.15) 0%, transparent 20%, transparent 75%, rgba(10,10,4,0.55) 100%);
+  }
+  .cinematic-hero-inner {
+    position: relative; z-index: 1;
+    display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 30px;
+    padding: 58px 40px;
+    min-height: 480px;
+  }
+  .cinematic-hero-text { max-width: 560px; }
+  .cinematic-hero-eyebrow {
+    display: flex; align-items: center; gap: 10px;
     font-family: var(--font-label); font-size: 11px; letter-spacing: 0.32em; text-transform: uppercase;
-    color: var(--vermilion); margin-bottom: 10px;
+    color: var(--fixed-vermilion); margin-bottom: 16px;
   }
-  .play-hero-title {
-    font-family: var(--font-display-bold); font-weight: 700; font-size: clamp(24px, 4.4vw, 34px);
-    color: var(--gold-light); line-height: 1.25; text-shadow: 0 0 26px rgba(233,195,73,0.25); margin-bottom: 12px;
+  .cinematic-hero-eyebrow::before, .cinematic-hero-eyebrow::after { content: '◇'; color: rgba(233,195,73,0.5); font-size: 10px; }
+  .cinematic-hero-title {
+    font-family: var(--font-display-bold); font-weight: 700; font-size: clamp(38px, 6.4vw, 68px);
+    color: var(--fixed-gold-light); line-height: 1.05; letter-spacing: 0.01em;
+    text-shadow: 0 4px 40px rgba(0,0,0,0.6), 0 0 30px rgba(233,195,73,0.2);
+    margin-bottom: 6px;
   }
-  .play-hero-sub { font-size: 15px; color: var(--text-dim); line-height: 1.7; max-width: 520px; margin: 0 auto; }
-  .play-hero-flourish { display: block; width: 200px; height: 14px; margin: 16px auto 0; }
+  .cinematic-hero-subtitle {
+    font-family: var(--font-label); font-size: clamp(13px, 1.8vw, 17px); letter-spacing: 0.3em; text-transform: uppercase;
+    color: var(--fixed-gold); margin-bottom: 18px;
+  }
+  .cinematic-hero-tagline { font-size: 15.5px; color: var(--fixed-text-dim); line-height: 1.75; max-width: 440px; margin-bottom: 26px; }
+  .cinematic-hero-ctas { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; }
+  .cinematic-hero-ctas button.primary { font-size: 13px; padding: 15px 30px; }
+  .cinematic-hero-secondary {
+    background: rgba(20,21,10,0.5); border: 1px solid rgba(233,195,73,0.4); border-radius: 8px;
+    color: var(--fixed-gold-light); font-family: var(--font-label); font-size: 12.5px; letter-spacing: 0.1em; text-transform: uppercase;
+    padding: 14px 26px; cursor: pointer;
+    transition: background 0.25s ease, border-color 0.25s ease, transform 0.25s var(--ease-premium);
+  }
+  .cinematic-hero-secondary:hover { background: rgba(233,195,73,0.12); border-color: rgba(233,195,73,0.7); transform: translateY(-1px); }
+
+  .cinematic-hero-stats {
+    display: flex; flex-direction: column; gap: 12px; flex: 0 0 auto;
+    min-width: 190px;
+  }
+  .chs-card {
+    display: flex; align-items: center; gap: 12px;
+    background: linear-gradient(155deg, rgba(30,31,17,0.82) 0%, rgba(14,15,3,0.86) 100%);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(233,195,73,0.28); border-radius: 10px;
+    padding: 12px 18px;
+    box-shadow: var(--shadow-card);
+  }
+  .chs-card .icon-svg { width: 19px; height: 19px; color: var(--fixed-gold); flex-shrink: 0; }
+  .chs-value { display: block; font-family: var(--font-display-bold); font-weight: 700; font-size: 21px; color: var(--fixed-gold-light); line-height: 1.2; }
+  .chs-label { display: block; font-family: var(--font-label); font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--fixed-text-dim); }
+
+  @media (max-width: 900px) {
+    .cinematic-hero-inner { padding: 40px 26px; }
+    .cinematic-hero-stats { flex-direction: row; flex-wrap: wrap; width: 100%; }
+    .chs-card { flex: 1 1 calc(50% - 6px); }
+  }
+
+  /* ---------- Value strip: 4-column trust bar below the hero ---------- */
+  .value-strip {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 0;
+    max-width: 1400px; margin: 0 auto 40px;
+    background: linear-gradient(160deg, var(--surface-1), var(--bg-2) 85%);
+    border: 1px solid rgba(233,195,73,0.16); border-radius: 14px;
+    box-shadow: var(--shadow-card);
+    overflow: hidden;
+  }
+  .value-item {
+    display: flex; align-items: center; gap: 14px;
+    padding: 20px 22px;
+    border-right: 1px solid rgba(233,195,73,0.14);
+  }
+  .value-item:last-child { border-right: none; }
+  .value-item .icon-svg { width: 22px; height: 22px; color: var(--gold); flex-shrink: 0; }
+  .value-item strong {
+    display: block; font-family: var(--font-display-bold); font-weight: 700; font-size: 14px;
+    color: var(--gold-light); margin-bottom: 3px;
+  }
+  .value-item span {
+    display: block; font-size: 12px; color: var(--text-dim); line-height: 1.4;
+  }
+  @media (max-width: 900px) {
+    .value-strip { grid-template-columns: repeat(2, 1fr); }
+    .value-item { border-bottom: 1px solid rgba(233,195,73,0.14); }
+    .value-item:nth-child(2n) { border-right: none; }
+    .value-item:nth-child(3), .value-item:nth-child(4) { border-bottom: none; }
+  }
+  @media (max-width: 640px) {
+    .value-strip { display: none; }
+  }
 
   /* ---------- Play layout: stage + trial-record side panel ---------- */
   .play-layout { display: flex; flex-wrap: wrap; gap: 22px; align-items: flex-start; justify-content: center; width: 100%; }
 
   .record-panel {
     width: 220px; flex-shrink: 0;
-    background: linear-gradient(160deg, rgba(52,54,37,0.6), var(--surface-1) 75%);
+    background: linear-gradient(160deg, var(--card-corner), var(--surface-1) 75%);
     border: 1px solid rgba(233,195,73,0.24); border-radius: 4px 16px 4px 16px;
     box-shadow: var(--shadow-card), inset 0 1px 0 rgba(255,255,255,0.06);
     padding: 18px 18px 20px;
@@ -289,6 +496,10 @@
   }
   .record-heading .icon-svg { width: 16px; height: 16px; }
   .record-heading.small { font-size: 11px; margin-bottom: 10px; }
+  .record-heading-sub {
+    font-family: var(--font-label); font-size: 10px; color: var(--text-dim); opacity: 0.7;
+    margin: -6px 0 10px;
+  }
   .record-stat {
     display: flex; align-items: baseline; justify-content: space-between; gap: 8px;
     padding: 7px 0; border-bottom: 1px dashed rgba(233,195,73,0.14);
@@ -298,52 +509,72 @@
   .rs-value { font-family: var(--font-display); font-weight: 600; font-size: 16px; color: var(--gold-light); }
   .record-divider { height: 1px; margin: 14px 0; background: linear-gradient(90deg, transparent, rgba(233,195,73,0.3), transparent); }
   .record-badges { display: flex; flex-wrap: wrap; gap: 7px; }
+  /* Fixed dark plaques (not theme-reactive), same reasoning as the Trial Log
+     rows below: a semi-transparent black background only reads as "dark"
+     against the dark-theme page -- on the light parchment page it composites
+     to a flat mid-grey box, and the very-low-alpha locked-icon color then
+     has almost no contrast against that grey, so the icon effectively
+     disappears. A solid fixed-dark background keeps both the locked (dim
+     silhouette) and unlocked (bright gold) icon states legible either way. */
   .record-badge {
     width: 30px; height: 30px; border-radius: 3px 9px 3px 9px;
     display: flex; align-items: center; justify-content: center;
-    border: 1px solid rgba(233,195,73,0.18); background: rgba(0,0,0,0.25);
-    color: rgba(233,195,73,0.22); transition: color 0.3s ease, border-color 0.3s ease, background 0.3s ease;
+    border: 1px solid rgba(233,195,73,0.22); background: rgba(19,20,7,0.6);
+    color: rgba(233,195,73,0.4); transition: color 0.3s ease, border-color 0.3s ease, background 0.3s ease;
   }
   .record-badge.unlocked {
-    color: var(--gold); border-color: rgba(233,195,73,0.55);
-    background: linear-gradient(155deg, rgba(233,195,73,0.18), rgba(233,195,73,0.04));
+    color: var(--fixed-gold); border-color: rgba(233,195,73,0.55);
+    background: linear-gradient(155deg, rgba(233,195,73,0.28), rgba(19,20,7,0.6));
     box-shadow: 0 0 8px rgba(233,195,73,0.25);
   }
   .record-badge .icon-svg { width: 15px; height: 15px; color: inherit; filter: none; }
 
+  /* Trial Log rows -- kept fixed-dark-on-purpose (not theme-reactive) as a
+     guaranteed-legible fallback: they used an undefined --text-main custom
+     property (a typo -- only --text exists), which is why the row text
+     could vanish in light theme. Rather than lean on inheritance quirks,
+     these small brass-plaque rows just always look like the dark-theme
+     version, same as the HUD pills. */
   .leaderboard-list { display: flex; flex-direction: column; gap: 4px; }
   .lb-row {
     display: flex; align-items: center; gap: 8px;
     padding: 5px 6px; border-radius: 3px 8px 3px 8px;
-    background: rgba(0,0,0,0.18);
+    background: rgba(19,20,7,0.55);
   }
-  .lb-row.you { background: linear-gradient(155deg, rgba(233,195,73,0.16), rgba(233,195,73,0.04)); box-shadow: inset 0 0 0 1px rgba(233,195,73,0.3); }
+  .lb-row.you { background: linear-gradient(155deg, rgba(233,195,73,0.22), rgba(19,20,7,0.5)); box-shadow: inset 0 0 0 1px rgba(233,195,73,0.3); }
   .lb-rank {
     flex-shrink: 0; width: 18px; height: 18px; border-radius: 50%;
     display: flex; align-items: center; justify-content: center;
     font-family: var(--font-display); font-size: 10px; font-weight: 700;
-    background: rgba(233,195,73,0.1); color: var(--text-dim);
+    background: rgba(233,195,73,0.1); color: var(--fixed-text-dim);
   }
   .lb-row.rank-1 .lb-rank { background: #e9c349; color: #2a1f04; box-shadow: 0 0 6px rgba(233,195,73,0.6); }
   .lb-row.rank-2 .lb-rank { background: #c7cdd6; color: #1f2226; }
   .lb-row.rank-3 .lb-rank { background: #cf8d55; color: #2a1a08; }
   .lb-name {
     flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
-    font-family: var(--font-label); font-size: 11.5px; color: var(--text-main);
+    font-family: var(--font-label); font-size: 11.5px; color: var(--fixed-text);
   }
-  .lb-score { font-family: var(--font-display); font-size: 13px; font-weight: 600; color: var(--gold-light); }
-  .lb-empty { font-family: var(--font-label); font-size: 11px; color: var(--text-dim); opacity: 0.7; padding: 6px 2px; }
+  .lb-score { font-family: var(--font-display); font-size: 13px; font-weight: 600; color: var(--fixed-gold-light); }
+  /* Sits directly on the Trial Log card's own (theme-reactive, light in
+     light theme) background rather than inside a dark .lb-row plaque, so
+     unlike the rows above it needs its own small dark backing -- otherwise
+     this fixed light-on-dark text goes invisible on a light card. */
+  .lb-empty {
+    font-family: var(--font-label); font-size: 11px; color: var(--fixed-text-dim, var(--text-dim));
+    padding: 8px 10px; border-radius: 3px 8px 3px 8px; background: rgba(19,20,7,0.5);
+  }
 
   .lb-entry { display: none; margin: 4px 0 14px; }
   .lb-entry.show { display: block; }
   .lb-entry .lb-entry-label {
-    font-family: var(--font-label); font-size: 11px; letter-spacing: 0.05em; color: var(--gold);
+    font-family: var(--font-label); font-size: 11px; letter-spacing: 0.05em; color: var(--fixed-gold);
     text-transform: uppercase; margin-bottom: 8px;
   }
   .lb-entry-row { display: flex; gap: 8px; }
   .lb-name-input {
-    flex: 1; min-width: 0; background: rgba(0,0,0,0.3); border: 1px solid rgba(233,195,73,0.32);
-    border-radius: 3px 8px 3px 8px; color: var(--text-main); font-family: var(--font-label);
+    flex: 1; min-width: 0; background: rgba(19,20,7,0.6); border: 1px solid rgba(233,195,73,0.32);
+    border-radius: 3px 8px 3px 8px; color: var(--fixed-text); font-family: var(--font-label);
     font-size: 13px; padding: 9px 12px; outline: none;
   }
   .lb-name-input:focus { border-color: var(--gold); }
@@ -356,6 +587,19 @@
   .lb-save-btn:hover { filter: brightness(1.08); }
   .lb-saved-note { font-family: var(--font-label); font-size: 11.5px; color: var(--gold-light); margin: 4px 0 14px; display: none; }
   .lb-saved-note.show { display: block; }
+
+  .modal-share-btn {
+    display: none; align-items: center; justify-content: center; gap: 8px;
+    width: 100%; margin: 0 0 12px; padding: 12px 20px;
+    background: rgba(233,195,73,0.07); border: 1px solid rgba(233,195,73,0.32); border-radius: 30px;
+    font-family: var(--font-label); font-size: 12px; letter-spacing: 0.09em; text-transform: uppercase;
+    color: var(--gold-light); cursor: pointer;
+    transition: background 0.25s ease, border-color 0.25s ease, transform 0.25s var(--ease-premium);
+  }
+  .modal-share-btn.show { display: inline-flex; }
+  .modal-share-btn:hover { background: rgba(233,195,73,0.14); border-color: rgba(233,195,73,0.6); transform: translateY(-1px); }
+  .modal-share-btn .icon-svg { width: 16px; height: 16px; }
+  .modal-share-btn.copied { color: var(--gold-light); border-color: rgba(233,195,73,0.7); }
 
   @media (max-width: 980px) {
     .record-panel { width: min(92vw, 780px); order: 2; }
@@ -398,10 +642,23 @@
 
   canvas#gameCanvas { display: block; width: 100%; height: auto; cursor: none; }
 
+  /* ---------- Game toolbar: HUD + audio controls now live in their own bar
+     above the canvas, in normal document flow, instead of floating on top
+     of the photo -- keeps the actual game view completely clean/unobstructed. */
+  .game-toolbar {
+    position: relative; z-index: 5;
+    display: flex; flex-direction: column; align-items: center; gap: 9px;
+    padding: 12px 14px 11px;
+    background: linear-gradient(160deg, rgba(42,44,26,0.97) 0%, rgba(20,21,7,0.98) 100%);
+    border-bottom: 1px solid rgba(233,195,73,0.22);
+    box-shadow: 0 2px 14px rgba(0,0,0,0.35);
+  }
+  .canvas-frame { position: relative; }
+
   /* ---------- HUD pills ---------- */
   .hud {
-    position: absolute; top: 16px; left: 16px; right: 16px;
-    display: flex; justify-content: space-between; gap: 10px; z-index: 5; pointer-events: none;
+    position: static;
+    display: flex; justify-content: space-between; gap: 10px; width: 100%;
   }
 
   /* A carved brass plaque, not a generic rounded pill: asymmetric corners,
@@ -435,21 +692,25 @@
   }
 
   .icon-svg { width: 17px; height: 17px; color: var(--gold); filter: drop-shadow(0 0 4px rgba(233,195,73,0.4)); flex-shrink: 0; }
-  .pill .icon-svg { width: 18px; height: 18px; }
+  /* The HUD pills sit on the game canvas, which stays permanently dark in
+     both site themes (see the --fixed-* variables above) -- so their text
+     and icons must stay fixed-bright too, or light theme flips them to dark
+     ink on a still-dark plaque and they go unreadable. */
+  .pill .icon-svg { width: 18px; height: 18px; color: var(--fixed-gold); }
   .pill .label {
     font-family: var(--font-label); font-size: 9px; letter-spacing: 0.17em;
-    text-transform: uppercase; color: var(--gold-dim); display: block; line-height: 1.15;
+    text-transform: uppercase; color: var(--fixed-gold-dim); display: block; line-height: 1.15;
   }
-  .pill .value { font-family: var(--font-display); font-size: 16.5px; font-weight: 600; color: var(--text); line-height: 1.3; letter-spacing: 0.01em; }
+  .pill .value { font-family: var(--font-display); font-size: 16.5px; font-weight: 600; color: var(--fixed-text); line-height: 1.3; letter-spacing: 0.01em; text-shadow: 0 1px 3px rgba(0,0,0,0.7); }
 
   .arrow-pips { display: flex; gap: 3px; margin-top: 3px; }
   .arrow-pips .pip { width: 5px; height: 14px; border-radius: 3px; background: rgba(233,195,73,0.22); transition: background 0.25s ease, box-shadow 0.25s ease; }
-  .arrow-pips .pip.filled { background: linear-gradient(180deg, var(--gold-light, #f6dd8a), var(--gold)); box-shadow: 0 0 7px rgba(233,195,73,0.75); }
+  .arrow-pips .pip.filled { background: linear-gradient(180deg, var(--fixed-gold-light), var(--fixed-gold)); box-shadow: 0 0 7px rgba(233,195,73,0.75); }
 
   /* ---------- Best-score line + combo badge (retention hooks) ---------- */
   .pill .best-line {
     display: block; font-family: var(--font-label); font-size: 8.5px; letter-spacing: 0.1em;
-    text-transform: uppercase; color: var(--gold-dim); opacity: 0.7; margin-top: 1px;
+    text-transform: uppercase; color: var(--fixed-gold-dim); opacity: 0.7; margin-top: 1px;
   }
   .pill#scorePill { position: relative; overflow: visible; }
   .combo-badge {
@@ -463,7 +724,7 @@
     transition: opacity 0.2s ease;
   }
   .combo-badge.show { animation: comboPop 0.42s var(--ease-premium) forwards; }
-  .combo-badge.hot { background: linear-gradient(160deg, var(--gold-light), var(--gold)); color: #1a1500; box-shadow: 0 2px 10px rgba(233,195,73,0.7), inset 0 1px 0 rgba(255,255,255,0.5); }
+  .combo-badge.hot { background: linear-gradient(160deg, var(--fixed-gold-light), var(--fixed-gold)); color: #1a1500; box-shadow: 0 2px 10px rgba(233,195,73,0.7), inset 0 1px 0 rgba(255,255,255,0.5); }
   @keyframes comboPop {
     0%   { opacity: 0; transform: scale(0.4) rotate(-8deg); }
     55%  { opacity: 1; transform: scale(1.18) rotate(4deg); }
@@ -518,14 +779,14 @@
   }
 
   .audio-controls {
-    position: absolute; top: 68px; left: 50%; transform: translateX(-50%); z-index: 5;
-    display: flex; gap: 8px;
+    position: static;
+    display: flex; justify-content: center; gap: 8px;
   }
   .sound-btn {
     background: linear-gradient(155deg, rgba(52,54,37,0.75), rgba(19,20,7,0.8));
     border: 1px solid rgba(233,195,73,0.35); border-radius: 50%;
     width: 30px; height: 30px; display: flex; align-items: center; justify-content: center;
-    cursor: pointer; color: var(--gold);
+    cursor: pointer; color: var(--fixed-gold);
     box-shadow: var(--shadow-card);
     transition: background 0.2s ease, transform 0.28s var(--ease-premium), box-shadow 0.28s ease;
   }
@@ -535,8 +796,8 @@
     box-shadow: var(--shadow-card), var(--glow-gold-soft);
   }
   .sound-btn.is-off { color: rgba(233,195,73,0.4); }
-  .sound-btn .icon-svg { width: 16px; height: 16px; color: var(--gold); }
-  .sound-btn:focus-visible, button:focus-visible { outline: 2px solid var(--vermilion); outline-offset: 2px; }
+  .sound-btn .icon-svg { width: 16px; height: 16px; color: var(--fixed-gold); }
+  .sound-btn:focus-visible, button:focus-visible, a:focus-visible, summary:focus-visible, input:focus-visible { outline: 2px solid var(--vermilion); outline-offset: 2px; }
 
   .footer-share {
     margin-top: 22px; padding-top: 18px; border-top: 1px solid rgba(233,195,73,0.15);
@@ -577,7 +838,7 @@
   .draw-strength.active { opacity: 1; }
   .draw-strength .label {
     font-family: var(--font-label); font-size: 9px; letter-spacing: 0.28em;
-    text-transform: uppercase; color: var(--gold); opacity: 0.85;
+    text-transform: uppercase; color: var(--fixed-gold); opacity: 0.85;
   }
   .draw-strength .track {
     width: 100%; height: 4px; border-radius: 999px; overflow: hidden;
@@ -590,12 +851,12 @@
   }
   .draw-strength .fill {
     height: 100%; width: 0%;
-    background: linear-gradient(90deg, var(--gold), var(--vermilion));
+    background: linear-gradient(90deg, var(--fixed-gold), var(--fixed-vermilion));
     box-shadow: 0 0 10px rgba(233,195,73,0.7);
     transition: width 0.05s linear, background 0.15s ease, box-shadow 0.15s ease;
   }
   .draw-strength .fill.perfect {
-    background: linear-gradient(90deg, var(--gold-light), #fff2c0);
+    background: linear-gradient(90deg, var(--fixed-gold-light), #fff2c0);
     box-shadow: 0 0 18px rgba(255,240,180,0.95);
   }
   .draw-strength .label.perfect { color: #fff2c0; text-shadow: 0 0 10px rgba(255,240,180,0.8); }
@@ -613,14 +874,14 @@
     78%  { transform: translate(-50%,-50%) scaleX(1); opacity: 1; }
     100% { transform: translate(-50%,-50%) scaleX(1); opacity: 0; }
   }
-  .level-banner .rule { width: 240px; height: 1px; background: linear-gradient(90deg, transparent, var(--gold), transparent); margin: 6px auto; }
+  .level-banner .rule { width: 240px; height: 1px; background: linear-gradient(90deg, transparent, var(--fixed-gold), transparent); margin: 6px auto; }
   .level-banner .big {
-    font-family: var(--font-display-bold); font-weight: 700; font-size: 28px; color: var(--gold);
+    font-family: var(--font-display-bold); font-weight: 700; font-size: 28px; color: var(--fixed-gold);
     text-shadow: 0 0 34px rgba(233,195,73,0.65), 0 2px 4px #000;
   }
   .level-banner .small {
     font-family: var(--font-label); font-size: 11px; letter-spacing: 0.3em;
-    text-transform: uppercase; color: var(--vermilion);
+    text-transform: uppercase; color: var(--fixed-vermilion);
   }
 
   .flash {
@@ -690,7 +951,7 @@
     text-transform: uppercase; color: var(--gold-dim); margin-bottom: 20px;
   }
   .scroll p { font-family: var(--font-body); font-size: 15.5px; line-height: 1.75; color: var(--text-dim); margin-bottom: 24px; }
-  .scroll .stats-row { display: flex; justify-content: center; gap: 30px; margin-bottom: 24px; }
+  .scroll .stats-row { display: flex; flex-wrap: wrap; justify-content: center; gap: 18px 26px; margin-bottom: 24px; }
   .scroll .stats-row div { text-align: center; }
   .scroll .stats-row .num { font-family: var(--font-display-bold); font-weight: 700; font-size: 27px; color: var(--gold); display: block; }
   .scroll .stats-row .lbl { font-family: var(--font-label); font-size: 9px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--gold-dim); }
@@ -699,7 +960,7 @@
      corners, a beveled rim, and small corner rivets. */
   button.primary {
     position: relative;
-    background: linear-gradient(165deg, #fff2c4 0%, var(--gold-light) 22%, var(--gold) 58%, var(--gold-dim) 100%);
+    background: linear-gradient(165deg, #fff2c4 0%, var(--fixed-gold-light) 22%, var(--fixed-gold) 58%, var(--fixed-gold-dim) 100%);
     border: 1px solid rgba(80,60,4,0.5);
     padding: 14px 38px; font-family: var(--font-label); font-size: 12.5px; font-weight: 700;
     letter-spacing: 0.15em; text-transform: uppercase; color: #1a1500; cursor: pointer;
@@ -707,7 +968,12 @@
     box-shadow: 0 8px 22px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.55), inset 0 -3px 6px rgba(90,60,10,0.4);
     transition: transform 0.25s var(--ease-premium), box-shadow 0.25s var(--ease-premium), filter 0.25s ease;
   }
+  button.primary::after {
+    content: '→'; display: inline-block; margin-left: 10px;
+    transition: transform 0.28s var(--ease-premium);
+  }
   button.primary:hover { transform: translateY(-2px); filter: brightness(1.05); box-shadow: 0 12px 30px rgba(233,195,73,0.4), inset 0 1px 0 rgba(255,255,255,0.6), inset 0 -3px 6px rgba(90,60,10,0.4); }
+  button.primary:hover::after { transform: translateX(4px); }
   button.primary:active { transform: translateY(0px) scale(0.97); }
 
   .footer {
@@ -754,7 +1020,7 @@
     .brand-text h1 { font-size: 12px; letter-spacing: 0.1em; }
     .nav-link { padding: 7px 8px; font-size: 10.5px; }
 
-    .play-hero { display: none; }
+    .cinematic-hero { display: none; }
     .tab-panel#tabPlay { padding-top: 10px; }
     .play-layout { gap: 14px; }
 
@@ -797,7 +1063,7 @@
 
   .story-tile {
     display: block; text-decoration: none;
-    background: linear-gradient(160deg, rgba(42,43,27,0.55), var(--surface-1));
+    background: linear-gradient(160deg, var(--card-corner), var(--surface-1));
     border: 1px solid rgba(233,195,73,0.22);
     border-radius: 14px;
     box-shadow: var(--shadow-card);
@@ -865,9 +1131,211 @@
   .comic-mini figcaption {
     font-size: 12.5px; color: var(--text-dim); padding: 10px 12px; border-top: 1px solid rgba(233,195,73,0.15);
   }
+
+  /* ================================================================
+     Phase 4 -- supporting narrative sections on the Play tab:
+     How It Works, The Reflection (signature moment), a short
+     international-friendly myth primer, and an FAQ accordion.
+     All sit below the game stage so the primary CTA is never delayed.
+     ================================================================ */
+  .play-extra { width: 100%; max-width: 1040px; margin: 64px auto 0; }
+
+  .section-kicker {
+    font-family: var(--font-label); font-size: 11px; letter-spacing: 0.34em;
+    text-transform: uppercase; color: var(--vermilion); margin-bottom: 12px; text-align: center;
+  }
+  .section-heading {
+    font-family: var(--font-display-bold); font-weight: 700; font-size: clamp(24px, 4.2vw, 32px);
+    color: var(--gold-light); text-align: center; margin-bottom: 14px; line-height: 1.3;
+    text-shadow: 0 0 26px rgba(233,195,73,0.2);
+  }
+  .section-sub {
+    font-size: 15px; color: var(--text-dim); line-height: 1.7; text-align: center;
+    max-width: 560px; margin: 0 auto 40px;
+  }
+
+  /* ---------- How It Works ---------- */
+  .how-it-works { padding: 0 8px; scroll-margin-top: 90px; }
+  #trialLogSection { display: block; scroll-margin-top: 90px; }
+  .hiw-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px;
+    counter-reset: hiw;
+  }
+  @media (max-width: 760px) { .hiw-grid { grid-template-columns: 1fr; } }
+  .hiw-card {
+    position: relative;
+    background: linear-gradient(160deg, var(--card-corner), var(--surface-1));
+    border: 1px solid rgba(233,195,73,0.22); border-radius: 14px;
+    box-shadow: var(--shadow-card);
+    padding: 30px 24px 26px;
+    transition: transform 0.3s var(--ease-premium), box-shadow 0.3s var(--ease-premium), border-color 0.3s ease;
+  }
+  .hiw-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-card), var(--glow-gold-soft); border-color: rgba(233,195,73,0.4); }
+  .hiw-num {
+    counter-increment: hiw;
+    display: flex; align-items: center; justify-content: center;
+    width: 40px; height: 40px; border-radius: 50%;
+    border: 1px solid rgba(233,195,73,0.4);
+    font-family: var(--font-display-bold); font-size: 15px; color: var(--gold);
+    margin-bottom: 18px;
+  }
+  .hiw-num::before { content: counter(hiw); }
+  .hiw-card h3 {
+    font-family: var(--font-display); font-size: 19px; font-weight: 600; color: var(--gold);
+    margin-bottom: 10px;
+  }
+  .hiw-card p { font-size: 13.5px; color: var(--text-dim); line-height: 1.65; }
+  .hiw-connector {
+    display: none;
+  }
+
+  /* ---------- The Reflection: signature scroll moment ---------- */
+  .reflection-moment {
+    margin: 74px auto 0; max-width: 720px; text-align: center; padding: 10px 20px 0;
+  }
+  .reflection-moment .section-kicker { color: var(--gold-dim); }
+  .reflection-line {
+    width: 64px; height: 1px; margin: 0 auto 30px;
+    background: linear-gradient(90deg, transparent, rgba(233,195,73,0.6), transparent);
+  }
+  .reflection-quote {
+    font-family: var(--font-display); font-style: italic; font-weight: 500;
+    font-size: clamp(20px, 3.4vw, 28px); line-height: 1.55; color: var(--text);
+  }
+  .reflection-quote span { color: var(--gold-light); }
+  .reflection-mirror {
+    font-family: var(--font-display); font-style: italic; font-weight: 500;
+    font-size: clamp(20px, 3.4vw, 28px); line-height: 1.55; color: var(--text);
+    transform: scaleY(-1); transform-origin: top center;
+    margin-top: 2px;
+    -webkit-mask-image: linear-gradient(to bottom, rgba(0,0,0,0.35), transparent 80%);
+            mask-image: linear-gradient(to bottom, rgba(0,0,0,0.35), transparent 80%);
+    opacity: 0.5; user-select: none; pointer-events: none;
+  }
+  .reflection-mirror span { color: var(--gold-light); }
+  .reflection-attribution {
+    margin-top: 30px; font-family: var(--font-label); font-size: 11px; letter-spacing: 0.14em;
+    text-transform: uppercase; color: var(--gold-dim);
+  }
+
+  /* ---------- The Legend: short, international-friendly context + portrait art ---------- */
+  .legend-section {
+    scroll-margin-top: 90px;
+    margin: 74px auto 0; max-width: 1040px;
+    display: grid; grid-template-columns: minmax(0, 280px) 1fr; align-items: center; gap: 32px;
+    background: linear-gradient(160deg, var(--surface-2), var(--bg-2) 70%);
+    border: 1px solid rgba(233,195,73,0.22); border-radius: 16px;
+    padding: 24px;
+    box-shadow: var(--shadow-card);
+    overflow: hidden;
+  }
+  .legend-media {
+    border-radius: 12px; overflow: hidden; height: 100%; min-height: 260px;
+    border: 1px solid rgba(233,195,73,0.25);
+  }
+  .legend-media img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .legend-content { display: flex; flex-direction: column; align-items: flex-start; gap: 20px; }
+  .myth-primer-text { flex: 1 1 380px; }
+  .myth-primer-text .section-kicker { text-align: left; margin-bottom: 10px; }
+  .myth-primer-text h3 {
+    font-family: var(--font-display-bold); font-weight: 700; font-size: 21px; color: var(--gold-light);
+    margin-bottom: 10px; line-height: 1.35;
+  }
+  .myth-primer-text p { font-size: 14px; color: var(--text-dim); line-height: 1.75; }
+  .myth-primer-text .legend-emphasis { color: var(--gold-light); font-family: var(--font-display); font-style: italic; font-size: 16px; margin-top: 8px; }
+  .myth-primer-cta { flex: 0 0 auto; }
+  .myth-primer-cta a {
+    display: inline-flex; align-items: center; gap: 8px; text-decoration: none;
+    font-family: var(--font-label); font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--gold); border: 1px solid rgba(233,195,73,0.4); border-radius: 30px;
+    padding: 12px 22px; white-space: nowrap;
+    transition: background 0.25s ease, border-color 0.25s ease, transform 0.25s var(--ease-premium);
+  }
+  .myth-primer-cta a:hover { background: rgba(233,195,73,0.12); border-color: rgba(233,195,73,0.7); transform: translateY(-1px); }
+  @media (max-width: 760px) {
+    .legend-section { grid-template-columns: 1fr; }
+    .legend-media { min-height: 200px; }
+  }
+
+  /* ---------- FAQ ---------- */
+  .faq-section { margin: 74px auto 0; max-width: 760px; }
+  .faq-list { display: flex; flex-direction: column; gap: 10px; }
+  .faq-item {
+    background: linear-gradient(160deg, var(--card-corner), var(--surface-1));
+    border: 1px solid rgba(233,195,73,0.18); border-radius: 10px;
+    overflow: hidden;
+  }
+  .faq-item summary {
+    list-style: none; cursor: pointer; padding: 16px 46px 16px 20px;
+    font-family: var(--font-display); font-size: 15.5px; font-weight: 600; color: var(--text);
+    position: relative; transition: color 0.2s ease;
+  }
+  .faq-item summary::-webkit-details-marker { display: none; }
+  .faq-item summary::after {
+    content: '+'; position: absolute; right: 18px; top: 50%; transform: translateY(-50%);
+    font-family: var(--font-label); font-size: 20px; color: var(--gold-dim);
+    transition: transform 0.25s var(--ease-premium), color 0.2s ease;
+  }
+  .faq-item[open] summary::after { transform: translateY(-50%) rotate(45deg); color: var(--gold); }
+  .faq-item:hover summary { color: var(--gold-light); }
+  .faq-answer { padding: 0 20px 18px; font-size: 13.5px; color: var(--text-dim); line-height: 1.7; }
+
+  @media (max-width: 640px) {
+    .play-extra { margin-top: 48px; }
+    .reflection-moment, .legend-section, .faq-section { margin-top: 52px; }
+    .legend-section { padding: 20px; }
+    .myth-primer-cta { width: 100%; }
+    .myth-primer-cta a { width: 100%; justify-content: center; }
+  }
+
+  /* ---------- Loading ceremony: a brief first-load moment, once per tab session ---------- */
+  #loadCeremony {
+    position: fixed; inset: 0; z-index: 999; background: var(--bg-2);
+    display: flex; align-items: center; justify-content: center;
+    transition: opacity 0.6s ease, visibility 0.6s ease;
+  }
+  #loadCeremony.lc-done { opacity: 0; visibility: hidden; pointer-events: none; }
+  .lc-mark { width: 84px; height: 84px; overflow: visible; }
+  .lc-circle { fill: none; stroke: var(--gold); stroke-width: 1.6; stroke-dasharray: 113; stroke-dashoffset: 113; animation: lcCircle 0.9s var(--ease-premium) 0.15s forwards; }
+  .lc-dot { fill: var(--gold); opacity: 0; animation: lcFade 0.4s ease 0.95s forwards; }
+  .lc-line { stroke: var(--gold); stroke-width: 1.6; stroke-linecap: round; stroke-dasharray: 26; stroke-dashoffset: 26; animation: lcLine 0.5s var(--ease-premium) 1.05s forwards; }
+  .lc-arrowhead { stroke: var(--gold); stroke-width: 1.6; fill: none; stroke-linecap: round; stroke-linejoin: round; opacity: 0; animation: lcFade 0.3s ease 1.4s forwards; }
+  @keyframes lcCircle { to { stroke-dashoffset: 0; } }
+  @keyframes lcLine { to { stroke-dashoffset: 0; } }
+  @keyframes lcFade { to { opacity: 1; } }
+  @media (prefers-reduced-motion: reduce) {
+    #loadCeremony { transition: none; }
+    .lc-circle, .lc-dot, .lc-line, .lc-arrowhead { animation: none !important; opacity: 1 !important; stroke-dashoffset: 0 !important; }
+  }
 </style>
 </head>
 <body>
+
+<div id="loadCeremony" aria-hidden="true">
+  <svg class="lc-mark" viewBox="0 0 100 100">
+    <line class="lc-line lc-line-l" x1="4" y1="50" x2="30" y2="50"></line>
+    <circle class="lc-circle" cx="50" cy="50" r="18"></circle>
+    <circle class="lc-dot" cx="50" cy="50" r="3"></circle>
+    <line class="lc-line lc-line-r" x1="70" y1="50" x2="92" y2="50" style="animation-delay:1.05s"></line>
+    <path class="lc-arrowhead" d="M92 50 L82 44 M92 50 L82 56"></path>
+  </svg>
+</div>
+<script>
+(function () {
+  var el = document.getElementById('loadCeremony');
+  if (!el) return;
+  try {
+    if (sessionStorage.getItem('mvCeremonyShown')) { el.remove(); return; }
+    sessionStorage.setItem('mvCeremonyShown', '1');
+  } catch (e) {}
+  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var delay = reduce ? 0 : 1550;
+  setTimeout(function () {
+    el.classList.add('lc-done');
+    setTimeout(function () { if (el.parentNode) el.parentNode.removeChild(el); }, 650);
+  }, delay);
+})();
+</script>
 
 <div id="cursorGlow"></div>
 <div id="grainOverlay"></div>
@@ -889,6 +1357,8 @@
     <symbol id="ic-crown" viewBox="0 0 24 24"><path d="M3 18h18l-1.6-8-4.4 3.4L12 6l-3 7.4-4.4-3.4L3 18Z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><circle cx="3" cy="8.4" r="1.1" fill="currentColor"/><circle cx="12" cy="4.6" r="1.1" fill="currentColor"/><circle cx="21" cy="8.4" r="1.1" fill="currentColor"/></symbol>
     <symbol id="ic-lotus" viewBox="0 0 24 24"><path d="M12 21c-3-2-4-5-4-8 2 1 3.4 3 4 5 .6-2 2-4 4-5 0 3-1 6-4 8Z" fill="currentColor" opacity="0.92"/><path d="M12 13c-4-.6-6-3.4-6.5-7 2.8.4 5.5 2.2 6.5 5 1-2.8 3.7-4.6 6.5-5-.5 3.6-2.5 6.4-6.5 7Z" fill="currentColor" opacity="0.6"/></symbol>
     <symbol id="ic-share" viewBox="0 0 24 24"><circle cx="18" cy="5" r="2.4" fill="none" stroke="currentColor" stroke-width="1.6"/><circle cx="6" cy="12" r="2.4" fill="none" stroke="currentColor" stroke-width="1.6"/><circle cx="18" cy="19" r="2.4" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M8.1 10.8 15.9 6.2M8.1 13.2 15.9 17.8" stroke="currentColor" stroke-width="1.6"/></symbol>
+    <symbol id="ic-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4.2" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M12 2.5v2.4M12 19.1v2.4M4.2 4.2l1.7 1.7M18.1 18.1l1.7 1.7M2.5 12h2.4M19.1 12h2.4M4.2 19.8l1.7-1.7M18.1 5.9l1.7-1.7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></symbol>
+    <symbol id="ic-moon" viewBox="0 0 24 24"><path d="M20 14.2A8.4 8.4 0 1 1 9.8 4a6.7 6.7 0 0 0 10.2 10.2Z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></symbol>
   </defs>
 </svg>
 
@@ -897,8 +1367,8 @@
 <header class="site-header">
   <div class="site-header-inner">
     <div class="brand">
-      <div class="mark">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 20L20 4"/><path d="M20 4v6M20 4h-6"/></svg>
+      <div class="mark" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="4"/><circle cx="12" cy="12" r="1.1" fill="currentColor" stroke="none"/><path d="M2.2 12h5.3M15 12h4.2" stroke-linecap="round"/><path d="M17.3 9.7 21 12l-3.7 2.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
       </div>
       <div class="brand-text">
         <h1 id="mainTitle">Matsya-Vedh</h1>
@@ -907,7 +1377,14 @@
     </div>
     <nav class="site-nav">
       <button class="nav-link active" id="tabBtnPlay">Play</button>
+      <a class="nav-link nav-anchor" href="#howItWorksSection">How It Works</a>
+      <a class="nav-link nav-anchor" href="#legendSection">The Legend</a>
+      <a class="nav-link nav-anchor" href="#trialLogSection">Trial Log</a>
       <button class="nav-link" id="tabBtnStory">Full Story</button>
+      <button class="theme-toggle" id="themeToggle" type="button" aria-label="Switch to light theme" title="Switch to light theme">
+        <svg class="icon-svg" id="themeIconSun"><use href="#ic-sun"/></svg>
+        <svg class="icon-svg" id="themeIconMoon" style="display:none"><use href="#ic-moon"/></svg>
+      </button>
     </nav>
   </div>
 </header>
@@ -916,16 +1393,60 @@
 
 <div class="tab-panel active" id="tabPlay">
 
-<div class="play-hero">
-  <div class="play-hero-eyebrow">A Trial From The Mahabharata</div>
-  <h2 class="play-hero-title">Strike the Reflected Eye</h2>
-  <p class="play-hero-sub">Never look at the fish itself — only its reflection, rippling in the pool below. Hold the string until your hand is steady. Loose the arrow the instant the reflection lines up.</p>
-  <svg class="play-hero-flourish" viewBox="0 0 320 18" preserveAspectRatio="none" aria-hidden="true">
-    <path d="M0 9 H130" stroke="rgba(233,195,73,0.4)" stroke-width="1"/>
-    <path d="M190 9 H320" stroke="rgba(233,195,73,0.4)" stroke-width="1"/>
-    <circle cx="160" cy="9" r="3.2" fill="none" stroke="var(--gold)" stroke-width="1.2"/>
-    <path d="M145 9 L152 9 M168 9 L175 9" stroke="var(--gold)" stroke-width="1.2"/>
-  </svg>
+<div class="cinematic-hero">
+  <div class="cinematic-hero-media">
+    <img src="hero-banner.jpg" alt="Arjuna drawing his bow toward the golden fish, aiming only at its reflection in the pool below" width="1600" height="750" loading="eager">
+  </div>
+  <div class="cinematic-hero-scrim" aria-hidden="true"></div>
+  <div class="cinematic-hero-inner">
+    <div class="cinematic-hero-text">
+      <div class="cinematic-hero-eyebrow">An Ancient Trial of Precision</div>
+      <h2 class="cinematic-hero-title">Matsya-Vedh</h2>
+      <div class="cinematic-hero-subtitle">The Fish-Eye Trial</div>
+      <p class="cinematic-hero-tagline">Aim at the reflection. Strike the eye. A legendary challenge of focus and mastery, drawn from the Mahabharata.</p>
+      <div class="cinematic-hero-ctas">
+        <button class="primary" id="heroPlayBtn" type="button">Play the Trial</button>
+        <button class="cinematic-hero-secondary" id="heroStoryCta" type="button">Discover the Legend</button>
+      </div>
+    </div>
+    <aside class="cinematic-hero-stats" aria-label="Your trial record">
+      <div class="chs-card">
+        <svg class="icon-svg"><use href="#ic-crown"/></svg>
+        <div><span class="chs-value" id="heroStatBest">0</span><span class="chs-label">Best Score</span></div>
+      </div>
+      <div class="chs-card">
+        <svg class="icon-svg"><use href="#ic-eye"/></svg>
+        <div><span class="chs-value" id="heroStatAccuracy">—</span><span class="chs-label">Accuracy</span></div>
+      </div>
+      <div class="chs-card">
+        <svg class="icon-svg"><use href="#ic-quiver"/></svg>
+        <div><span class="chs-value" id="heroStatTrials">0</span><span class="chs-label">Trials Played</span></div>
+      </div>
+      <div class="chs-card">
+        <svg class="icon-svg"><use href="#ic-flame"/></svg>
+        <div><span class="chs-value" id="heroStatStreak">0</span><span class="chs-label">Best Streak</span></div>
+      </div>
+    </aside>
+  </div>
+</div>
+
+<div class="value-strip">
+  <div class="value-item">
+    <svg class="icon-svg"><use href="#ic-eye"/></svg>
+    <div><strong>Skill Based</strong><span>No luck. Only your focus.</span></div>
+  </div>
+  <div class="value-item">
+    <svg class="icon-svg"><use href="#ic-medal"/></svg>
+    <div><strong>Personal Best</strong><span>Track and beat your own record.</span></div>
+  </div>
+  <div class="value-item">
+    <svg class="icon-svg"><use href="#ic-crown"/></svg>
+    <div><strong>Achievements</strong><span>Unlock rewards. Prove your mastery.</span></div>
+  </div>
+  <div class="value-item">
+    <svg class="icon-svg"><use href="#ic-share"/></svg>
+    <div><strong>Share &amp; Inspire</strong><span>Share your score and challenge friends.</span></div>
+  </div>
 </div>
 
 <div class="play-layout">
@@ -938,54 +1459,58 @@
       <div class="ornament-corner corner-bl"></div>
       <div class="ornament-corner corner-br"></div>
 
-      <div class="hud">
-        <div class="pill" id="scorePill">
-          <svg class="icon-svg"><use href="#ic-bow"/></svg>
-          <div>
-            <span class="label">Score</span>
-            <span class="value" id="scoreDisplay">0</span>
-            <span class="best-line" id="bestLine">Best · 0</span>
+      <div class="game-toolbar">
+        <div class="hud">
+          <div class="pill" id="scorePill">
+            <svg class="icon-svg"><use href="#ic-bow"/></svg>
+            <div>
+              <span class="label">Score</span>
+              <span class="value" id="scoreDisplay">0</span>
+              <span class="best-line" id="bestLine">Best · 0</span>
+            </div>
+            <span class="combo-badge" id="comboBadge">×2</span>
           </div>
-          <span class="combo-badge" id="comboBadge">×2</span>
-        </div>
-        <div class="pill" id="levelPill">
-          <svg class="icon-svg"><use href="#ic-steps"/></svg>
-          <div><span class="label">Level</span><span class="value" id="levelDisplay">1</span></div>
-        </div>
-        <div class="pill" id="arrowsPill">
-          <svg class="icon-svg"><use href="#ic-quiver"/></svg>
-          <div>
-            <span class="label">Arrows</span>
-            <div class="arrow-pips" id="arrowPips"></div>
+          <div class="pill" id="levelPill">
+            <svg class="icon-svg"><use href="#ic-steps"/></svg>
+            <div><span class="label">Level</span><span class="value" id="levelDisplay">1</span></div>
+          </div>
+          <div class="pill" id="arrowsPill">
+            <svg class="icon-svg"><use href="#ic-quiver"/></svg>
+            <div>
+              <span class="label">Arrows</span>
+              <div class="arrow-pips" id="arrowPips"></div>
+            </div>
           </div>
         </div>
+
+        <div class="audio-controls">
+          <button class="sound-btn" id="soundBtn" aria-label="Toggle sound effects" title="Sound effects on/off">
+            <svg class="icon-svg" id="soundIconOn"><use href="#ic-sound-on"/></svg>
+            <svg class="icon-svg" id="soundIconOff" style="display:none"><use href="#ic-sound-off"/></svg>
+          </button>
+          <button class="sound-btn" id="musicBtn" aria-label="Toggle background music" title="Background music on/off">
+            <svg class="icon-svg" id="musicIconOn"><use href="#ic-music-on"/></svg>
+            <svg class="icon-svg" id="musicIconOff" style="display:none"><use href="#ic-music-off"/></svg>
+          </button>
+        </div>
       </div>
 
-      <div class="audio-controls">
-        <button class="sound-btn" id="soundBtn" aria-label="Toggle sound effects" title="Sound effects on/off">
-          <svg class="icon-svg" id="soundIconOn"><use href="#ic-sound-on"/></svg>
-          <svg class="icon-svg" id="soundIconOff" style="display:none"><use href="#ic-sound-off"/></svg>
-        </button>
-        <button class="sound-btn" id="musicBtn" aria-label="Toggle background music" title="Background music on/off">
-          <svg class="icon-svg" id="musicIconOn"><use href="#ic-music-on"/></svg>
-          <svg class="icon-svg" id="musicIconOff" style="display:none"><use href="#ic-music-off"/></svg>
-        </button>
-      </div>
+      <div class="canvas-frame">
+        <div class="flash" id="flashEl"></div>
 
-      <div class="flash" id="flashEl"></div>
+        <div class="level-banner" id="levelBanner">
+          <div class="rule"></div>
+          <div class="small">Level Cleared</div>
+          <div class="big" id="levelBannerBig">Level 2</div>
+          <div class="rule"></div>
+        </div>
 
-      <div class="level-banner" id="levelBanner">
-        <div class="rule"></div>
-        <div class="small">Level Cleared</div>
-        <div class="big" id="levelBannerBig">Level 2</div>
-        <div class="rule"></div>
-      </div>
+        <canvas id="gameCanvas" width="760" height="560"></canvas>
 
-      <canvas id="gameCanvas" width="760" height="560"></canvas>
-
-      <div class="draw-strength" id="drawStrength">
-        <span class="label" id="drawLabel">Draw Strength</span>
-        <div class="track"><div class="fill" id="drawFill"></div></div>
+        <div class="draw-strength" id="drawStrength">
+          <span class="label" id="drawLabel">Draw Strength</span>
+          <div class="track"><div class="fill" id="drawFill"></div></div>
+        </div>
       </div>
 
       <div class="modal-veil" id="modalVeil">
@@ -998,6 +1523,7 @@
             <span class="txt" id="streakText">Day 1 streak</span>
           </div>
           <div id="modalStats" style="display:none" class="stats-row">
+            <div><span class="num" id="finalAccuracy">0%</span><span class="lbl">Accuracy</span></div>
             <div><span class="num" id="finalScore">0</span><span class="lbl">Final Score</span></div>
             <div><span class="num" id="finalLevel">1</span><span class="lbl">Level Reached</span></div>
             <div><span class="num" id="finalBest">0</span><span class="lbl">Personal Best</span></div>
@@ -1007,13 +1533,17 @@
             Move to aim. Hold to draw the bowstring. Release to loose the arrow.
           </p>
           <div class="lb-entry" id="lbEntry">
-            <div class="lb-entry-label">A score worthy of the record — sign it</div>
+            <div class="lb-entry-label">A run worth remembering — sign your trial log</div>
             <div class="lb-entry-row">
               <input class="lb-name-input" id="lbNameInput" maxlength="16" placeholder="Your name">
               <button class="lb-save-btn" id="lbSaveBtn" type="button">Save</button>
             </div>
           </div>
-          <div class="lb-saved-note" id="lbSavedNote">Saved to the leaderboard.</div>
+          <div class="lb-saved-note" id="lbSavedNote">Saved to your trial log.</div>
+          <button class="modal-share-btn" id="shareResultBtn" type="button">
+            <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="18" cy="5" r="2.6"/><circle cx="6" cy="12" r="2.6"/><circle cx="18" cy="19" r="2.6"/><path d="M8.3 10.7 15.7 6.3M8.3 13.3 15.7 17.7" stroke-linecap="round"/></svg>
+            <span class="msb-label">Share This Result</span>
+          </button>
           <button class="primary" id="startBtn">Begin the Trial</button>
         </div>
       </div>
@@ -1022,7 +1552,9 @@
   </div>
 </div>
 
-<aside class="record-panel" id="recordPanel" aria-label="Trial record">
+<canvas id="shareCardCanvas" width="1080" height="1080" style="display:none" aria-hidden="true"></canvas>
+
+<aside class="record-panel" id="recordPanel" aria-label="Trial record"><span id="trialLogSection"></span>
   <div class="record-heading">
     <svg class="icon-svg"><use href="#ic-medal"/></svg>
     <span>Trial Record</span>
@@ -1052,10 +1584,90 @@
   <div class="record-divider"></div>
   <div class="record-heading small">
     <svg class="icon-svg"><use href="#ic-crown"/></svg>
-    <span>Leaderboard</span>
+    <span>Trial Log</span>
   </div>
+  <div class="record-heading-sub">Your best runs, saved on this device</div>
   <div class="leaderboard-list" id="leaderboardList"></div>
 </aside>
+</div>
+
+<div class="play-extra">
+
+  <section class="how-it-works" id="howItWorksSection" aria-labelledby="hiwHeading">
+    <div class="section-kicker">The Three Motions</div>
+    <h2 class="section-heading" id="hiwHeading">Observe. Align. Strike.</h2>
+    <p class="section-sub">The trial rewards stillness, not speed. Every draw comes down to three motions, repeated until your aim is true.</p>
+    <div class="hiw-grid">
+      <div class="hiw-card">
+        <div class="hiw-num" aria-hidden="true"></div>
+        <h3>Observe</h3>
+        <p>Never look at the fish itself. Find its reflection rippling in the pool below and fix your attention there alone.</p>
+      </div>
+      <div class="hiw-card">
+        <div class="hiw-num" aria-hidden="true"></div>
+        <h3>Align</h3>
+        <p>Move to aim, then hold. The longer you draw the string with a steady hand, the truer the shot — but the fish never stops turning.</p>
+      </div>
+      <div class="hiw-card">
+        <div class="hiw-num" aria-hidden="true"></div>
+        <h3>Strike</h3>
+        <p>Release the instant the reflection lines up. Hesitate and the moment passes; rush and the arrow goes wide.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="reflection-moment" aria-label="The Reflection">
+    <div class="section-kicker">The Reflection</div>
+    <div class="reflection-line" aria-hidden="true"></div>
+    <p class="reflection-quote">You were never asked to see the fish. Only to see truly — through what it <span>reflects</span>.</p>
+    <p class="reflection-mirror" aria-hidden="true">You were never asked to see the fish. Only to see truly — through what it <span>reflects</span>.</p>
+    <div class="reflection-attribution">The Mahabharata</div>
+  </section>
+
+  <section class="legend-section" id="legendSection" aria-labelledby="mythPrimerHeading">
+    <div class="legend-media">
+      <img src="legend-portrait.jpg" alt="A silhouette of Arjuna drawing his bow, rim-lit against a golden temple haze" width="900" height="1124" loading="lazy">
+    </div>
+    <div class="legend-content">
+      <div class="myth-primer-text">
+        <div class="section-kicker">The Legend</div>
+        <h3 id="mythPrimerHeading">Why This Trial Exists</h3>
+        <p>The Mahabharata is one of the great epics of ancient India — the story of a royal family torn apart by a struggle for the throne. Before that struggle begins, a lone archer named Arjuna must pass an impossible test: strike the eye of a spinning fish above a pool, aiming only at its reflection in the water below.</p>
+        <p class="legend-emphasis">Only one achieved it. Arjuna.</p>
+      </div>
+      <div class="myth-primer-cta">
+        <a href="what-is-matsya-vedh.html">Explore the Story<span aria-hidden="true"> →</span></a>
+      </div>
+    </div>
+  </section>
+
+  <section class="faq-section" aria-labelledby="faqHeading">
+    <div class="section-kicker">Before You Draw</div>
+    <h2 class="section-heading" id="faqHeading">Frequently Asked</h2>
+    <div class="faq-list">
+      <details class="faq-item">
+        <summary>Is Matsya-Vedh free to play?</summary>
+        <div class="faq-answer">Yes. No download, no account, no payment — it runs directly in your browser, on desktop or mobile.</div>
+      </details>
+      <details class="faq-item">
+        <summary>Do I need any special skill or archery knowledge?</summary>
+        <div class="faq-answer">No. The trial is easy to understand — move to aim, hold to draw, release to shoot — and gets harder as you climb levels, so anyone can start immediately.</div>
+      </details>
+      <details class="faq-item">
+        <summary>Is this based on a real story?</summary>
+        <div class="faq-answer">Yes. It's drawn from a famous episode in the Mahabharata, one of India's great ancient epics, where the archer Arjuna strikes a spinning fish's eye by aiming only at its reflection. The Full Story tab tells it in ten short chapters.</div>
+      </details>
+      <details class="faq-item">
+        <summary>Is my score saved?</summary>
+        <div class="faq-answer">Your personal best, level record, and achievements are saved in your own browser on this device, so they'll be waiting for you next time you visit.</div>
+      </details>
+      <details class="faq-item">
+        <summary>Does it work well on mobile?</summary>
+        <div class="faq-answer">Yes — the game is fully playable with touch: tap and hold on the arena to draw, release to shoot.</div>
+      </details>
+    </div>
+  </section>
+
 </div>
 </div>
 
@@ -1270,6 +1882,54 @@
   btnPlay.addEventListener('click', showPlay);
   btnStory.addEventListener('click', showStory);
   if (storyPlayBtn) storyPlayBtn.addEventListener('click', showPlay);
+
+  const heroStoryCta = document.getElementById('heroStoryCta');
+  if (heroStoryCta) heroStoryCta.addEventListener('click', showStory);
+
+  const heroPlayBtn = document.getElementById('heroPlayBtn');
+  if (heroPlayBtn) heroPlayBtn.addEventListener('click', () => {
+    const stage = document.querySelector('.stage-wrap');
+    if (stage) stage.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  });
+})();
+
+// ---------- Light / dark theme toggle ----------
+(function() {
+  const btn = document.getElementById('themeToggle');
+  const iconSun = document.getElementById('themeIconSun');
+  const iconMoon = document.getElementById('themeIconMoon');
+  if (!btn) return;
+
+  function applyIcon(theme) {
+    const isLight = theme === 'light';
+    if (iconSun) iconSun.style.display = isLight ? 'none' : '';
+    if (iconMoon) iconMoon.style.display = isLight ? '' : 'none';
+    const label = isLight ? 'Switch to dark theme' : 'Switch to light theme';
+    btn.setAttribute('aria-label', label);
+    btn.setAttribute('title', label);
+  }
+
+  applyIcon(document.documentElement.getAttribute('data-theme') || 'dark');
+
+  btn.addEventListener('click', () => {
+    const current = document.documentElement.getAttribute('data-theme') === 'light' ? 'light' : 'dark';
+    const next = current === 'light' ? 'dark' : 'light';
+    document.documentElement.setAttribute('data-theme', next);
+    applyIcon(next);
+    try { localStorage.setItem('matsyaVedhTheme', next); } catch (e) {}
+  });
+})();
+
+// ---------- Nav: intensify on scroll ----------
+(function() {
+  const header = document.querySelector('.site-header');
+  if (!header) return;
+  function onScroll() {
+    if (window.scrollY > 12) header.classList.add('is-scrolled');
+    else header.classList.remove('is-scrolled');
+  }
+  onScroll();
+  window.addEventListener('scroll', onScroll, { passive: true });
 })();
 
 // ---------- Old #blogN deep-link redirect ----------
@@ -1383,7 +2043,20 @@
 (function() {
   const canvas = document.getElementById('gameCanvas');
   const ctx = canvas.getContext('2d');
+  /* ---------- Crisp rendering: back the canvas with real device pixels ----------
+     All gameplay code below works in a fixed LOGICAL 760x560 coordinate space
+     (W/H). We size the actual backing store to that space times devicePixelRatio,
+     then scale the context once so every existing draw call stays correct while
+     rendering at full display sharpness on retina/high-DPI screens. Capped at 3x
+     so very high-DPR phones don't pay for pixels nobody can see. */
   const W = canvas.width, H = canvas.height;
+  const DPR = Math.min(window.devicePixelRatio || 1, 3);
+  const DEV_W = Math.round(W * DPR), DEV_H = Math.round(H * DPR);
+  canvas.width = DEV_W;
+  canvas.height = DEV_H;
+  ctx.scale(DPR, DPR);
+  ctx.imageSmoothingEnabled = true;
+  ctx.imageSmoothingQuality = 'high';
   const ARENA_H = 430;
   const WATER_H = H - ARENA_H;
 
@@ -1391,6 +2064,55 @@
   reflectBuffer.width = W;
   reflectBuffer.height = ARENA_H;
   const rctx = reflectBuffer.getContext('2d');
+
+  /* Photoreal sprite set -- replaces the vector-drawn fish/archer with the
+     generated character art (base image + half-draw/full-draw crossfade
+     poses tied to bow-pull strength). Loaded async; every draw call below
+     guards on `.complete` so the vector fallback silently continues to
+     render until each image is ready, and the page never blocks on load. */
+  function loadSprite(src) { const img = new Image(); img.src = src; return img; }
+  function loadSpriteSeq(prefix, count) {
+    const arr = [];
+    for (let i = 1; i <= count; i++) arr.push(loadSprite(`assets/sprites/frames/${prefix}_${i}.webp`));
+    return arr;
+  }
+  /* Narrow/tall viewports (phones) show a hard-cropped slice of the wide
+     desktop temple photo -- object-fit:cover chews into the side pillars
+     to fill the taller box. A dedicated portrait-composed photo keeps the
+     scene intact instead, loaded only on mobile so desktop never pays for
+     the extra download. */
+  const IS_MOBILE_VIEWPORT = window.matchMedia && window.matchMedia('(max-width: 760px)').matches;
+  const SPR = {
+    fish: loadSprite('assets/sprites/fish.webp'),
+    archerIdle: loadSprite('assets/sprites/archer_idle.webp'),
+    archerHalf: loadSprite('assets/sprites/archer_half_draw.webp'),
+    archerFull: loadSprite('assets/sprites/archer_full_draw.webp'),
+    temple: loadSprite(IS_MOBILE_VIEWPORT ? 'assets/sprites/temple_mobile.webp' : 'assets/sprites/temple_bg.webp')
+  };
+  /* Frame-by-frame archer animation -- a real sequence per motion (breathing
+     idle loop, the full draw pull, the release snap, and a subtle hold-wobble
+     at full draw) rather than a 3-pose crossfade. Falls back to the original
+     idle/half/full crossfade automatically if any frame fails to load, via
+     spriteReady() guards at draw time. */
+  const ARCHER_FRAMES = {
+    breathe: loadSpriteSeq('archer_breathe', 6),
+    draw: loadSpriteSeq('archer_draw', 8),
+    release: loadSpriteSeq('archer_release', 4),
+    wobble: loadSpriteSeq('archer_wobble', 4)
+  };
+  function spriteReady(img) { return img && img.complete && img.naturalWidth > 0; }
+  function frameSeqReady(seq) { return seq && seq.length > 0 && seq.every(spriteReady); }
+  /* Normalized (0-1) eye position within the fish sprite, measured against
+     the trimmed artwork -- keeps the invisible hit-circle glued to the
+     golden fish's actual painted eye instead of a generic ellipse offset. */
+  const FISH_EYE_FRAC = { x: 0.897, y: 0.446 };
+  function fishDisplaySize(scale) {
+    const s = scale / 74;
+    const w = 88 * s;
+    const img = SPR.fish;
+    const aspect = spriteReady(img) ? img.naturalHeight / img.naturalWidth : (703 / 1100);
+    return { w, h: w * aspect };
+  }
 
   const scoreDisplay = document.getElementById('scoreDisplay');
   const levelDisplay = document.getElementById('levelDisplay');
@@ -1426,6 +2148,7 @@
   const streakRow = document.getElementById('streakRow');
   const streakText = document.getElementById('streakText');
   const finalBestEl = document.getElementById('finalBest');
+  const finalAccuracyEl = document.getElementById('finalAccuracy');
   const rpBest = document.getElementById('rpBest');
   const rpLevel = document.getElementById('rpLevel');
   const rpCombo = document.getElementById('rpCombo');
@@ -1438,6 +2161,8 @@
   const lbNameInput = document.getElementById('lbNameInput');
   const lbSaveBtn = document.getElementById('lbSaveBtn');
   const lbSavedNote = document.getElementById('lbSavedNote');
+  const shareResultBtn = document.getElementById('shareResultBtn');
+  const shareCardCanvas = document.getElementById('shareCardCanvas');
 
   let score = 0, level = 1, arrowsLeft = 5, maxArrows = 5;
   let gameActive = false;
@@ -1446,11 +2171,12 @@
   let lastPull = 0;
   let combo = 0;
   let hitThisGame = false;
+  let shotsThisTrial = 0, hitsThisTrial = 0;
 
   /* ---------- Persistence: high score, streak, achievements ---------- */
   const SAVE_KEY = 'matsyaVedhSave_v1';
   function defaultSave() {
-    return { highScore: 0, bestLevel: 1, bestCombo: 0, gamesPlayed: 0, totalHits: 0, streakDays: 0, lastPlayedDate: null, achievements: [], leaderboard: [], playerName: '' };
+    return { highScore: 0, bestLevel: 1, bestCombo: 0, gamesPlayed: 0, totalHits: 0, totalShots: 0, streakDays: 0, bestStreak: 0, lastPlayedDate: null, achievements: [], leaderboard: [], playerName: '' };
   }
   function loadSave() {
     try {
@@ -1463,6 +2189,7 @@
   function persistSave() {
     try { localStorage.setItem(SAVE_KEY, JSON.stringify(save)); } catch (e) {}
     if (typeof renderRecordPanel === 'function') renderRecordPanel();
+    if (typeof renderHeroStats === 'function') renderHeroStats();
   }
   function dateKey(d) { return d.getFullYear() + '-' + (d.getMonth()+1) + '-' + d.getDate(); }
   function bumpStreak() {
@@ -1470,6 +2197,7 @@
     if (save.lastPlayedDate === today) return;
     const y = new Date(); y.setDate(y.getDate() - 1);
     save.streakDays = (save.lastPlayedDate === dateKey(y)) ? save.streakDays + 1 : 1;
+    if (save.streakDays > (save.bestStreak || 0)) save.bestStreak = save.streakDays;
     save.lastPlayedDate = today;
     persistSave();
   }
@@ -1536,9 +2264,44 @@
   const bowX = W/2, bowY = ARENA_H - 34;
   let fishAngle = 0;
   let fishSpeed = 0.018;
-  const fishCenterX = W/2, fishCenterY = 168;
-  const fishRadiusX = 210, fishRadiusY = 26;
+  const fishCenterX = W/2, fishCenterY = 92;
+  const fishRadiusX = 210, fishRadiusY = 22;
   let fishSize = 74;
+
+  /* ---------- Cinematic grade pass: vignette + film grain ----------
+     Built once and reused every frame (cheap: a gradient fill + a tiled
+     pattern fill) so the "premium footage" texture costs nothing in the
+     hot loop. Kept extremely subtle per spec: texture, not noise -- must
+     never obscure the HUD, the eye target or the reflection. */
+  const vignetteGrad = ctx.createRadialGradient(W/2, H*0.42, H*0.15, W/2, H*0.42, H*0.85);
+  vignetteGrad.addColorStop(0, 'rgba(0,0,0,0)');
+  vignetteGrad.addColorStop(0.75, 'rgba(0,0,0,0)');
+  vignetteGrad.addColorStop(1, 'rgba(0,0,0,0.38)');
+
+  const grainCanvas = document.createElement('canvas');
+  grainCanvas.width = 96; grainCanvas.height = 96;
+  (function buildGrain() {
+    const gctx = grainCanvas.getContext('2d');
+    const imgData = gctx.createImageData(96, 96);
+    for (let i = 0; i < imgData.data.length; i += 4) {
+      const v = 128 + (Math.random() - 0.5) * 255;
+      imgData.data[i] = imgData.data[i+1] = imgData.data[i+2] = v;
+      imgData.data[i+3] = 255;
+    }
+    gctx.putImageData(imgData, 0, 0);
+  })();
+  const grainPattern = ctx.createPattern(grainCanvas, 'repeat');
+
+  function drawCinematicGrade() {
+    ctx.fillStyle = vignetteGrad;
+    ctx.fillRect(0, 0, W, H);
+    ctx.save();
+    ctx.globalAlpha = 0.035;
+    ctx.globalCompositeOperation = 'overlay';
+    ctx.fillStyle = grainPattern;
+    ctx.fillRect(0, 0, W, H);
+    ctx.restore();
+  }
 
   let flyingArrows = [];
   let particles = [];
@@ -1775,6 +2538,99 @@
     }
     musicTimers.push(setTimeout(() => thump(false), 900));
   }
+  /* Bow-draw tension: a rising creak+hum that tracks the pull, started the
+     instant the pointer goes down and cut short (with a quick fade, never
+     an abrupt stop) on release -- the one piece of "character feel" the
+     game had no audio for once the archer sprite could actually be seen
+     visibly straining against the string. */
+  let drawSoundNodes = null;
+  function startDrawSound() {
+    if (sfxMuted || !audioCtx) return;
+    stopDrawSound();
+    const t = audioCtx.currentTime;
+    const dur = MAX_DRAW_MS / 1000;
+    const o = audioCtx.createOscillator();
+    const g = audioCtx.createGain();
+    o.type = 'sawtooth';
+    o.frequency.setValueAtTime(72, t);
+    o.frequency.linearRampToValueAtTime(240, t + dur);
+    const f = audioCtx.createBiquadFilter();
+    f.type = 'lowpass';
+    f.Q.value = 3;
+    f.frequency.setValueAtTime(500, t);
+    f.frequency.linearRampToValueAtTime(1700, t + dur);
+    g.gain.setValueAtTime(0.0001, t);
+    g.gain.linearRampToValueAtTime(0.045, t + 0.05);
+    g.gain.linearRampToValueAtTime(0.085, t + dur);
+    o.connect(f); f.connect(g); g.connect(audioCtx.destination);
+    o.start(t);
+    drawSoundNodes = { o, g };
+  }
+  function stopDrawSound() {
+    if (!drawSoundNodes || !audioCtx) return;
+    const { o, g } = drawSoundNodes;
+    const t = audioCtx.currentTime;
+    try {
+      g.gain.cancelScheduledValues(t);
+      g.gain.setValueAtTime(g.gain.value, t);
+      g.gain.exponentialRampToValueAtTime(0.0001, t + 0.07);
+      o.stop(t + 0.09);
+    } catch (e) {}
+    drawSoundNodes = null;
+  }
+  /* A very soft filtered-noise inhale/exhale, timed to one full breathing
+     loop of the idle archer animation (see BREATHE_FRAME_MS below) -- quiet
+     enough to read as ambience rather than a sound effect, so it doesn't
+     fight the temple music bed underneath it. */
+  function playBreathe() {
+    if (sfxMuted || !audioCtx) return;
+    const t = audioCtx.currentTime;
+    /* Slower and much quieter than the first pass, with a gentle lowpass
+       instead of a bandpass sweep -- the earlier version's short duration
+       and mid-frequency hump read as a huff/pant rather than calm ambient
+       breathing. This is meant to barely register consciously. */
+    const dur = 2.3;
+    const len = Math.floor(audioCtx.sampleRate * dur);
+    const buffer = audioCtx.createBuffer(1, len, audioCtx.sampleRate);
+    const data = buffer.getChannelData(0);
+    for (let i = 0; i < len; i++) {
+      const phase = i / len;
+      const env = Math.pow(Math.sin(phase * Math.PI), 1.6);
+      data[i] = (Math.random() * 2 - 1) * env;
+    }
+    const noise = audioCtx.createBufferSource();
+    noise.buffer = buffer;
+    const f = audioCtx.createBiquadFilter();
+    f.type = 'lowpass';
+    f.frequency.setValueAtTime(750, t);
+    f.frequency.linearRampToValueAtTime(920, t + dur * 0.5);
+    f.frequency.linearRampToValueAtTime(680, t + dur);
+    f.Q.value = 0.4;
+    const g = audioCtx.createGain();
+    g.gain.setValueAtTime(0.014, t);
+    noise.connect(f); f.connect(g); g.connect(audioCtx.destination);
+    noise.start(t);
+  }
+  function playWhoosh() {
+    if (sfxMuted || !audioCtx) return;
+    const t = audioCtx.currentTime;
+    const len = Math.floor(audioCtx.sampleRate * 0.22);
+    const buffer = audioCtx.createBuffer(1, len, audioCtx.sampleRate);
+    const data = buffer.getChannelData(0);
+    for (let i = 0; i < len; i++) data[i] = (Math.random() * 2 - 1) * (1 - i / len);
+    const noise = audioCtx.createBufferSource();
+    noise.buffer = buffer;
+    const f = audioCtx.createBiquadFilter();
+    f.type = 'bandpass';
+    f.frequency.setValueAtTime(2400, t);
+    f.frequency.exponentialRampToValueAtTime(500, t + 0.2);
+    f.Q.value = 0.9;
+    const g = audioCtx.createGain();
+    g.gain.setValueAtTime(0.15, t);
+    g.gain.exponentialRampToValueAtTime(0.001, t + 0.22);
+    noise.connect(f); f.connect(g); g.connect(audioCtx.destination);
+    noise.start(t);
+  }
   function playTwang() {
     if (sfxMuted || !audioCtx) return;
     const t = audioCtx.currentTime;
@@ -1879,6 +2735,27 @@
 
   function pulse(el) { el.classList.remove('is-pulsing'); void el.offsetWidth; el.classList.add('is-pulsing'); }
 
+  /* Counts a stat up from 0 on the result screen instead of snapping straight
+     to its final value -- a small, tasteful bit of ceremony on a screen the
+     player looks at every single trial. */
+  function animateCount(el, to, opts) {
+    opts = opts || {};
+    const suffix = opts.suffix || '';
+    const duration = opts.duration || 700;
+    if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      el.textContent = to + suffix;
+      return;
+    }
+    const start = performance.now();
+    function tick(now) {
+      const p = Math.min(1, (now - start) / duration);
+      const eased = 1 - Math.pow(1 - p, 3);
+      el.textContent = Math.round(to * eased) + suffix;
+      if (p < 1) requestAnimationFrame(tick);
+    }
+    requestAnimationFrame(tick);
+  }
+
   function renderPips() {
     arrowPips.innerHTML = '';
     for (let i = 0; i < maxArrows; i++) {
@@ -1910,6 +2787,20 @@
     renderLeaderboard();
   }
 
+  function renderHeroStats() {
+    const bestEl = document.getElementById('heroStatBest');
+    if (!bestEl) return;
+    bestEl.textContent = save.highScore;
+    const accEl = document.getElementById('heroStatAccuracy');
+    if (accEl) {
+      accEl.textContent = save.totalShots > 0 ? Math.round((save.totalHits / save.totalShots) * 100) + '%' : '—';
+    }
+    const trialsEl = document.getElementById('heroStatTrials');
+    if (trialsEl) trialsEl.textContent = save.gamesPlayed;
+    const streakEl = document.getElementById('heroStatStreak');
+    if (streakEl) streakEl.textContent = save.bestStreak || 0;
+  }
+
   function escapeHtml(s) {
     return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   }
@@ -1918,7 +2809,7 @@
     if (!leaderboardList) return;
     const lb = save.leaderboard || [];
     if (!lb.length) {
-      leaderboardList.innerHTML = '<div class="lb-empty">No trials recorded yet — be the first.</div>';
+      leaderboardList.innerHTML = '<div class="lb-empty">No trials recorded yet — play to start your log.</div>';
       return;
     }
     leaderboardList.innerHTML = lb.slice(0, 8).map((row, i) => {
@@ -1979,6 +2870,59 @@
   }
 
   function drawBackground() {
+    if (spriteReady(SPR.temple)) { drawBackgroundPhoto(); return; }
+    drawBackgroundVector();
+  }
+  function drawBackgroundPhoto() {
+    /* Real photoreal temple-interior art (the same reference scene the
+       marketing hero uses), cover-fit into the FULL canvas -- not just the
+       gameplay arena above the character's feet. This photo already has
+       generous floor at the bottom of its own frame, so there's no need
+       to crop it to a smaller arena box and separately mirror a copy of
+       it into a lower "floor band" -- that mirrored patchwork is what
+       read as an odd, cut-and-pasted duplicate. One photo, cover-fit to
+       the whole stage, just shows more of its own real floor naturally. */
+    const img = SPR.temple;
+    const scale = Math.max(W / img.naturalWidth, H / img.naturalHeight);
+    const iw = img.naturalWidth * scale, ih = img.naturalHeight * scale;
+    ctx.drawImage(img, (W - iw) / 2, (H - ih) / 2, iw, ih);
+
+    ctx.fillStyle = currentTier.tint;
+    ctx.globalAlpha = 0.05;
+    ctx.fillRect(0, 0, W, H);
+    ctx.globalAlpha = 1;
+
+    const spot = ctx.createRadialGradient(fishCenterX, fishCenterY, 10, fishCenterX, fishCenterY, 240);
+    spot.addColorStop(0, 'rgba(255,220,140,0.14)');
+    spot.addColorStop(0.55, 'rgba(120,95,30,0.05)');
+    spot.addColorStop(1, 'rgba(0,0,0,0)');
+    ctx.fillStyle = spot;
+    ctx.fillRect(0, 0, W, H);
+
+    ctx.strokeStyle = 'rgba(255,225,160,0.35)';
+    ctx.lineWidth = 1.5;
+    ctx.setLineDash([3, 3]);
+    ctx.beginPath(); ctx.moveTo(fishCenterX, 34); ctx.lineTo(fishCenterX, fishCenterY); ctx.stroke();
+    ctx.setLineDash([]);
+
+    ctx.save();
+    ctx.translate(fishCenterX, fishCenterY);
+    ctx.strokeStyle = 'rgba(233,195,73,0.28)';
+    ctx.lineWidth = 1.4;
+    ctx.beginPath();
+    ctx.ellipse(0, 0, fishRadiusX, fishRadiusY, 0, 0, Math.PI * 2);
+    ctx.stroke();
+    for (let s = 0; s < 8; s++) {
+      const a = fishAngle * 0.6 + (s / 8) * Math.PI * 2;
+      ctx.beginPath();
+      ctx.moveTo(0, 0);
+      ctx.lineTo(Math.cos(a) * fishRadiusX, Math.sin(a) * fishRadiusY);
+      ctx.strokeStyle = 'rgba(233,195,73,0.10)';
+      ctx.stroke();
+    }
+    ctx.restore();
+  }
+  function drawBackgroundVector() {
     const skyGrad = ctx.createLinearGradient(0, 0, 0, ARENA_H);
     skyGrad.addColorStop(0, '#1c1c0d');
     skyGrad.addColorStop(0.55, '#131407');
@@ -1993,10 +2937,27 @@
     ctx.fillRect(0, 0, W, ARENA_H);
     ctx.globalAlpha = 1;
 
+    /* Focal spotlight over the fish's orbit: pulls the eye straight to the
+       gameplay target (fish -> reflection -> reticle) per the visual
+       hierarchy the whole scene is built around, and adds contrast so the
+       target reads clearly even after heavy video compression. Background
+       stays hazier at the edges; the gameplay plane stays crisp. */
+    const spot = ctx.createRadialGradient(fishCenterX, fishCenterY, 10, fishCenterX, fishCenterY, 260);
+    spot.addColorStop(0, 'rgba(120,95,30,0.16)');
+    spot.addColorStop(0.55, 'rgba(60,48,16,0.06)');
+    spot.addColorStop(1, 'rgba(0,0,0,0)');
+    ctx.fillStyle = spot;
+    ctx.fillRect(0, 0, W, ARENA_H);
+
+    /* Very subtle parallax on the distant star layer, tied to aim position --
+       just enough to add depth to the scene, never enough to distract from
+       aiming or cause motion sickness. */
+    const parX = Math.max(-4, Math.min(4, (mouseX - bowX) * 0.012));
+    const parY = Math.max(-2, Math.min(2, (mouseY - ARENA_H * 0.5) * 0.006));
     ctx.fillStyle = 'rgba(255,255,255,0.5)';
     for (let i = 0; i < 34; i++) {
-      const sx = (i * 137.5) % W;
-      const sy = (i * 71.3) % (ARENA_H * 0.5);
+      const sx = (i * 137.5) % W + parX;
+      const sy = (i * 71.3) % (ARENA_H * 0.5) + parY;
       const tw = 0.4 + 0.6 * Math.abs(Math.sin(fishAngle * 3 + i));
       ctx.globalAlpha = tw * 0.5;
       ctx.fillRect(sx, sy, 1.4, 1.4);
@@ -2069,6 +3030,14 @@
 
   function fishEyeLocal(scale) {
     const s = scale / 74;
+    if (spriteReady(SPR.fish)) {
+      const d = fishDisplaySize(scale);
+      return {
+        x: (FISH_EYE_FRAC.x - 0.5) * d.w,
+        y: (FISH_EYE_FRAC.y - 0.5) * d.h,
+        r: 8.5 * s
+      };
+    }
     return { x: 24 * s, y: -3 * s, r: 8.5 * s };
   }
 
@@ -2079,30 +3048,81 @@
     ctx.rotate(wiggle);
     const s = scale / 74;
 
-    ctx.fillStyle = 'rgba(0,0,0,0.25)';
-    ctx.beginPath(); ctx.ellipse(2*s, 30*s, 34*s, 6*s, 0, 0, Math.PI*2); ctx.fill();
+    /* Soft contact shadow, feathered instead of a flat ellipse so it reads as
+       cast light rather than a video-game blob. */
+    const shadowGrad = ctx.createRadialGradient(2*s, 30*s, 2*s, 2*s, 30*s, 34*s);
+    shadowGrad.addColorStop(0, 'rgba(0,0,0,0.32)');
+    shadowGrad.addColorStop(1, 'rgba(0,0,0,0)');
+    ctx.fillStyle = shadowGrad;
+    ctx.beginPath(); ctx.ellipse(2*s, 30*s, 34*s, 7*s, 0, 0, Math.PI*2); ctx.fill();
 
-    ctx.fillStyle = '#c9822f';
+    if (spriteReady(SPR.fish)) {
+      const d = fishDisplaySize(scale);
+      ctx.drawImage(SPR.fish, -d.w/2, -d.h/2, d.w, d.h);
+      ctx.restore();
+      const eye = fishEyeLocal(scale);
+      const ex = x + eye.x * Math.cos(wiggle) - eye.y * Math.sin(wiggle);
+      const ey = y + eye.x * Math.sin(wiggle) + eye.y * Math.cos(wiggle);
+      return { eyeX: ex, eyeY: ey, eyeR: eye.r };
+    }
+
+    /* Tail: gradient + a darker trailing edge so it reads as metal catching
+       light rather than a flat silhouette. */
+    const tailGrad = ctx.createLinearGradient(-42*s, -24*s, -66*s, 24*s);
+    tailGrad.addColorStop(0, '#e0a34a');
+    tailGrad.addColorStop(0.6, '#c9822f');
+    tailGrad.addColorStop(1, '#8f5c1c');
+    ctx.fillStyle = tailGrad;
     ctx.beginPath();
     ctx.moveTo(-42 * s, 0);
     ctx.quadraticCurveTo(-58 * s, -20 * s, -66 * s, -24 * s);
     ctx.quadraticCurveTo(-52 * s, 0, -66 * s, 24 * s);
     ctx.quadraticCurveTo(-58 * s, 20 * s, -42 * s, 0);
     ctx.fill();
+    ctx.strokeStyle = 'rgba(60,36,4,0.55)';
+    ctx.lineWidth = 0.8;
+    ctx.stroke();
 
+    /* Body: base metallic-gold gradient (dark underside -> bright upper flank),
+       then a clipped specular pass adds a proper highlight the way brushed gold
+       catches a single strong light source, plus a warm rim light along the
+       top edge so the silhouette reads clearly against the dark temple bg. */
     const bodyGrad = ctx.createLinearGradient(-38*s, -26*s, 38*s, 26*s);
-    bodyGrad.addColorStop(0, '#ffdf8f');
-    bodyGrad.addColorStop(0.55, '#f0ae3f');
-    bodyGrad.addColorStop(1, '#c9822f');
+    bodyGrad.addColorStop(0, '#fff0c4');
+    bodyGrad.addColorStop(0.42, '#f0ae3f');
+    bodyGrad.addColorStop(0.8, '#b9711f');
+    bodyGrad.addColorStop(1, '#7a4813');
     ctx.fillStyle = bodyGrad;
     ctx.beginPath();
     ctx.ellipse(0, 0, 42 * s, 26 * s, 0, 0, Math.PI * 2);
     ctx.fill();
-    ctx.strokeStyle = 'rgba(90,60,10,0.7)';
-    ctx.lineWidth = 1.2;
-    ctx.stroke();
 
-    ctx.strokeStyle = 'rgba(150,90,10,0.35)';
+    ctx.save();
+    ctx.beginPath();
+    ctx.ellipse(0, 0, 42 * s, 26 * s, 0, 0, Math.PI * 2);
+    ctx.clip();
+    const specGrad = ctx.createRadialGradient(-14*s, -14*s, 1*s, -14*s, -14*s, 44*s);
+    specGrad.addColorStop(0, 'rgba(255,252,235,0.85)');
+    specGrad.addColorStop(0.35, 'rgba(255,238,180,0.22)');
+    specGrad.addColorStop(1, 'rgba(255,238,180,0)');
+    ctx.fillStyle = specGrad;
+    ctx.fillRect(-42*s, -26*s, 84*s, 52*s);
+    const underGrad = ctx.createLinearGradient(0, 4*s, 0, 26*s);
+    underGrad.addColorStop(0, 'rgba(40,20,4,0)');
+    underGrad.addColorStop(1, 'rgba(40,20,4,0.45)');
+    ctx.fillStyle = underGrad;
+    ctx.fillRect(-42*s, 4*s, 84*s, 22*s);
+    ctx.restore();
+
+    ctx.strokeStyle = 'rgba(60,36,4,0.75)';
+    ctx.lineWidth = 1.2;
+    ctx.beginPath(); ctx.ellipse(0, 0, 42 * s, 26 * s, 0, 0, Math.PI * 2); ctx.stroke();
+    /* Rim light: bright thin arc along the upper-left edge only. */
+    ctx.strokeStyle = 'rgba(255,244,204,0.65)';
+    ctx.lineWidth = 1.1;
+    ctx.beginPath(); ctx.ellipse(0, 0, 42 * s, 26 * s, 0, Math.PI * 1.08, Math.PI * 1.75); ctx.stroke();
+
+    ctx.strokeStyle = 'rgba(120,70,10,0.4)';
     ctx.lineWidth = 0.8;
     for (let r = -20; r <= 20; r += 8) {
       ctx.beginPath();
@@ -2110,13 +3130,19 @@
       ctx.stroke();
     }
 
-    ctx.fillStyle = '#f6cd70';
+    const finGrad = ctx.createLinearGradient(-2*s, -46*s, 16*s, -22*s);
+    finGrad.addColorStop(0, '#fff0c4');
+    finGrad.addColorStop(1, '#d99a3a');
+    ctx.fillStyle = finGrad;
     ctx.beginPath();
     ctx.moveTo(-2 * s, -22 * s);
     ctx.quadraticCurveTo(6 * s, -46 * s, 16 * s, -22 * s);
     ctx.closePath();
     ctx.fill();
 
+    /* Eye: kept crisp and high-contrast on purpose (white ring / near-black
+       pupil / tight specular dot) — this is the gameplay target, so it must
+       stay unambiguous even after heavy video compression. */
     ctx.strokeStyle = 'rgba(233,195,73,0.9)';
     ctx.lineWidth = 1.4 * s;
     ctx.beginPath();
@@ -2139,7 +3165,216 @@
     return { eyeX: ex, eyeY: ey, eyeR: eye.r };
   }
 
-  function drawArcher() {
+  /* Archer pose crossfade: three photoreal keyframes (idle / half-draw /
+     full-draw) swapped by bow-pull strength and blended over a short window
+     so the switch reads as a fluid draw motion rather than a hard pop --
+     the practical 2D substitute for full skeletal animation. */
+  let archerPose = 'idle';
+  let archerPoseFrom = null;
+  let archerPoseBlend = 1;
+  const ARCHER_POSE_BLEND_MS = 130;
+  /* Which way the archer is turned -- mirrored horizontally about the bow
+     so he visibly faces left or right depending on where the reticle is,
+     instead of always presenting the same fixed side. A dead zone around
+     the bow keeps him from flickering back and forth when the mouse
+     hovers near center. */
+  let archerFacing = 1;
+  const FACING_DEADZONE = 26;
+  function pickArcherPose(pull) {
+    if (pull >= 0.55) return 'archerFull';
+    if (pull > 0.03) return 'archerHalf';
+    return 'archerIdle';
+  }
+  /* Frame-by-frame animation driver (breathing loop / draw pull / release
+     burst / full-draw hold wobble) -- see ARCHER_FRAMES above. Falls back
+     to the 3-pose crossfade (pickArcherPose, right above) while any of the
+     new frame sequences are still loading, so the stage is never blank or
+     half-populated. */
+  const BREATHE_FRAME_MS = 260;
+  const WOBBLE_FRAME_MS = 240;
+  const RELEASE_FRAME_MS = 55;
+  const FULL_HOLD_WOBBLE_DELAY = 260;
+  const FRAME_BLEND_MS = 100;
+  let breatheLoopStart = performance.now();
+  let lastBreatheCycle = -1;
+  let fullHoldSince = 0;
+  let releaseActive = false;
+  let releaseStart = 0;
+  /* Crossfade between whichever two frame images were picked most recently
+     (any sequence, any transition) -- a straight hard-cut between frames,
+     even adjacent ones, reads as a jerky flicker at 60fps. This one blend
+     covers breathing, drawing, release and wobble alike. */
+  let lastPickedImg = null;
+  let framePickBlend = 1;
+  let framePickBlendFrom = null;
+  /* Bounces 0,1,2,...,n-1,n-2,...,1,0,1,... instead of hard-wrapping
+     n-1 -> 0. A straight loop needs frame n-1 and frame 0 to already be
+     near-identical poses to read as smooth -- ours weren't quite, and the
+     wraparound jump was exactly what read as a gasp/pant in the breathing
+     loop. Ping-ponging guarantees every step is between adjacent, already-
+     similar frames, so there's never a jump to disguise. */
+  function pingPongIndex(elapsedMs, frameMs, n) {
+    if (n <= 1) return 0;
+    const period = (n - 1) * 2;
+    const pos = Math.floor(elapsedMs / frameMs) % period;
+    return pos < n ? pos : period - pos;
+  }
+  /* Called from shoot() the instant an arrow looses -- switches the archer
+     into the 4-frame release/follow-through burst no matter what the
+     breathing or draw loop was doing a moment before. */
+  function triggerArcherRelease() {
+    releaseActive = true;
+    releaseStart = performance.now();
+  }
+  function pickArcherFrame(pull) {
+    const now = performance.now();
+    if (releaseActive) {
+      const idx = Math.floor((now - releaseStart) / RELEASE_FRAME_MS);
+      if (idx < ARCHER_FRAMES.release.length) return { seq: ARCHER_FRAMES.release, idx };
+      releaseActive = false;
+      breatheLoopStart = now;
+    }
+    if (isDrawing && pull >= 0.999) {
+      if (!fullHoldSince) fullHoldSince = now;
+      if (now - fullHoldSince > FULL_HOLD_WOBBLE_DELAY) {
+        const idx = pingPongIndex(now - fullHoldSince, WOBBLE_FRAME_MS, ARCHER_FRAMES.wobble.length);
+        return { seq: ARCHER_FRAMES.wobble, idx };
+      }
+    } else {
+      fullHoldSince = 0;
+    }
+    if (isDrawing) {
+      const idx = Math.min(ARCHER_FRAMES.draw.length - 1, Math.floor(pull * (ARCHER_FRAMES.draw.length - 0.001)));
+      return { seq: ARCHER_FRAMES.draw, idx };
+    }
+    /* Idle stance: a single steady frame, not a cycling sequence. Swapping
+       between several breathe-pose images -- even crossfaded, even with
+       every frame cropped to an identical box -- still reads as a subtle
+       "blink" each time the pose art changes underneath the blend, because
+       the drawn silhouette itself (arm/quiver/chest line) shifts, not just
+       its bounding box. The calm, natural-looking idle motion was always
+       the continuous procedural sway/bob/scale below (in drawArcherSprite),
+       not a frame swap -- so idle now holds on one relaxed pose and lets
+       that continuous motion alone carry the "breathing" look. */
+    const elapsed = now - breatheLoopStart;
+    const cycleLen = BREATHE_FRAME_MS * (ARCHER_FRAMES.breathe.length - 1) * 2;
+    const cycleNum = Math.floor(elapsed / cycleLen);
+    if (cycleNum !== lastBreatheCycle && gameActive) {
+      lastBreatheCycle = cycleNum;
+      playBreathe();
+    }
+    return { seq: ARCHER_FRAMES.breathe, idx: 0 };
+  }
+  function drawArcherSprite(pull) {
+    if (mouseX < bowX - FACING_DEADZONE) archerFacing = -1;
+    else if (mouseX > bowX + FACING_DEADZONE) archerFacing = 1;
+
+    const lean = Math.max(-0.12, Math.min(0.12, (mouseX - bowX) / 900));
+    const groundY = ARENA_H - 6;
+    const displayH = ARENA_H * 0.58;
+
+    /* Soft contact shadow at the feet -- without this the cutout sprite
+       just sits on top of the photo with nothing tying it to the ground,
+       which is what reads as "floating" rather than standing in the
+       scene. One feathered ellipse, drawn once (not per crossfade layer)
+       so it doesn't double up during a pose blend. */
+    ctx.save();
+    ctx.translate(bowX, groundY);
+    ctx.scale(archerFacing, 1);
+    const contactShadow = ctx.createRadialGradient(0, 0, 0, 0, 0, displayH * 0.32);
+    contactShadow.addColorStop(0, 'rgba(0,0,0,0.4)');
+    contactShadow.addColorStop(1, 'rgba(0,0,0,0)');
+    ctx.fillStyle = contactShadow;
+    ctx.beginPath();
+    ctx.ellipse(0, 2, displayH * 0.32, displayH * 0.07, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
+
+    /* Idle "alive" motion -- a slow breathing bob/scale and a gentle sway,
+       layered on top of the aim-lean so the character is never perfectly
+       static even when the mouse holds still. Subtle by design: this is a
+       flat sprite, not a rig, so the goal is a believable amount of life
+       rather than full limb articulation. Faded out as the draw deepens:
+       the half/full-draw art is already a dynamic mid-action pose (weight
+       forward, back heel lifted), so layering calm idle breathing on top
+       of it reads as a glitch rather than life -- only the relaxed idle
+       stance gets the full sway. */
+    const idleAmt = 1 - Math.min(1, pull / 0.35);
+    const t = performance.now();
+    const bob = Math.sin(t / 1400) * 1.4 * idleAmt;
+    const breathe = 1 + Math.sin(t / 1400 + 0.6) * 0.006 * idleAmt;
+    const sway = Math.sin(t / 2600) * 0.012 * idleAmt;
+
+    /* When mirrored for a left-facing aim, the pure horizontal flip carries
+       the art's original weight distribution (built for a right-facing
+       stance) to the other side as-is, which reads as an oddly floating
+       back foot/raised leg rather than a natural mirrored weight shift. A
+       small extra tilt in the mirrored state alone re-grounds it -- purely
+       a visual balance fix, tuned by eye rather than derived from anything
+       in the source art. */
+    const mirrorTilt = archerFacing === -1 ? 0.055 : 0;
+
+    function drawImg(img, alpha) {
+      if (!spriteReady(img) || alpha <= 0) return false;
+      const w = displayH * (img.naturalWidth / img.naturalHeight);
+      ctx.save();
+      ctx.globalAlpha = alpha;
+      ctx.translate(bowX, groundY);
+      ctx.scale(archerFacing, 1);
+      ctx.rotate(lean + sway + mirrorTilt);
+      ctx.scale(1, breathe);
+      ctx.translate(-bowX, -groundY);
+      ctx.translate(0, bob);
+      /* Anchor: feet on the ground line, character horizontally centered
+         a little left of the bow-hand anchor (the art's stance keeps the
+         torso left-of-center with the bow arm reaching right to bowX).
+         The facing scale() above mirrors this automatically when turned. */
+      ctx.drawImage(img, bowX - w * 0.62, groundY - displayH, w, displayH);
+      ctx.restore();
+      return true;
+    }
+
+    let drewAny = false;
+    const framesReady = frameSeqReady(ARCHER_FRAMES.breathe) && frameSeqReady(ARCHER_FRAMES.draw) &&
+      frameSeqReady(ARCHER_FRAMES.release) && frameSeqReady(ARCHER_FRAMES.wobble);
+    if (framesReady) {
+      const pick = pickArcherFrame(pull);
+      const currentImg = pick.seq[pick.idx];
+      if (currentImg !== lastPickedImg) {
+        framePickBlendFrom = lastPickedImg;
+        lastPickedImg = currentImg;
+        framePickBlend = 0;
+      }
+      if (framePickBlend < 1) framePickBlend = Math.min(1, framePickBlend + (16.7 / FRAME_BLEND_MS));
+      if (framePickBlend < 1 && framePickBlendFrom) {
+        drewAny = drawImg(framePickBlendFrom, 1 - framePickBlend) || drewAny;
+      }
+      drewAny = drawImg(currentImg, framePickBlendFrom ? framePickBlend : 1) || drewAny;
+    }
+    if (!drewAny) {
+      /* New frame set still loading (or failed) -- fall back to the
+         original 3-pose crossfade so the stage never sits half-populated. */
+      const target = pickArcherPose(pull);
+      if (target !== archerPose) {
+        archerPoseFrom = archerPose;
+        archerPose = target;
+        archerPoseBlend = 0;
+      }
+      if (archerPoseBlend < 1) archerPoseBlend = Math.min(1, archerPoseBlend + (16.7 / ARCHER_POSE_BLEND_MS));
+      if (archerPoseBlend < 1 && archerPoseFrom) {
+        drewAny = drawImg(SPR[archerPoseFrom], 1 - archerPoseBlend) || drewAny;
+      }
+      drewAny = drawImg(SPR[archerPose], archerPoseFrom ? archerPoseBlend : 1) || drewAny;
+    }
+
+    if (!drewAny) {
+      /* Sprites not loaded yet (or failed) -- fall back to the original
+         vector archer so the game is never left with a blank stage. */
+      drawArcherVector();
+      if (pull > 0) drawArcherFrontArmVector(pull);
+    }
+  }
+  function drawArcherVector() {
     const groundY = ARENA_H - 6;
     const hipY = bowY + 26;
     const shoulderY = bowY - 24;
@@ -2170,7 +3405,7 @@
 
     const garmentGrad = ctx.createLinearGradient(bowX - 20, hipY, bowX + 20, hipY + 30);
     garmentGrad.addColorStop(0, '#e74b38');
-    garmentGrad.addColorStop(1, '#9c2f1f');
+    garmentGrad.addColorStop(1, '#7a2216');
     ctx.fillStyle = garmentGrad;
     ctx.beginPath();
     ctx.moveTo(bowX - 16, hipY - 4);
@@ -2181,8 +3416,9 @@
     ctx.fill();
 
     const torsoGrad = ctx.createLinearGradient(bowX - 16, shoulderY, bowX + 16, hipY);
-    torsoGrad.addColorStop(0, '#d68a4f');
-    torsoGrad.addColorStop(1, '#a8642f');
+    torsoGrad.addColorStop(0, '#e8a260');
+    torsoGrad.addColorStop(0.55, '#c17a3d');
+    torsoGrad.addColorStop(1, '#7a4b21');
     ctx.fillStyle = torsoGrad;
     ctx.beginPath();
     ctx.moveTo(bowX - 13, shoulderY);
@@ -2191,6 +3427,15 @@
     ctx.lineTo(bowX - 15, hipY - 2);
     ctx.closePath();
     ctx.fill();
+    /* Warm rim light along the torso's outer (left) edge -- simulates the
+       temple torchlight catching the silhouette, and keeps the archer
+       readable as a distinct shape against the dark backdrop. */
+    ctx.strokeStyle = 'rgba(255,224,160,0.55)';
+    ctx.lineWidth = 1.4;
+    ctx.beginPath();
+    ctx.moveTo(bowX - 13, shoulderY);
+    ctx.lineTo(bowX - 15, hipY - 2);
+    ctx.stroke();
 
     ctx.strokeStyle = 'rgba(233,195,73,0.85)';
     ctx.lineWidth = 3;
@@ -2247,7 +3492,7 @@
     ctx.restore();
   }
 
-  function drawArcherFrontArm(pull) {
+  function drawArcherFrontArmVector(pull) {
     const shoulderY = bowY - 24;
     ctx.strokeStyle = '#c1873f';
     ctx.lineWidth = 6.5;
@@ -2276,58 +3521,62 @@
     drawLabel.classList.toggle('perfect', inPerfectZone);
     drawLabel.textContent = inPerfectZone ? 'Perfect — Release!' : 'Draw Strength';
 
-    drawArcher();
+    drawArcherSprite(pull);
 
-    ctx.save();
-    ctx.translate(bowX, bowY);
-    ctx.rotate(angle + Math.PI / 2);
+    if (!spriteReady(SPR.archerFull)) {
+      /* Vector bow fallback -- only needed for the brief window before the
+         photoreal sprites finish loading, so the stage is never blank. */
+      ctx.save();
+      ctx.translate(bowX, bowY);
+      ctx.rotate(angle + Math.PI / 2);
 
-    ctx.strokeStyle = '#8a5a2b';
-    ctx.lineWidth = 5;
-    ctx.lineCap = 'round';
-    ctx.beginPath();
-    ctx.arc(0, 0, 36, -Math.PI * 0.46, Math.PI * 0.46);
-    ctx.stroke();
-    ctx.strokeStyle = 'rgba(233,195,73,0.55)';
-    ctx.lineWidth = 1.4;
-    ctx.beginPath();
-    ctx.arc(0, 0, 36, -Math.PI * 0.46, Math.PI * 0.46);
-    ctx.stroke();
-
-    const nockY = -18 - pull * 22;
-    ctx.strokeStyle = '#e8dcc0';
-    ctx.lineWidth = 1.4;
-    ctx.beginPath();
-    ctx.moveTo(36 * Math.cos(-Math.PI * 0.46), 36 * Math.sin(-Math.PI * 0.46));
-    ctx.lineTo(0, nockY);
-    ctx.lineTo(36 * Math.cos(Math.PI * 0.46), 36 * Math.sin(Math.PI * 0.46));
-    ctx.stroke();
-
-    if (arrowsLeft > 0 && flyingArrows.length === 0) {
-      ctx.strokeStyle = '#3a2510';
-      ctx.lineWidth = 2.6;
+      ctx.strokeStyle = '#8a5a2b';
+      ctx.lineWidth = 5;
+      ctx.lineCap = 'round';
       ctx.beginPath();
-      ctx.moveTo(0, nockY);
-      ctx.lineTo(0, nockY - 48);
+      ctx.arc(0, 0, 36, -Math.PI * 0.46, Math.PI * 0.46);
       ctx.stroke();
-      ctx.fillStyle = '#333';
+      ctx.strokeStyle = 'rgba(233,195,73,0.55)';
+      ctx.lineWidth = 1.4;
       ctx.beginPath();
-      ctx.moveTo(0, nockY - 48);
-      ctx.lineTo(-4, nockY - 39);
-      ctx.lineTo(4, nockY - 39);
-      ctx.closePath();
-      ctx.fill();
-      ctx.strokeStyle = '#c9822f';
-      ctx.lineWidth = 1;
-      ctx.beginPath();
-      ctx.moveTo(-3, nockY - 4); ctx.lineTo(-7, nockY + 2);
-      ctx.moveTo(3, nockY - 4); ctx.lineTo(7, nockY + 2);
+      ctx.arc(0, 0, 36, -Math.PI * 0.46, Math.PI * 0.46);
       ctx.stroke();
+
+      const nockY = -18 - pull * 22;
+      ctx.strokeStyle = '#e8dcc0';
+      ctx.lineWidth = 1.4;
+      ctx.beginPath();
+      ctx.moveTo(36 * Math.cos(-Math.PI * 0.46), 36 * Math.sin(-Math.PI * 0.46));
+      ctx.lineTo(0, nockY);
+      ctx.lineTo(36 * Math.cos(Math.PI * 0.46), 36 * Math.sin(Math.PI * 0.46));
+      ctx.stroke();
+
+      if (arrowsLeft > 0 && flyingArrows.length === 0) {
+        ctx.strokeStyle = '#3a2510';
+        ctx.lineWidth = 2.6;
+        ctx.beginPath();
+        ctx.moveTo(0, nockY);
+        ctx.lineTo(0, nockY - 48);
+        ctx.stroke();
+        ctx.fillStyle = '#333';
+        ctx.beginPath();
+        ctx.moveTo(0, nockY - 48);
+        ctx.lineTo(-4, nockY - 39);
+        ctx.lineTo(4, nockY - 39);
+        ctx.closePath();
+        ctx.fill();
+        ctx.strokeStyle = '#c9822f';
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(-3, nockY - 4); ctx.lineTo(-7, nockY + 2);
+        ctx.moveTo(3, nockY - 4); ctx.lineTo(7, nockY + 2);
+        ctx.stroke();
+      }
+
+      ctx.restore();
+
+      drawArcherFrontArmVector(pull);
     }
-
-    ctx.restore();
-
-    drawArcherFrontArm(pull);
 
     if (hasPointer) {
       ctx.save();
@@ -2335,8 +3584,14 @@
       ctx.setLineDash([3, 7]);
       ctx.lineWidth = 1;
       ctx.beginPath();
-      ctx.moveTo(bowX, bowY - 60);
-      ctx.lineTo(bowX + dx * 4, bowY + dy * 4);
+      /* Matches shoot()'s actual arrow math exactly (same originY, same
+         dx/dy formula) rather than an approximate parallel line -- so this
+         guide always points precisely along the path the arrow will fly,
+         not just from a visually-close origin. */
+      const aimOriginY = bowY - 66;
+      const aimDx = mouseX - bowX, aimDy = mouseY - aimOriginY;
+      ctx.moveTo(bowX, aimOriginY);
+      ctx.lineTo(bowX + aimDx * 4, aimOriginY + aimDy * 4);
       ctx.stroke();
       ctx.restore();
 
@@ -2368,9 +3623,13 @@
       perfect
     });
     arrowsLeft--;
+    shotsThisTrial++;
+    save.totalShots = (save.totalShots || 0) + 1;
     updateHUD();
     pulse(arrowsPill);
     if (perfect) playPerfectTwang(); else playTwang();
+    playWhoosh();
+    triggerArcherRelease();
   }
 
   function spawnParticles(x, y, color, count) {
@@ -2402,6 +3661,15 @@
     levelBanner.classList.remove('show'); void levelBanner.offsetWidth; levelBanner.classList.add('show');
   }
 
+  /* Shortest distance from point (px,py) to the segment (x1,y1)-(x2,y2). */
+  function pointSegmentDist(px, py, x1, y1, x2, y2) {
+    const dx = x2 - x1, dy = y2 - y1;
+    const lenSq = dx * dx + dy * dy;
+    let t = lenSq > 0 ? ((px - x1) * dx + (py - y1) * dy) / lenSq : 0;
+    t = Math.max(0, Math.min(1, t));
+    const cx = x1 + t * dx, cy = y1 + t * dy;
+    return Math.hypot(px - cx, py - cy);
+  }
   function checkArrows() {
     const fpos = getFishPos();
     const wiggle = Math.sin(fishAngle * 4.2) * 0.10;
@@ -2409,28 +3677,51 @@
     const eyeX = fpos.x + eyeLocal.x * Math.cos(wiggle) - eyeLocal.y * Math.sin(wiggle);
     const eyeY = fpos.y + eyeLocal.x * Math.sin(wiggle) + eyeLocal.y * Math.cos(wiggle);
 
+    function registerBodyMiss(a) {
+      spawnParticles(a.x, a.y, '#e74b38', 12);
+      showFloatingText(combo >= 2 ? 'Combo Broken' : 'Miss', fpos.x, fpos.y - 60, '#e74b38', false);
+      combo = 0;
+      updateComboBadge();
+      triggerFlash(a.x, a.y, true);
+      triggerShakeMiss();
+      vibrate(10);
+      playThud();
+      checkOutOfArrows();
+    }
+
     for (let i = flyingArrows.length - 1; i >= 0; i--) {
       const a = flyingArrows[i];
+      const prevX = a.x, prevY = a.y;
       a.x += a.vx; a.y += a.vy;
       a.angle = Math.atan2(a.vy, a.vx);
 
-      if (a.x < -30 || a.x > W + 30 || a.y > ARENA_H + 10) {
-        flyingArrows.splice(i, 1);
-        if (combo >= 2) { combo = 0; updateComboBadge(); }
-        checkOutOfArrows();
-        continue;
-      }
-
-      const dxE = a.x - eyeX, dyE = a.y - eyeY;
-      const distToEye = Math.sqrt(dxE*dxE + dyE*dyE);
+      /* Swept (segment) collision rather than a point-in-time check: at
+         20px/frame the arrow can step clean over the eye's small hit
+         window in a single frame -- especially now that the eye sits
+         near the photoreal fish's actual painted position rather than a
+         generic ellipse offset. Testing the whole prev->current segment
+         against the eye point catches the true closest approach instead
+         of only the frame's landing spot. */
+      const distToEye = pointSegmentDist(eyeX, eyeY, prevX, prevY, a.x, a.y);
 
       const bdx = a.x - fpos.x, bdy = a.y - fpos.y;
       const rX = 46 * (fishSize/74), rY = 28 * (fishSize/74);
       const bodyHit = (bdx*bdx)/(rX*rX) + (bdy*bdy)/(rY*rY) <= 1;
+      if (bodyHit) a.wasInBody = true;
+
+      const outOfBounds = a.x < -30 || a.x > W + 30 || a.y > ARENA_H + 10 || a.y < -30;
+      if (outOfBounds) {
+        flyingArrows.splice(i, 1);
+        if (a.wasInBody) registerBodyMiss(a);
+        else if (combo >= 2) { combo = 0; updateComboBadge(); }
+        checkOutOfArrows();
+        continue;
+      }
 
       if (distToEye <= eyeLocal.r + 6) {
         combo++;
         hitThisGame = true;
+        hitsThisTrial++;
         save.totalHits++;
         if (combo > save.bestCombo) save.bestCombo = combo;
         const comboMult = 1 + Math.min(combo - 1, 9) * 0.15;
@@ -2485,17 +3776,13 @@
           if (level >= 30) unlock('level30');
         }, 750);
         return;
-      } else if (bodyHit) {
-        spawnParticles(a.x, a.y, '#e74b38', 12);
+      } else if (a.wasInBody && !bodyHit) {
+        /* Only register the body miss once the arrow has actually exited
+           the fish's hit-ellipse without landing the eye -- while it's
+           still inside, later frames get a fair chance at the eye check
+           above first (see the swept-collision note). */
         flyingArrows.splice(i, 1);
-        showFloatingText(combo >= 2 ? 'Combo Broken' : 'Miss', fpos.x, fpos.y - 60, '#e74b38', false);
-        combo = 0;
-        updateComboBadge();
-        triggerFlash(a.x, a.y, true);
-        triggerShakeMiss();
-        vibrate(10);
-        playThud();
-        checkOutOfArrows();
+        registerBodyMiss(a);
       }
     }
   }
@@ -2517,16 +3804,27 @@
     persistSave();
     if (isNewHighAtEnd && score > 0) unlock('high_score');
 
-    modalTitle.textContent = 'Trial Ended';
-    modalTagline.textContent = score > 0 ? 'Well drawn, archer' : 'Try again';
+    const accuracyPct = shotsThisTrial > 0 ? Math.round((hitsThisTrial / shotsThisTrial) * 100) : 0;
+
+    modalTitle.textContent = 'Trial Complete';
+    if (score === 0) {
+      modalTagline.textContent = 'The Reflection Eluded You';
+    } else if (accuracyPct >= 85) {
+      modalTagline.textContent = 'Exceptional Focus';
+    } else if (accuracyPct >= 60) {
+      modalTagline.textContent = 'A Steady Aim';
+    } else {
+      modalTagline.textContent = 'The Reflection Wavered';
+    }
     modalStats.style.display = 'flex';
-    finalScoreEl.textContent = score;
-    finalLevelEl.textContent = level;
+    animateCount(finalAccuracyEl, accuracyPct, { suffix: '%' });
+    animateCount(finalScoreEl, score, { duration: 900 });
+    animateCount(finalLevelEl, level, { duration: 500 });
     finalBestEl.textContent = save.highScore;
     modalText.innerHTML = score >= 400
       ? 'You held Arjuna\'s focus — eyes fixed on the reflection, mind fixed on the mark.'
       : 'Patience and a steady eye make the marksman. Try again.';
-    startBtn.textContent = 'Try Again';
+    startBtn.textContent = 'Play Again';
     if (save.streakDays >= 2) {
       streakRow.style.display = 'inline-flex';
       streakText.textContent = 'Day ' + save.streakDays + ' streak — come back tomorrow';
@@ -2534,6 +3832,11 @@
       streakRow.style.display = 'none';
     }
     refreshBestLine();
+    shareResultBtn.classList.add('show');
+    shareResultBtn.dataset.score = score;
+    shareResultBtn.dataset.accuracy = accuracyPct;
+    shareResultBtn.dataset.level = level;
+    shareResultBtn.dataset.tagline = modalTagline.textContent;
     lbSavedNote.classList.remove('show');
     if (qualifiesForLeaderboard(score)) {
       lbEntry.classList.add('show');
@@ -2559,43 +3862,160 @@
   lbSaveBtn.addEventListener('click', saveLeaderboardEntry);
   lbNameInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') saveLeaderboardEntry(); });
 
+  /* ---------- Result share-card: draws a branded PNG of the just-finished
+     trial (accuracy / score / level) and hands it to the OS share sheet on
+     mobile, or downloads it as an image everywhere else. Entirely
+     client-side -- there is no server to post this to. ---------- */
+  async function generateShareCard() {
+    const w = shareCardCanvas.width, h = shareCardCanvas.height;
+    const ctx = shareCardCanvas.getContext('2d');
+    try { if (document.fonts && document.fonts.ready) await document.fonts.ready; } catch (e) {}
+
+    const bg = ctx.createLinearGradient(0, 0, 0, h);
+    bg.addColorStop(0, '#1c1c0d'); bg.addColorStop(0.55, '#131407'); bg.addColorStop(1, '#0a0a04');
+    ctx.fillStyle = bg; ctx.fillRect(0, 0, w, h);
+
+    const vg = ctx.createRadialGradient(w/2, h*0.42, h*0.12, w/2, h*0.42, h*0.75);
+    vg.addColorStop(0, 'rgba(0,0,0,0)'); vg.addColorStop(1, 'rgba(0,0,0,0.55)');
+    ctx.fillStyle = vg; ctx.fillRect(0, 0, w, h);
+
+    ctx.strokeStyle = 'rgba(233,195,73,0.5)'; ctx.lineWidth = 2;
+    const pad = 46, cl = 44;
+    [[pad,pad,1,1],[w-pad,pad,-1,1],[pad,h-pad,1,-1],[w-pad,h-pad,-1,-1]].forEach(([x,y,dx,dy]) => {
+      ctx.beginPath(); ctx.moveTo(x, y + cl*dy); ctx.lineTo(x, y); ctx.lineTo(x + cl*dx, y); ctx.stroke();
+    });
+
+    ctx.textAlign = 'center';
+    ctx.fillStyle = '#e74b38';
+    ctx.font = '600 20px "Segoe UI", Arial, sans-serif';
+    ctx.fillText('A  T R I A L  F R O M  T H E  M A H A B H A R A T A', w/2, 150);
+
+    ctx.fillStyle = '#f6dd8a';
+    ctx.font = '700 66px Cinzel, Georgia, serif';
+    ctx.shadowColor = 'rgba(233,195,73,0.35)'; ctx.shadowBlur = 26;
+    ctx.fillText('MATSYA-VEDH', w/2, 242);
+    ctx.shadowBlur = 0;
+
+    const cx = w/2, cy = 400, R = 68;
+    ctx.strokeStyle = '#e9c349'; ctx.lineWidth = 4;
+    ctx.beginPath(); ctx.arc(cx, cy, R, 0, Math.PI*2); ctx.stroke();
+    ctx.fillStyle = '#e9c349';
+    ctx.beginPath(); ctx.arc(cx, cy, 9, 0, Math.PI*2); ctx.fill();
+    ctx.lineWidth = 3;
+    ctx.beginPath(); ctx.moveTo(cx - R - 62, cy); ctx.lineTo(cx - R - 10, cy); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(cx + R + 10, cy); ctx.lineTo(cx + R + 62, cy); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(cx + R + 62, cy); ctx.lineTo(cx + R + 40, cy - 13); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(cx + R + 62, cy); ctx.lineTo(cx + R + 40, cy + 13); ctx.stroke();
+
+    ctx.fillStyle = '#e4e4cc';
+    ctx.font = 'italic 500 36px "Cormorant Garamond", Georgia, serif';
+    ctx.fillText(shareResultBtn.dataset.tagline || 'Trial Complete', w/2, 544);
+
+    const stats = [
+      { label: 'ACCURACY', value: (shareResultBtn.dataset.accuracy || '0') + '%' },
+      { label: 'SCORE', value: shareResultBtn.dataset.score || '0' },
+      { label: 'LEVEL', value: shareResultBtn.dataset.level || '1' },
+    ];
+    const colW = w / 3;
+    stats.forEach((s, i) => {
+      const x = colW * i + colW / 2;
+      ctx.fillStyle = '#f6dd8a';
+      ctx.font = '700 58px Cinzel, Georgia, serif';
+      ctx.fillText(s.value, x, 690);
+      ctx.fillStyle = '#af8d11';
+      ctx.font = '600 16px "Segoe UI", Arial, sans-serif';
+      ctx.fillText(s.label, x, 722);
+    });
+
+    ctx.strokeStyle = 'rgba(233,195,73,0.3)'; ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(w/2 - 90, 768); ctx.lineTo(w/2 + 90, 768); ctx.stroke();
+
+    ctx.fillStyle = '#c4c6ce';
+    ctx.font = '15px "Segoe UI", Arial, sans-serif';
+    ctx.fillText('Aim only at the reflection, never the target', w/2, 806);
+    ctx.fillStyle = '#e9c349';
+    ctx.font = '600 21px "Segoe UI", Arial, sans-serif';
+    ctx.fillText('aimfisheye.com', w/2, 844);
+
+    shareCardCanvas.toBlob(async (blob) => {
+      if (!blob) return;
+      const label = shareResultBtn.querySelector('.msb-label');
+      const origLabel = label ? label.textContent : '';
+      const flashLabel = (text) => {
+        if (!label) return;
+        label.textContent = text;
+        setTimeout(() => { label.textContent = origLabel; }, 1800);
+      };
+      let file = null;
+      try { file = new File([blob], 'matsya-vedh-result.png', { type: 'image/png' }); } catch (e) {}
+      if (file && navigator.canShare && navigator.canShare({ files: [file] })) {
+        try {
+          await navigator.share({
+            files: [file],
+            title: 'Matsya-Vedh',
+            text: 'I scored ' + (shareResultBtn.dataset.score || '0') + ' in Matsya-Vedh — can you beat my aim?',
+          });
+          return;
+        } catch (e) { /* user cancelled or share failed -- fall back to download */ }
+      }
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = 'matsya-vedh-result.png';
+      document.body.appendChild(a); a.click(); document.body.removeChild(a);
+      setTimeout(() => URL.revokeObjectURL(url), 4000);
+      flashLabel('Image Saved');
+    }, 'image/png');
+  }
+  shareResultBtn.addEventListener('click', generateShareCard);
+
+  /* The temple background photo depicts its own pool with baked-in
+     stone-ledge reflections -- the game's reflection draws directly into
+     THAT pool -- a mirrored, alpha-blended echo of the fish only,
+     positioned and clipped to sit inside it. The background is now one
+     single photo cover-fit across the whole canvas (see drawBackgroundPhoto),
+     so there's no separate mirrored floor band any more -- these bounds are
+     just the measured pixel position of the pool inside each device's own
+     background photo. Desktop and mobile use different source photos with
+     different crops, so the bounds differ per device. */
+  const POOL_TOP = IS_MOBILE_VIEWPORT ? 127 : 231;
+  const POOL_BOTTOM = IS_MOBILE_VIEWPORT ? 350 : 352;
+  const POOL_MID_Y = POOL_TOP + (POOL_BOTTOM - POOL_TOP) * 0.5;
+  function drawFishReflection(fx, fy, scale) {
+    if (!spriteReady(SPR.fish)) return;
+    const wobbleX = Math.sin(reflectTime * 2.2 + fy * 0.05) * 3;
+    const wiggle = Math.sin(fishAngle * 4.2) * 0.10;
+    /* Bob the reflection's own vertical position with the real fish's
+       up/down orbit motion (fy around fishCenterY), instead of pinning it
+       to a fixed mid-pool spot -- a reflection that never moves while the
+       fish it belongs to visibly does reads as a random decorative blob
+       rather than *that* fish's reflection. Scaled down and clamped so it
+       always stays inside the pool's own measured bounds. */
+    const reflectY = Math.max(POOL_TOP + 14, Math.min(POOL_BOTTOM - 14,
+      POOL_MID_Y + (fy - fishCenterY) * 0.9));
+    ctx.save();
+    ctx.beginPath();
+    ctx.rect(0, POOL_TOP, W, POOL_BOTTOM - POOL_TOP);
+    ctx.clip();
+    ctx.globalAlpha = 0.5;
+    ctx.translate(fx + wobbleX, reflectY);
+    ctx.scale(1, -1);
+    ctx.rotate(wiggle);
+    const d = fishDisplaySize(scale * 0.68);
+    ctx.drawImage(SPR.fish, -d.w / 2, -d.h / 2, d.w, d.h);
+    ctx.restore();
+  }
   function drawReflection() {
     reflectTime += 0.035;
-
-    rctx.clearRect(0, 0, W, ARENA_H);
-    rctx.drawImage(canvas, 0, 0, W, ARENA_H, 0, 0, W, ARENA_H);
-
-    const waterTop = ARENA_H;
-    const sliceH = 2;
-    for (let y = 0; y < WATER_H; y += sliceH) {
-      const t = y / WATER_H;
-      const srcY = (ARENA_H - 1) * (1 - t);
-      const wobble = Math.sin(y * 0.11 + reflectTime * 2.2) * (1.5 + t * 5);
-      ctx.drawImage(reflectBuffer, 0, srcY, W, 2, wobble, waterTop + y, W, sliceH + 1);
-    }
-
-    const tintGrad = ctx.createLinearGradient(0, waterTop, 0, H);
-    tintGrad.addColorStop(0, 'rgba(6,20,25,0.22)');
-    tintGrad.addColorStop(1, 'rgba(2,8,10,0.8)');
-    ctx.fillStyle = tintGrad;
-    ctx.fillRect(0, waterTop, W, WATER_H);
-
     for (let i = ripples.length - 1; i >= 0; i--) {
       const r = ripples[i];
       r.r += 2.4; r.life--;
       if (r.life <= 0) { ripples.splice(i, 1); continue; }
-      ctx.strokeStyle = `rgba(233,195,73,${r.life/40*0.5})`;
-      ctx.lineWidth = 1;
+      ctx.strokeStyle = `rgba(255,238,180,${r.life/40*0.6})`;
+      ctx.lineWidth = 1.2;
       ctx.beginPath();
-      ctx.ellipse(r.x, waterTop + 14, r.r, r.r*0.28, 0, 0, Math.PI*2);
+      ctx.ellipse(r.x, POOL_MID_Y, r.r, r.r*0.28, 0, 0, Math.PI*2);
       ctx.stroke();
     }
-
-    ctx.strokeStyle = 'rgba(233,195,73,0.5)';
-    ctx.lineWidth = 1;
-    ctx.beginPath(); ctx.moveTo(0, waterTop); ctx.lineTo(W, waterTop); ctx.stroke();
-    ctx.fillStyle = 'rgba(233,195,73,0.06)';
-    ctx.fillRect(0, waterTop, W, 3);
   }
 
   function gameLoop() {
@@ -2629,7 +4049,7 @@
       ctx.restore();
     }
 
-    if (!gameActive) drawArcher();
+    if (!gameActive) drawArcherSprite(0);
     if (gameActive) checkArrows();
 
     for (let i = particles.length - 1; i >= 0; i--) {
@@ -2637,8 +4057,14 @@
       p.x += p.vx; p.y += p.vy; p.vy += 0.12; p.life--;
       if (p.life <= 0) { particles.splice(i, 1); continue; }
       ctx.globalAlpha = p.life / p.maxLife;
-      ctx.fillStyle = p.color;
-      ctx.beginPath(); ctx.arc(p.x, p.y, 2.6, 0, Math.PI*2); ctx.fill();
+      /* Soft glow dot instead of a flat circle -- reads as an ember/spark
+         catching light rather than a solid game-particle blob. */
+      const pg = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, 3.2);
+      pg.addColorStop(0, '#fffdf2');
+      pg.addColorStop(0.4, p.color);
+      pg.addColorStop(1, 'rgba(0,0,0,0)');
+      ctx.fillStyle = pg;
+      ctx.beginPath(); ctx.arc(p.x, p.y, 3.2, 0, Math.PI*2); ctx.fill();
       ctx.globalAlpha = 1;
     }
 
@@ -2657,12 +4083,22 @@
     if (gameActive) drawBow();
     else drawStrength.classList.remove('active');
 
+    drawFishReflection(fpos.x, fpos.y, scale);
     drawReflection();
+    drawCinematicGrade();
 
     requestAnimationFrame(gameLoop);
   }
 
-  function setPointerFromEvent(e, rect) {
+  /* On touch, the reticle and aim line are drawn this many logical pixels
+     ABOVE the actual finger position -- otherwise the thumb sits directly
+     on top of the very point it's supposed to be showing, on a small
+     screen that's most of the aim indicator hidden. The shot itself still
+     fires at this same offset point (mouseX/mouseY drive both the drawing
+     AND shoot()'s trajectory math), so what the player sees is exactly
+     where the arrow goes -- just not buried under their own thumb. */
+  const TOUCH_AIM_OFFSET_Y = 78;
+  function setPointerFromEvent(e, rect, isTouch) {
     /* Accounts for CSS object-fit: cover (used on mobile, where the canvas box's
        aspect ratio differs from its internal 760x560 resolution) so aim tracking
        stays exact even when the display crops the sides to fill a taller box. */
@@ -2671,6 +4107,7 @@
     const offY = (rect.height - H * scale) / 2;
     mouseX = (e.clientX - rect.left - offX) / scale;
     mouseY = (e.clientY - rect.top - offY) / scale;
+    if (isTouch) mouseY -= TOUCH_AIM_OFFSET_Y;
     mouseY = Math.min(mouseY, ARENA_H - 4);
   }
 
@@ -2686,9 +4123,10 @@
     ensureAudio();
     isDrawing = true;
     drawStart = performance.now();
+    startDrawSound();
   });
   window.addEventListener('mouseup', () => {
-    if (isDrawing) { isDrawing = false; shoot(); }
+    if (isDrawing) { isDrawing = false; stopDrawSound(); shoot(); }
   });
 
   canvas.addEventListener('touchstart', (e) => {
@@ -2697,18 +4135,19 @@
     ensureAudio();
     hasPointer = true;
     const rect = canvas.getBoundingClientRect();
-    setPointerFromEvent(e.touches[0], rect);
+    setPointerFromEvent(e.touches[0], rect, true);
     isDrawing = true;
     drawStart = performance.now();
+    startDrawSound();
   }, { passive: false });
   canvas.addEventListener('touchmove', (e) => {
     e.preventDefault();
     const rect = canvas.getBoundingClientRect();
-    setPointerFromEvent(e.touches[0], rect);
+    setPointerFromEvent(e.touches[0], rect, true);
   }, { passive: false });
   canvas.addEventListener('touchend', (e) => {
     e.preventDefault();
-    if (isDrawing) { isDrawing = false; shoot(); }
+    if (isDrawing) { isDrawing = false; stopDrawSound(); shoot(); }
   }, { passive: false });
 
   /* The browser natively scrolls a button into view the instant it receives
@@ -2722,10 +4161,12 @@
   startBtn.addEventListener('click', () => {
     ensureAudio();
     score = 0; level = 1; combo = 0; hitThisGame = false;
+    shotsThisTrial = 0; hitsThisTrial = 0;
     flyingArrows = []; particles = []; floatingTexts = []; ripples = [];
     resetLevel();
     updateComboBadge();
     bumpStreak();
+    shareResultBtn.classList.remove('show');
     gameActive = true;
     /* Guard against any focus-driven scroll on browsers/devices that do
        scroll a newly-focused button into view; harmless no-op otherwise. */
@@ -2746,6 +4187,7 @@
   updateHUD();
   refreshBestLine();
   renderRecordPanel();
+  renderHeroStats();
   requestAnimationFrame(gameLoop);
 })();
 </script>

@@ -2,6 +2,16 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<script>
+  (function() {
+    try {
+      var saved = localStorage.getItem('matsyaVedhTheme');
+      var theme = saved === 'light' || saved === 'dark' ? saved
+        : (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
+      document.documentElement.setAttribute('data-theme', theme);
+    } catch (e) { document.documentElement.setAttribute('data-theme', 'dark'); }
+  })();
+</script>
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-DV8G1EMJ7S"></script>
 <script>
@@ -33,19 +43,40 @@
 
 <style>
   :root { --bg-2:#0e0f03; --gold:#e9c349; --gold-dim:#af8d11; --text:#e4e4cc; --text-dim:#c4c6ce; }
+  :root[data-theme="light"] { --bg-2:#eadfc4; --surface-1:#fbf6ea; --surface-2:#f1e6cc; --gold:#7d5408; --gold-light:#6b4705; --gold-dim:#7a5c1a; --vermilion:#b23a26; --text:#2a2314; --text-dim:#5c5138; }
+  body, .chapter-nav a, .cta, .theme-toggle { transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease; }
+  .theme-toggle {
+    position: fixed; top: 18px; right: 18px; z-index: 50;
+    display: flex; align-items: center; justify-content: center;
+    width: 38px; height: 38px;
+    background: var(--surface-1, rgba(0,0,0,0.3));
+    border: 1px solid rgba(233,195,73,0.28);
+    border-radius: 50%;
+    color: var(--gold);
+    cursor: pointer;
+  }
+  .theme-toggle:hover { border-color: rgba(233,195,73,0.55); }
+  .theme-toggle svg { width: 17px; height: 17px; }
   * { margin:0; padding:0; box-sizing:border-box; }
   body { font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background:var(--bg-2); color:var(--text); line-height:1.7; padding:48px 20px 80px; }
   .wrap { max-width:720px; margin:0 auto; }
   a { color:var(--gold); text-decoration:none; }
   a:hover { text-decoration:underline; }
   .back { display:inline-block; margin-bottom:28px; font-size:13px; color:var(--gold-dim); }
-  h1 { font-family:'Palatino Linotype', 'Book Antiqua', Palatino, Georgia, 'Times New Roman', serif; font-size:30px; color:var(--gold); margin-bottom:8px; }
+  h1 { font-family: 'Cinzel', 'Palatino Linotype', 'Book Antiqua', Palatino, Georgia, serif; font-size:30px; color:var(--gold); margin-bottom:8px; }
   .updated { font-size:13px; color:var(--text-dim); opacity:0.7; margin-bottom:32px; }
-  h2 { font-family:'Palatino Linotype', 'Book Antiqua', Palatino, Georgia, 'Times New Roman', serif; font-size:19px; color:var(--gold); margin:32px 0 12px; font-weight:600; }
+  h2 { font-family: 'Cormorant Garamond', 'Palatino Linotype', 'Book Antiqua', Palatino, Georgia, serif; font-size:19px; color:var(--gold); margin:32px 0 12px; font-weight:600; }
   p { font-size:15.5px; color:var(--text-dim); margin-bottom:12px; }
 </style>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700;800&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap" rel="stylesheet">
 </head>
 <body>
+<button class="theme-toggle" id="themeToggle" type="button" aria-label="Switch to light theme" title="Switch to light theme">
+  <svg id="themeIconSun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.4M12 19.1v2.4M4.2 4.2l1.7 1.7M18.1 18.1l1.7 1.7M2.5 12h2.4M19.1 12h2.4M4.2 19.8l1.7-1.7M18.1 5.9l1.7-1.7" stroke-linecap="round"/></svg>
+  <svg id="themeIconMoon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" style="display:none"><path d="M20 14.2A8.4 8.4 0 1 1 9.8 4a6.7 6.7 0 0 0 10.2 10.2Z" stroke-linejoin="round"/></svg>
+</button>
 <div class="wrap">
   <a class="back" href="index.html">← Back to the game</a>
   <h1>Disclaimer</h1>
@@ -72,5 +103,29 @@
   <h2>7. Limitation</h2>
   <p>To the fullest extent permitted by law, the site owner disclaims liability for any errors, omissions, or interpretations in the mythological or historical content presented here. If you notice a factual error, we welcome a correction via our <a href="contact-us.html">Contact Us</a> page.</p>
 </div>
+<script>
+(function() {
+  var btn = document.getElementById('themeToggle');
+  var iconSun = document.getElementById('themeIconSun');
+  var iconMoon = document.getElementById('themeIconMoon');
+  if (!btn) return;
+  function applyIcon(theme) {
+    var isLight = theme === 'light';
+    if (iconSun) iconSun.style.display = isLight ? 'none' : '';
+    if (iconMoon) iconMoon.style.display = isLight ? '' : 'none';
+    var label = isLight ? 'Switch to dark theme' : 'Switch to light theme';
+    btn.setAttribute('aria-label', label);
+    btn.setAttribute('title', label);
+  }
+  applyIcon(document.documentElement.getAttribute('data-theme') || 'dark');
+  btn.addEventListener('click', function() {
+    var current = document.documentElement.getAttribute('data-theme') === 'light' ? 'light' : 'dark';
+    var next = current === 'light' ? 'dark' : 'light';
+    document.documentElement.setAttribute('data-theme', next);
+    applyIcon(next);
+    try { localStorage.setItem('matsyaVedhTheme', next); } catch (e) {}
+  });
+})();
+</script>
 </body>
 </html>
