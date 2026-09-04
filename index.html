@@ -4020,6 +4020,11 @@
     shareResultBtn.dataset.accuracy = accuracyPct;
     shareResultBtn.dataset.level = level;
     shareResultBtn.dataset.tagline = modalTagline.textContent;
+    /* Render the share-card image now, in the background, instead of
+       waiting for the tap on "Share This Result" -- see the note by
+       pendingShareBlob's declaration for why this timing is the whole
+       fix for the button falling back to a download on iPhone. */
+    pendingShareBlob = renderShareCard();
     lbSavedNote.classList.remove('show');
     if (qualifiesForLeaderboard(score)) {
       lbEntry.classList.add('show');
@@ -4048,8 +4053,25 @@
   /* ---------- Result share-card: draws a branded PNG of the just-finished
      trial (accuracy / score / level) and hands it to the OS share sheet on
      mobile, or downloads it as an image everywhere else. Entirely
-     client-side -- there is no server to post this to. ---------- */
-  async function generateShareCard() {
+     client-side -- there is no server to post this to.
+
+     pendingShareBlob holds the in-flight/finished render, kicked off the
+     moment the result screen appears (see showResults()) rather than on
+     the button tap. This matters on iOS: Safari and iPhone Chrome (every
+     iOS browser runs on the same WebKit engine, Apple requires it) only
+     allow navigator.share() while the click's "user activation" is still
+     live, and that expires the moment there's a real async wait before
+     calling it -- which `await document.fonts.ready` and `canvas.toBlob()`
+     both are. So a share() called only after those finishes was routinely
+     arriving too late on iOS, throwing quietly, and falling through to a
+     739KB download every time -- share() itself was never actually
+     reachable there. Rendering ahead of time means the blob is normally
+     already sitting there waiting by the time someone taps the button, so
+     the click handler can call share() with (at most) a microtask of
+     delay -- which WebKit does allow -- instead of a multi-frame one. ---------- */
+  let pendingShareBlob = null;
+  function renderShareCard() {
+    return new Promise(async (resolve) => {
     const w = shareCardCanvas.width, h = shareCardCanvas.height;
     const ctx = shareCardCanvas.getContext('2d');
     try { if (document.fonts && document.fonts.ready) await document.fonts.ready; } catch (e) {}
@@ -4120,34 +4142,44 @@
     ctx.font = '600 21px "Segoe UI", Arial, sans-serif';
     ctx.fillText('aimfisheye.com', w/2, 844);
 
-    shareCardCanvas.toBlob(async (blob) => {
-      if (!blob) return;
-      const label = shareResultBtn.querySelector('.msb-label');
-      const origLabel = label ? label.textContent : '';
-      const flashLabel = (text) => {
-        if (!label) return;
-        label.textContent = text;
-        setTimeout(() => { label.textContent = origLabel; }, 1800);
-      };
-      let file = null;
-      try { file = new File([blob], 'matsya-vedh-result.png', { type: 'image/png' }); } catch (e) {}
-      if (file && navigator.canShare && navigator.canShare({ files: [file] })) {
-        try {
-          await navigator.share({
-            files: [file],
-            title: 'Matsya-Vedh',
-            text: 'I scored ' + (shareResultBtn.dataset.score || '0') + ' in Matsya-Vedh — can you beat my aim?',
-          });
-          return;
-        } catch (e) { /* user cancelled or share failed -- fall back to download */ }
-      }
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url; a.download = 'matsya-vedh-result.png';
-      document.body.appendChild(a); a.click(); document.body.removeChild(a);
-      setTimeout(() => URL.revokeObjectURL(url), 4000);
-      flashLabel('Image Saved');
-    }, 'image/png');
+    shareCardCanvas.toBlob((blob) => resolve(blob), 'image/png');
+    });
+  }
+  async function generateShareCard() {
+    const label = shareResultBtn.querySelector('.msb-label');
+    const origLabel = label ? label.textContent : '';
+    const flashLabel = (text) => {
+      if (!label) return;
+      label.textContent = text;
+      setTimeout(() => { label.textContent = origLabel; }, 1800);
+    };
+    /* Almost always already resolved by the time this fires -- the render
+       started as soon as the result screen showed up, long before anyone
+       reads their score and decides to tap Share. Awaiting an
+       already-settled promise costs only a microtask, which iOS still
+       counts as "still handling the click", unlike a fresh render (a real
+       task-queue wait) would. */
+    let blob = pendingShareBlob ? await pendingShareBlob : null;
+    if (!blob) blob = await renderShareCard(); // rare: tapped before the pre-render finished
+    if (!blob) return;
+    let file = null;
+    try { file = new File([blob], 'matsya-vedh-result.png', { type: 'image/png' }); } catch (e) {}
+    if (file && navigator.canShare && navigator.canShare({ files: [file] })) {
+      try {
+        await navigator.share({
+          files: [file],
+          title: 'Matsya-Vedh',
+          text: 'I scored ' + (shareResultBtn.dataset.score || '0') + ' in Matsya-Vedh — can you beat my aim?',
+        });
+        return;
+      } catch (e) { /* user cancelled or share failed -- fall back to download */ }
+    }
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = 'matsya-vedh-result.png';
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    setTimeout(() => URL.revokeObjectURL(url), 4000);
+    flashLabel('Image Saved');
   }
   shareResultBtn.addEventListener('click', generateShareCard);
 
