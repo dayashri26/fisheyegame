@@ -1913,6 +1913,29 @@
   btnStory.addEventListener('click', showStory);
   if (storyPlayBtn) storyPlayBtn.addEventListener('click', showPlay);
 
+  // The header's "How It Works" / "The Legend" / "Trial Log" links point to
+  // sections that live inside the Play tab panel. If the Story tab is open,
+  // that panel is display:none, so a plain #hash jump lands on an invisible
+  // target and looks like nothing happened. Switch back to Play first, then
+  // scroll to the section once it's actually visible.
+  document.querySelectorAll('a.nav-anchor[href^="#"]').forEach((link) => {
+    link.addEventListener('click', (e) => {
+      const id = link.getAttribute('href').slice(1);
+      const target = document.getElementById(id);
+      if (!target) return;
+      e.preventDefault();
+      const wasOnStory = panelStory.classList.contains('active');
+      if (wasOnStory) {
+        btnPlay.classList.add('active'); btnStory.classList.remove('active');
+        panelPlay.classList.add('active'); panelStory.classList.remove('active');
+      }
+      const doScroll = () => target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      if (wasOnStory) requestAnimationFrame(() => requestAnimationFrame(doScroll));
+      else doScroll();
+      history.replaceState(null, '', '#' + id);
+    });
+  });
+
   const heroStoryCta = document.getElementById('heroStoryCta');
   if (heroStoryCta) heroStoryCta.addEventListener('click', showStory);
 
@@ -2131,6 +2154,12 @@
     for (let i = 1; i <= count; i++) arr.push(loadSprite(`assets/sprites/frames/${prefix}_${i}.webp`));
     return arr;
   }
+  function loadSpriteSeqLazy(prefix, count) {
+    const arr = [];
+    for (let i = 1; i <= count; i++) arr.push(loadSpriteLazy(`assets/sprites/frames/${prefix}_${i}.webp`));
+    return arr;
+  }
+  function activateSpriteSeq(seq) { seq.forEach(activateLazySprite); }
   /* Narrow/tall viewports (phones) show a hard-cropped slice of the wide
      desktop temple photo -- object-fit:cover chews into the side pillars
      to fill the taller box. A dedicated portrait-composed photo keeps the
@@ -2149,14 +2178,34 @@
      at full draw) rather than a 3-pose crossfade. Falls back to the original
      idle/half/full crossfade automatically if any frame fails to load, via
      spriteReady() guards at draw time. */
+  /* Only the idle "breathe" loop is on screen the instant the page paints,
+     so only it needs to be in the initial network burst alongside the
+     temple photo and the fish. The draw/release/wobble sets (16 of the 22
+     frames, ~850KB) are never seen until the player actually pulls the
+     bow -- fetching all of them eagerly just made them compete for
+     bandwidth against the stuff that's actually visible on load, which is
+     exactly the kind of thing that drags page weight down on slow/budget
+     connections. They're kicked off a beat after the critical content
+     instead (see below), so they're almost always ready well before
+     anyone's fingers reach the bow, with the existing crossfade fallback
+     as a safety net for the rare case they aren't. */
   const ARCHER_FRAMES = {
     breathe: loadSpriteSeq('archer_breathe', 6),
-    draw: loadSpriteSeq('archer_draw', 8),
-    release: loadSpriteSeq('archer_release', 4),
-    wobble: loadSpriteSeq('archer_wobble', 4)
+    draw: loadSpriteSeqLazy('archer_draw', 8),
+    release: loadSpriteSeqLazy('archer_release', 4),
+    wobble: loadSpriteSeqLazy('archer_wobble', 4)
   };
   function spriteReady(img) { return img && img.complete && img.naturalWidth > 0; }
   function frameSeqReady(seq) { return seq && seq.length > 0 && seq.every(spriteReady); }
+  (function deferSecondaryFrames() {
+    const start = () => {
+      activateSpriteSeq(ARCHER_FRAMES.draw);
+      activateSpriteSeq(ARCHER_FRAMES.release);
+      activateSpriteSeq(ARCHER_FRAMES.wobble);
+    };
+    if ('requestIdleCallback' in window) requestIdleCallback(start, { timeout: 1200 });
+    else setTimeout(start, 400);
+  })();
   /* Kick off the deferred archer idle/half/full fallback trio only if it
      turns out to actually be needed: either the frame set fails to fully
      load within a generous grace period, or one of its images errors out
@@ -2174,7 +2223,7 @@
       const framesReady = frameSeqReady(ARCHER_FRAMES.breathe) && frameSeqReady(ARCHER_FRAMES.draw) &&
         frameSeqReady(ARCHER_FRAMES.release) && frameSeqReady(ARCHER_FRAMES.wobble);
       if (!framesReady) activateAll();
-    }, 4000);
+    }, 5000);
   })();
   /* Normalized (0-1) eye position within the fish sprite, measured against
      the trimmed artwork -- keeps the invisible hit-circle glued to the
