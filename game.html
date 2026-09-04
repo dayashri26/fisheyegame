@@ -101,6 +101,13 @@
     --fixed-text-dim: #c4c6ce;
     --fixed-vermilion: #e74b38;
 
+    /* A dedicated, extra-dark accent for small high-stakes labels (like the
+       "sign your trial log" line) that still want the golden accent feel
+       but need noticeably stronger contrast than the regular --gold token
+       gives on light backgrounds. Same bright gold as --gold in dark theme
+       (nothing changes there); a much darker bronze ink in light theme. */
+    --gold-label: #e9c349;
+
     /* Corner-shadow tint for page cards (record strip, leaderboard, etc) --
        unlike --fixed-* above, this DOES flip with theme since these cards
        sit on the page, not the always-dark canvas. */
@@ -124,6 +131,7 @@
     --ice:           #3d5a80;
     --text:          #2a2314;
     --text-dim:      #5c5138;
+    --gold-label:    #4a3202;
 
     --body-bg-wash-1: rgba(156,111,14,0.08);
     --body-bg-wash-2: rgba(178,58,38,0.05);
@@ -629,8 +637,15 @@
 
   .lb-entry { display: none; margin: 4px 0 14px; }
   .lb-entry.show { display: block; }
+  /* This label sits on the modal's own card (.scroll), which -- unlike the
+     always-dark game canvas -- rethemes to a light parchment background in
+     light mode. It used --fixed-gold (a bright yellow tuned for dark
+     backgrounds only), so in light theme it read as pale gold on cream:
+     almost invisible. --gold is the theme-reactive token that already
+     turns a readable dark bronze in light mode, same as every other label
+     on this card (h2, tagline, stat numbers). */
   .lb-entry .lb-entry-label {
-    font-family: var(--font-label); font-size: 11px; letter-spacing: 0.05em; color: var(--fixed-gold);
+    font-family: var(--font-label); font-size: 11px; letter-spacing: 0.05em; color: var(--gold-label);
     text-transform: uppercase; margin-bottom: 8px;
   }
   .lb-entry-row { display: flex; gap: 8px; }
@@ -639,6 +654,11 @@
     border-radius: 3px 8px 3px 8px; color: var(--fixed-text); font-family: var(--font-label);
     font-size: 13px; padding: 9px 12px; outline: none;
   }
+  /* Without this, the browser's default placeholder styling (usually a
+     low-alpha version of the platform's own gray, not this input's actual
+     text color) makes "Your name" barely readable against the dark plaque
+     -- fix it to a color we know reads clearly on that fixed-dark box. */
+  .lb-name-input::placeholder { color: var(--fixed-text-dim); opacity: 0.85; }
   .lb-name-input:focus { border-color: var(--gold); }
   .lb-save-btn {
     flex-shrink: 0; background: linear-gradient(160deg, var(--gold-light), var(--gold));
