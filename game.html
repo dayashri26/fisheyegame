@@ -1191,6 +1191,15 @@
      guards on `.complete` so the vector fallback silently continues to
      render until each image is ready, and the page never blocks on load. */
   function loadSprite(src) { const img = new Image(); img.src = src; return img; }
+  /* Same as loadSprite, but the actual network fetch is deferred until
+     something calls .src = ._lazySrc on it later -- used for the archer
+     idle/half/full trio below, which exist purely as a safety-net fallback
+     for the real 22-frame animation set and are almost never actually
+     drawn. Fetching ~625KB of images nobody ends up looking at, in
+     parallel with (and competing bandwidth against) the frames that
+     matter, was pure waste on every single page load. */
+  function loadSpriteLazy(src) { const img = new Image(); img._lazySrc = src; return img; }
+  function activateLazySprite(img) { if (img && img._lazySrc && !img.src) img.src = img._lazySrc; }
   function loadSpriteSeq(prefix, count) {
     const arr = [];
     for (let i = 1; i <= count; i++) arr.push(loadSprite(`assets/sprites/frames/${prefix}_${i}.webp`));
@@ -1204,9 +1213,9 @@
   const IS_MOBILE_VIEWPORT = window.matchMedia && window.matchMedia('(max-width: 760px)').matches;
   const SPR = {
     fish: loadSprite('assets/sprites/fish.webp'),
-    archerIdle: loadSprite('assets/sprites/archer_idle.webp'),
-    archerHalf: loadSprite('assets/sprites/archer_half_draw.webp'),
-    archerFull: loadSprite('assets/sprites/archer_full_draw.webp'),
+    archerIdle: loadSpriteLazy('assets/sprites/archer_idle.webp'),
+    archerHalf: loadSpriteLazy('assets/sprites/archer_half_draw.webp'),
+    archerFull: loadSpriteLazy('assets/sprites/archer_full_draw.webp'),
     temple: loadSprite(IS_MOBILE_VIEWPORT ? 'assets/sprites/temple_mobile.webp' : 'assets/sprites/temple_bg.webp')
   };
   /* Frame-by-frame archer animation -- a real sequence per motion (breathing
@@ -1222,6 +1231,25 @@
   };
   function spriteReady(img) { return img && img.complete && img.naturalWidth > 0; }
   function frameSeqReady(seq) { return seq && seq.length > 0 && seq.every(spriteReady); }
+  /* Kick off the deferred archer idle/half/full fallback trio only if it
+     turns out to actually be needed: either the frame set fails to fully
+     load within a generous grace period, or one of its images errors out
+     outright. On the common path (frames load fine, as they almost always
+     do) this never fires and that 625KB is never fetched at all. */
+  (function guardFallbackSprites() {
+    const allFrames = [].concat(ARCHER_FRAMES.breathe, ARCHER_FRAMES.draw, ARCHER_FRAMES.release, ARCHER_FRAMES.wobble);
+    const activateAll = () => {
+      activateLazySprite(SPR.archerIdle);
+      activateLazySprite(SPR.archerHalf);
+      activateLazySprite(SPR.archerFull);
+    };
+    allFrames.forEach(img => img.addEventListener('error', activateAll, { once: true }));
+    setTimeout(() => {
+      const framesReady = frameSeqReady(ARCHER_FRAMES.breathe) && frameSeqReady(ARCHER_FRAMES.draw) &&
+        frameSeqReady(ARCHER_FRAMES.release) && frameSeqReady(ARCHER_FRAMES.wobble);
+      if (!framesReady) activateAll();
+    }, 4000);
+  })();
   /* Normalized (0-1) eye position within the fish sprite, measured against
      the trimmed artwork -- keeps the invisible hit-circle glued to the
      golden fish's actual painted eye instead of a generic ellipse offset. */
