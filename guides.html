@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<script>
+  (function() {
+    try {
+      var saved = localStorage.getItem('matsyaVedhTheme');
+      var theme = saved === 'light' || saved === 'dark' ? saved
+        : (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
+      document.documentElement.setAttribute('data-theme', theme);
+    } catch (e) { document.documentElement.setAttribute('data-theme', 'dark'); }
+  })();
+</script>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-DV8G1EMJ7S"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-DV8G1EMJ7S');
+</script>
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Guides — Archery, Focus &amp; Mahabharata Mythology | Matsya-Vedh</title>
+<link rel="canonical" href="https://aimfisheye.com/guides.html">
+<link rel="icon" type="image/x-icon" href="/favicon.ico">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png">
+<meta name="description" content="Guides on free online archery games, focus and hand-eye coordination, and Mahabharata mythology — Arjuna, Karna, Eklavya, Draupadi's swayamvara, and the fish-eye trial behind Matsya-Vedh.">
+<meta name="keywords" content="archery game guides, mahabharata guides, matsya vedh, mahabharata, arjuna, focus games, indian mythology">
+<meta name="robots" content="index, follow">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://aimfisheye.com/guides.html">
+<meta property="og:title" content="Guides — Archery, Focus &amp; Mahabharata Mythology">
+<meta property="og:description" content="Guides on free online archery games, focus and hand-eye coordination, and Mahabharata mythology — Arjuna, Karna, Eklavya, Draupadi's swayamvara, and the fish-eye trial behind Matsya-Vedh.">
+<meta property="og:site_name" content="Matsya-Vedh">
+<meta property="og:image" content="https://aimfisheye.com/og-image.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Guides — Archery, Focus &amp; Mahabharata Mythology">
+<meta name="twitter:description" content="Guides on free online archery games, focus and hand-eye coordination, and Mahabharata mythology — Arjuna, Karna, Eklavya, Draupadi's swayamvara, and the fish-eye trial behind Matsya-Vedh.">
+<meta name="twitter:image" content="https://aimfisheye.com/og-image.jpg">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "CollectionPage",
+  "name": "Matsya-Vedh Guides",
+  "description": "Guides on free online archery games, focus and hand-eye coordination, and Mahabharata mythology.",
+  "inLanguage": "en",
+  "url": "https://aimfisheye.com/guides.html"
+}
+</script>
+
+<style>
+  :root { --bg-2:#0e0f03; --surface-1:#1f2111; --surface-2:#2a2b1b; --gold:#e9c349; --gold-light:#f6dd8a; --gold-dim:#af8d11; --vermilion:#e74b38; --text:#e4e4cc; --text-dim:#c4c6ce; }
+  :root[data-theme="light"] { --bg-2:#eadfc4; --surface-1:#fbf6ea; --surface-2:#f1e6cc; --gold:#7d5408; --gold-light:#6b4705; --gold-dim:#7a5c1a; --vermilion:#b23a26; --text:#2a2314; --text-dim:#5c5138; }
+  body, .theme-toggle, .g-tile { transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease; }
+  .theme-toggle {
+    position: fixed; top: 18px; right: 18px; z-index: 50;
+    display: flex; align-items: center; justify-content: center;
+    width: 38px; height: 38px;
+    background: var(--surface-1, rgba(0,0,0,0.3));
+    border: 1px solid rgba(233,195,73,0.28);
+    border-radius: 50%;
+    color: var(--gold);
+    cursor: pointer;
+  }
+  .theme-toggle:hover { border-color: rgba(233,195,73,0.55); }
+  .theme-toggle svg { width: 17px; height: 17px; }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html, body { height: 100%; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    background:
+      radial-gradient(circle at 50% 0%, rgba(233,195,73,0.10), transparent 55%),
+      radial-gradient(circle at 15% 85%, rgba(231,75,56,0.07), transparent 50%),
+      var(--bg-2);
+    color: var(--text); line-height: 1.7; padding: 40px 20px 80px;
+  }
+  .wrap { max-width: 980px; margin: 0 auto; }
+  a { color: var(--gold); text-decoration: none; }
+  .back { display: inline-block; margin-bottom: 24px; font-size: 13px; color: var(--gold-dim); text-decoration: none; }
+  .back:hover { text-decoration: underline; }
+  .kicker { font-size: 11px; letter-spacing: 0.28em; text-transform: uppercase; color: var(--vermilion); margin-bottom: 14px; }
+  h1 {
+    font-family: 'Cinzel', 'Palatino Linotype', 'Book Antiqua', Palatino, Georgia, serif;
+    font-size: clamp(28px, 5vw, 40px); color: var(--gold-light); margin-bottom: 12px; line-height: 1.25;
+    text-shadow: 0 0 26px rgba(233,195,73,0.2);
+  }
+  .intro { font-size: 16px; color: var(--text-dim); margin-bottom: 40px; max-width: 680px; }
+  h2.section-h { font-family: 'Cinzel', Georgia, serif; font-size: 20px; color: var(--gold-light); margin: 46px 0 18px; padding-top: 24px; border-top: 1px solid rgba(233,195,73,0.18); }
+  h2.section-h:first-of-type { margin-top: 0; padding-top: 0; border-top: none; }
+  .g-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 14px; }
+  .g-tile {
+    display: block; padding: 18px 20px; background: var(--surface-1);
+    border: 1px solid rgba(233,195,73,0.22); border-radius: 12px; text-decoration: none;
+  }
+  .g-tile:hover { border-color: rgba(233,195,73,0.5); }
+  .g-tile h3 { font-family: 'Cinzel', Georgia, serif; font-size: 15.5px; color: var(--gold-light); margin-bottom: 8px; line-height: 1.35; }
+  .g-tile p { font-size: 13.5px; color: var(--text-dim); line-height: 1.6; }
+  .cta {
+    margin-top: 50px; text-align: center; padding: 26px 22px;
+    background: linear-gradient(160deg, var(--surface-2), var(--bg-2) 70%);
+    border: 1px solid rgba(233,195,73,0.25); border-radius: 14px;
+  }
+  .cta a.play { display: inline-block; margin-top: 10px; padding: 12px 26px; background: var(--gold); color: #1a1503; font-weight: 700; border-radius: 8px; text-decoration: none; }
+  .cta a.play:hover { opacity: 0.92; }
+</style>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700;800&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap" rel="stylesheet">
+</head>
+<body>
+<button class="theme-toggle" id="themeToggle" type="button" aria-label="Switch to light theme" title="Switch to light theme">
+  <svg id="themeIconSun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.4M12 19.1v2.4M4.2 4.2l1.7 1.7M18.1 18.1l1.7 1.7M2.5 12h2.4M19.1 12h2.4M4.2 19.8l1.7-1.7M18.1 5.9l1.7-1.7" stroke-linecap="round"/></svg>
+  <svg id="themeIconMoon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" style="display:none"><path d="M20 14.2A8.4 8.4 0 1 1 9.8 4a6.7 6.7 0 0 0 10.2 10.2Z" stroke-linejoin="round"/></svg>
+</button>
+<div class="wrap">
+  <a class="back" href="index.html">← Back to Matsya-Vedh</a>
+  <div class="kicker">Guides</div>
+  <h1>Archery, Focus &amp; Mahabharata Guides</h1>
+  <p class="intro">Short reads on free online archery games, the psychology of focus and aim, and the Mahabharata mythology behind Matsya-Vedh — Arjuna, Karna, Eklavya, and the fish-eye trial itself.</p>
+
+  <h2 class="section-h">Play &amp; Game Guides</h2>
+  <div class="g-grid">
+    <a class="g-tile" href="free-online-archery-game-no-download.html"><h3>Free Online Archery Game With No Download Required</h3><p>What to look for before trusting any “free” archery game.</p></a>
+    <a class="g-tile" href="best-free-mahabharata-game-online.html"><h3>Best Free Mahabharata Game to Play Online</h3><p>What actually makes a Mahabharata game worth your time.</p></a>
+    <a class="g-tile" href="single-player-archery-games-online.html"><h3>Single-Player Archery Games You Can Play Without an App</h3><p>The case for solo, no-pressure, browser-only archery.</p></a>
+    <a class="g-tile" href="hand-eye-coordination-games-online.html"><h3>Hand-Eye Coordination Games You Can Play Free Online</h3><p>How simple timing games train coordination.</p></a>
+    <a class="g-tile" href="free-games-that-train-focus-and-patience.html"><h3>5 Free Browser Games That Train Focus and Patience</h3><p>Five categories of games that reward patience over speed.</p></a>
+    <a class="g-tile" href="mythology-inspired-indie-games-2026.html"><h3>Mythology-Inspired Indie Games Worth Playing in 2026</h3><p>Why myth makes such fertile ground for game design.</p></a>
+    <a class="g-tile" href="daily-archery-challenge-streak.html"><h3>Daily Archery Challenge: Why a Score Streak Keeps You Coming Back</h3><p>The psychology of personal bests and global leaderboards.</p></a>
+    <a class="g-tile" href="one-shot-one-kill-aiming-psychology.html"><h3>One Shot, One Kill: The Psychology of High-Stakes Aiming Games</h3><p>Why limited attempts raise the stakes of every shot.</p></a>
+  </div>
+
+  <h2 class="section-h">Focus, Aim &amp; the Mental Game</h2>
+  <div class="g-grid">
+    <a class="g-tile" href="improve-aim-focus-with-a-game.html"><h3>How to Improve Your Aim and Focus With a Simple Online Game</h3><p>What a hold-and-release mechanic actually trains.</p></a>
+    <a class="g-tile" href="what-is-target-panic-in-archery.html"><h3>What Is Target Panic in Archery (and Can a Game Help)?</h3><p>A real archery phenomenon, explained honestly.</p></a>
+    <a class="g-tile" href="why-archery-games-are-mind-games.html"><h3>Reflex and Focus: Why Archery Games Are Secretly Mind Games</h3><p>Why restraint, not speed, is the real skill.</p></a>
+  </div>
+
+  <h2 class="section-h">Mahabharata Mythology</h2>
+  <div class="g-grid">
+    <a class="g-tile" href="arjuna-vs-karna-greatest-archer.html"><h3>Arjuna vs Karna: Who Was the Greater Archer?</h3><p>The centuries-old debate, argued fairly.</p></a>
+    <a class="g-tile" href="greatest-archer-in-mahabharata.html"><h3>Who Was the Greatest Archer in the Mahabharata?</h3><p>Arjuna, Karna, Eklavya, Bhishma and Drona, considered together.</p></a>
+    <a class="g-tile" href="eklavya-story-guru-dakshina.html"><h3>The Eklavya Story: Guru Dakshina and the Price of Devotion</h3><p>Devotion, sacrifice, and a story still debated today.</p></a>
+    <a class="g-tile" href="adi-parva-summary.html"><h3>Adi Parva Summary: Where the Mahabharata Begins</h3><p>A clean primer on the epic's opening book.</p></a>
+    <a class="g-tile" href="pandavas-exile-story-summary.html"><h3>The Pandavas' Exile: A Quick Summary Before the Swayamvara</h3><p>From the lacquer house fire to Drupada's court.</p></a>
+    <a class="g-tile" href="what-does-vedh-mean-in-sanskrit.html"><h3>What Does “Vedh” Mean in Sanskrit?</h3><p>Piercing, trials, and testing — the word behind the name.</p></a>
+    <a class="g-tile" href="mahabharata-trivia-questions.html"><h3>10 Mahabharata Trivia Questions Every Fan Should Know</h3><p>Ten questions, with real explanations, not one-liners.</p></a>
+    <a class="g-tile" href="dussehra-archery-tradition.html"><h3>Dussehra and the Tradition of Ceremonial Archery in India</h3><p>Ayudha Puja, the shami tree, and weapon-worship traditions.</p></a>
+    <a class="g-tile" href="ancient-indian-archery-weapons.html"><h3>Ancient Indian Archery Weapons: A Field Guide From the Epics</h3><p>Gandiva, Vijaya, Pinaka, and the astra/shastra distinction.</p></a>
+  </div>
+
+  <h2 class="section-h">The Full Ten-Chapter Story</h2>
+  <p class="intro" style="margin-bottom:20px;">Prefer the legend told start to finish? Read <a href="index.html#tabStory">The Piercing of the Fish's Eye</a>, told across ten chapters from <a href="what-is-matsya-vedh.html">what Matsya-Vedh is</a> to <a href="from-myth-to-mechanic-designing-this-game.html">how it became this game</a>.</p>
+
+  <div class="cta">
+    <div>Ready to try the trial yourself?</div>
+    <a class="play" href="index.html#tabPlay">Play Matsya-Vedh Free →</a>
+  </div>
+</div>
+<script>
+(function() {
+  var btn = document.getElementById('themeToggle');
+  var iconSun = document.getElementById('themeIconSun');
+  var iconMoon = document.getElementById('themeIconMoon');
+  if (!btn) return;
+  function applyIcon(theme) {
+    var isLight = theme === 'light';
+    if (iconSun) iconSun.style.display = isLight ? 'none' : '';
+    if (iconMoon) iconMoon.style.display = isLight ? '' : 'none';
+    var label = isLight ? 'Switch to dark theme' : 'Switch to light theme';
+    btn.setAttribute('aria-label', label);
+    btn.setAttribute('title', label);
+  }
+  applyIcon(document.documentElement.getAttribute('data-theme') || 'dark');
+  btn.addEventListener('click', function() {
+    var current = document.documentElement.getAttribute('data-theme') === 'light' ? 'light' : 'dark';
+    var next = current === 'light' ? 'dark' : 'light';
+    document.documentElement.setAttribute('data-theme', next);
+    applyIcon(next);
+    try { localStorage.setItem('matsyaVedhTheme', next); } catch (e) {}
+  });
+})();
+</script>
+</body>
+</html>

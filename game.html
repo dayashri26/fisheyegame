@@ -243,6 +243,25 @@
   .theme-toggle:hover { background: rgba(233,195,73,0.1); border-color: rgba(233,195,73,0.55); transform: translateY(-1px); }
   .theme-toggle .icon-svg { width: 16px; height: 16px; }
 
+  /* ---------- Optional Google sign-in: entirely optional, the game is
+     fully playable without it. Signing in only adds cross-device sync of
+     your best/achievements/streak and a spot on the real global
+     leaderboard. ---------- */
+  .auth-btn {
+    display: flex; align-items: center; gap: 6px;
+    height: 34px; min-height: 36px; padding: 0 12px 0 10px;
+    background: transparent; border: 1px solid rgba(233,195,73,0.28); border-radius: 20px;
+    color: var(--text); font-family: var(--font-label); font-size: 12px; font-weight: 600;
+    cursor: pointer;
+    transition: background 0.25s ease, border-color 0.25s ease, transform 0.25s var(--ease-premium);
+  }
+  .auth-btn:hover { background: rgba(233,195,73,0.1); border-color: rgba(233,195,73,0.55); transform: translateY(-1px); }
+  .auth-btn.signed-in { padding: 0 12px 0 5px; }
+  .auth-avatar { width: 22px; height: 22px; border-radius: 50%; display: none; object-fit: cover; flex-shrink: 0; }
+  .auth-btn.signed-in .auth-avatar { display: block; }
+  .auth-btn.signed-in .auth-google-icon { display: none; }
+  .auth-label { white-space: nowrap; max-width: 92px; overflow: hidden; text-overflow: ellipsis; }
+
   /* ---------- Stage ---------- */
   .stage-wrap { position: relative; width: min(92vw, 780px); }
   .stage {
@@ -717,6 +736,9 @@
     .scroll { padding: 24px 18px 20px; }
     .draw-strength { width: 160px; }
     .record-badges { margin-left: 0; }
+    .auth-btn { width: 34px; padding: 0; justify-content: center; }
+    .auth-btn.signed-in { width: 34px; padding: 0; }
+    .auth-label { display: none; }
   }
 
   /* ---------- Mobile: put the game itself front and center on first load ---------- */
@@ -967,6 +989,16 @@
     <svg class="icon-svg" id="themeIconSun"><use href="#ic-sun"/></svg>
     <svg class="icon-svg" id="themeIconMoon" style="display:none"><use href="#ic-moon"/></svg>
   </button>
+  <button class="auth-btn" id="authBtn" type="button" aria-label="Sign in with Google" title="Sign in with Google to sync your progress and join the global leaderboard">
+    <img class="auth-avatar" id="authAvatar" alt="" src="">
+    <svg class="auth-google-icon" viewBox="0 0 18 18" width="16" height="16" aria-hidden="true">
+      <path fill="#4285F4" d="M17.64 9.2c0-.64-.06-1.25-.16-1.84H9v3.48h4.84c-.21 1.13-.84 2.09-1.79 2.73v2.27h2.9c1.7-1.56 2.69-3.87 2.69-6.64z"/>
+      <path fill="#34A853" d="M9 18c2.43 0 4.47-.8 5.96-2.18l-2.9-2.27c-.8.54-1.83.86-3.06.86-2.35 0-4.34-1.59-5.05-3.71H.97v2.33C2.45 15.98 5.48 18 9 18z"/>
+      <path fill="#FBBC05" d="M3.95 10.71c-.18-.54-.28-1.11-.28-1.71s.1-1.17.28-1.71V4.96H.97C.35 6.2 0 7.56 0 9s.35 2.8.97 4.04l2.98-2.33z"/>
+      <path fill="#EA4335" d="M9 3.58c1.32 0 2.51.45 3.44 1.35l2.58-2.58C13.46.89 11.43 0 9 0 5.48 0 2.45 2.02.97 4.96l2.98 2.33C4.66 5.17 6.65 3.58 9 3.58z"/>
+    </svg>
+    <span class="auth-label" id="authLabel">Sign in</span>
+  </button>
 </div>
 <div class="stage-wrap">
   <div class="stage" id="stage">
@@ -1078,6 +1110,12 @@
   <div class="leaderboard-list" id="leaderboardList"></div>
 </div>
 
+<div class="leaderboard-strip">
+  <div class="rs-heading"><svg class="icon-svg"><use href="#ic-crown"/></svg><span>Global Leaderboard</span></div>
+  <div class="record-heading-sub" id="globalLeaderboardSub">Sign in with Google to see how you rank worldwide</div>
+  <div class="leaderboard-list" id="globalLeaderboardList"><div class="lb-empty">Loading...</div></div>
+</div>
+
 <div class="play-extra">
 
   <section class="how-it-works" aria-labelledby="hiwHeading">
@@ -1165,6 +1203,15 @@
     </div>
   </div>
 </div>
+<!-- Optional cloud account (Google sign-in + cross-device sync + global
+     leaderboard). Loaded with `defer` so it never blocks first paint; the
+     game script below checks for `window.firebase` and degrades to fully
+     offline/localStorage-only play if these fail to load for any reason
+     (ad blocker, no network, CDN hiccup) -- signing in is a bonus, never a
+     requirement. -->
+<script defer src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script defer src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+<script defer src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
 <script>
 (function() {
   const canvas = document.getElementById('gameCanvas');
@@ -1380,6 +1427,10 @@
   function persistSave() {
     try { localStorage.setItem(SAVE_KEY, JSON.stringify(save)); } catch (e) {}
     if (typeof renderRecordPanel === 'function') renderRecordPanel();
+    /* No-op until sign-in (and a no-op if never signed in at all) --
+       pushSaveToCloud() itself checks for a logged-in user before doing
+       anything, so this is always safe to call. */
+    if (typeof pushSaveToCloud === 'function') pushSaveToCloud();
   }
   function dateKey(d) { return d.getFullYear() + '-' + (d.getMonth()+1) + '-' + d.getDate(); }
   function bumpStreak() {
@@ -1492,6 +1543,196 @@
     save.leaderboard = save.leaderboard.slice(0, 8);
     persistSave();
     return save.leaderboard.findIndex(r => r.score === score && r.name === clean && r.date && Date.now() - r.date < 5000);
+  }
+
+  /* ---------- Optional cloud account: Google sign-in via Firebase ----------
+     Entirely optional -- every line above this already works fully offline
+     on localStorage alone, and keeps working exactly the same way whether
+     or not any of this succeeds. Signing in additionally (1) syncs your
+     best score/level/combo/streak/achievements across devices, and (2)
+     posts your best run to a real cross-device global leaderboard instead
+     of the per-device "Trial Log" above. Every call here is wrapped so a
+     failed network request, a missing SDK (ad blocker, offline), or simply
+     never signing in can never break or slow down the actual game. */
+  const firebaseConfig = {
+    apiKey: "AIzaSyDFFbVJ0kmUEzhwC49frJPxtEkKBIDaKpE",
+    authDomain: "aim-fish-eye.firebaseapp.com",
+    projectId: "aim-fish-eye",
+    storageBucket: "aim-fish-eye.firebasestorage.app",
+    messagingSenderId: "895707070214",
+    appId: "1:895707070214:web:82dc9c9b78320bfb0de887",
+    measurementId: "G-0Z4JGZ6M4K"
+  };
+  let fbAuth = null, fbDb = null, fbUser = null, fbSyncing = false;
+  const authBtn = document.getElementById('authBtn');
+  const authLabel = document.getElementById('authLabel');
+  const authAvatar = document.getElementById('authAvatar');
+  const globalLeaderboardList = document.getElementById('globalLeaderboardList');
+  const globalLeaderboardSub = document.getElementById('globalLeaderboardSub');
+
+  function renderAuthUI() {
+    if (!authBtn) return;
+    if (fbUser) {
+      authBtn.classList.add('signed-in');
+      const displayName = fbUser.displayName || fbUser.email || 'Archer';
+      authBtn.title = 'Signed in as ' + displayName + ' — tap to sign out';
+      if (authLabel) authLabel.textContent = displayName.split(' ')[0];
+      if (authAvatar) {
+        if (fbUser.photoURL) { authAvatar.src = fbUser.photoURL; authAvatar.style.display = ''; }
+        else authAvatar.style.display = 'none'; // no photo on the Google account -- avoid a broken-image icon
+      }
+    } else {
+      authBtn.classList.remove('signed-in');
+      authBtn.title = 'Sign in with Google to sync your progress and join the global leaderboard';
+      if (authLabel) authLabel.textContent = 'Sign in';
+    }
+    if (globalLeaderboardSub) {
+      globalLeaderboardSub.textContent = fbUser ? 'Top archers across every signed-in device' : 'Sign in with Google to see how you rank worldwide';
+    }
+  }
+
+  /* Cloud data always wins on the higher number / union, never overwrites a
+     bigger local number with a smaller cloud one -- so merging can only
+     ever help, whichever device/browser you signed in from last. */
+  function mergeCloudSave(cloud) {
+    if (!cloud) return;
+    save.highScore = Math.max(save.highScore || 0, cloud.highScore || 0);
+    save.bestLevel = Math.max(save.bestLevel || 1, cloud.bestLevel || 1);
+    save.bestCombo = Math.max(save.bestCombo || 0, cloud.bestCombo || 0);
+    save.gamesPlayed = Math.max(save.gamesPlayed || 0, cloud.gamesPlayed || 0);
+    save.totalHits = Math.max(save.totalHits || 0, cloud.totalHits || 0);
+    save.streakDays = Math.max(save.streakDays || 0, cloud.streakDays || 0);
+    if (cloud.lastPlayedDate && (!save.lastPlayedDate || cloud.lastPlayedDate > save.lastPlayedDate)) {
+      save.lastPlayedDate = cloud.lastPlayedDate;
+    }
+    save.achievements = Array.from(new Set([...(save.achievements || []), ...(cloud.achievements || [])]));
+    if (!save.playerName && cloud.playerName) save.playerName = cloud.playerName;
+    const mergedLog = [...(save.leaderboard || []), ...(cloud.leaderboard || [])];
+    mergedLog.sort((a, b) => b.score - a.score);
+    save.leaderboard = mergedLog.slice(0, 8);
+  }
+
+  async function pushSaveToCloud() {
+    if (!fbUser || !fbDb) return;
+    try {
+      await fbDb.collection('users').doc(fbUser.uid).set({
+        highScore: save.highScore, bestLevel: save.bestLevel, bestCombo: save.bestCombo,
+        gamesPlayed: save.gamesPlayed, totalHits: save.totalHits, streakDays: save.streakDays,
+        lastPlayedDate: save.lastPlayedDate, achievements: save.achievements,
+        leaderboard: save.leaderboard, playerName: save.playerName,
+        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+      }, { merge: true });
+    } catch (e) { console.warn('Cloud save failed (offline?):', e); }
+  }
+
+  /* One document per player in the global leaderboard collection (doc ID =
+     their uid), so everyone appears exactly once, always showing their own
+     best -- and only overwritten with a NEW score if it's actually higher,
+     never regressed by an older/lower run on some other device. */
+  async function pushGlobalScore(name, score, level, combo) {
+    if (!fbUser || !fbDb) return;
+    try {
+      const ref = fbDb.collection('leaderboard').doc(fbUser.uid);
+      const snap = await ref.get();
+      if (!snap.exists || (snap.data().score || 0) < score) {
+        await ref.set({ name, score, level, combo, updatedAt: firebase.firestore.FieldValue.serverTimestamp() });
+        loadGlobalLeaderboard();
+      }
+    } catch (e) { console.warn('Global leaderboard update failed:', e); }
+  }
+
+  async function loadGlobalLeaderboard() {
+    if (!globalLeaderboardList) return;
+    if (!fbDb) {
+      globalLeaderboardList.innerHTML = '<div class="lb-empty">Global leaderboard needs a connection — try again shortly.</div>';
+      return;
+    }
+    try {
+      const q = await fbDb.collection('leaderboard').orderBy('score', 'desc').limit(10).get();
+      if (q.empty) {
+        globalLeaderboardList.innerHTML = '<div class="lb-empty">No trials recorded yet — sign in and set the first global record.</div>';
+        return;
+      }
+      let i = 0;
+      globalLeaderboardList.innerHTML = q.docs.map((doc) => {
+        const row = doc.data();
+        i++;
+        const rankClass = i <= 3 ? ' rank-' + i : '';
+        const youClass = fbUser && doc.id === fbUser.uid ? ' you' : '';
+        return '<div class="lb-row' + rankClass + youClass + '">' +
+          '<div class="lb-rank">' + i + '</div>' +
+          '<div class="lb-name">' + escapeHtml(row.name || 'Archer') + '</div>' +
+          '<div class="lb-score">' + row.score + '</div>' +
+          '</div>';
+      }).join('');
+    } catch (e) {
+      globalLeaderboardList.innerHTML = '<div class="lb-empty">Couldn’t load the global leaderboard right now.</div>';
+    }
+  }
+
+  async function signInWithGoogle() {
+    if (!fbAuth) return;
+    const provider = new firebase.auth.GoogleAuthProvider();
+    try {
+      await fbAuth.signInWithPopup(provider);
+    } catch (e) {
+      const popupIssue = e && (e.code === 'auth/popup-blocked' || e.code === 'auth/cancelled-popup-request' || e.code === 'auth/operation-not-supported-in-this-environment');
+      if (popupIssue) {
+        try { await fbAuth.signInWithRedirect(provider); } catch (e2) { console.warn('Sign-in failed:', e2); }
+      } else if (e && e.code !== 'auth/popup-closed-by-user') {
+        console.warn('Sign-in failed:', e);
+      }
+    }
+  }
+
+  /* The Firebase SDK <script> tags load with `defer` (so they never block
+     first paint) and this whole game script runs immediately/synchronously
+     -- meaning `window.firebase` is NOT guaranteed to exist yet at this
+     point in the file. Deferred scripts are guaranteed to finish, in
+     order, before DOMContentLoaded fires, so that's the safe place to
+     actually touch the SDK; everything above this is just function/const
+     definitions, safe to evaluate any time. */
+  function initCloudAccount() {
+    try {
+      if (window.firebase && firebase.initializeApp) {
+        firebase.initializeApp(firebaseConfig);
+        fbAuth = firebase.auth();
+        fbDb = firebase.firestore();
+      }
+    } catch (e) { console.warn('Cloud account unavailable, playing fully offline.', e); }
+
+    if (authBtn) {
+      authBtn.addEventListener('click', () => {
+        if (fbUser) { if (fbAuth) fbAuth.signOut(); }
+        else signInWithGoogle();
+      });
+    }
+
+    if (fbAuth) {
+      fbAuth.onAuthStateChanged(async (user) => {
+        fbUser = user;
+        renderAuthUI();
+        if (user && fbDb && !fbSyncing) {
+          fbSyncing = true;
+          try {
+            const doc = await fbDb.collection('users').doc(user.uid).get();
+            if (doc.exists) mergeCloudSave(doc.data());
+            if (!save.playerName && user.displayName) save.playerName = user.displayName.split(' ')[0];
+            persistSave();
+          } catch (e) { console.warn('Cloud sync failed:', e); }
+          fbSyncing = false;
+        }
+        loadGlobalLeaderboard();
+      });
+    } else {
+      renderAuthUI();
+      loadGlobalLeaderboard();
+    }
+  }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initCloudAccount);
+  } else {
+    initCloudAccount();
   }
 
   const bowX = W/2, bowY = ARENA_H - 34;
@@ -2549,6 +2790,7 @@
       drawArcherVector();
       if (pull > 0) drawArcherFrontArmVector(pull);
     }
+    return !drewAny;
   }
   function drawArcherVector() {
     const groundY = ARENA_H - 6;
@@ -2680,10 +2922,13 @@
     drawFill.classList.toggle('perfect', inPerfectZone);
     drawLabel.classList.toggle('perfect', inPerfectZone);
     drawLabel.textContent = inPerfectZone ? 'Perfect — Release!' : 'Draw Strength';
-    drawArcherSprite(pull);
-    if (!spriteReady(SPR.archerFull)) {
-      /* Vector bow fallback -- only needed for the brief window before the
-         photoreal sprites finish loading, so the stage is never blank. */
+    const archerDrewVector = drawArcherSprite(pull);
+    if (archerDrewVector) {
+      /* Vector bow fallback -- only draw this when drawArcherSprite() itself
+         had to fall back to the vector-drawn archer body (no photoreal
+         sprite -- 22-frame set, 3-pose crossfade -- was ready). The
+         photoreal archer already has its own bow baked into the artwork,
+         so drawing this vector bow on top of it would show two bows. */
       ctx.save();
       ctx.translate(bowX, bowY);
       ctx.rotate(angle + Math.PI / 2);
@@ -3003,6 +3248,7 @@
     renderLeaderboard(idx);
     lbEntry.classList.remove('show');
     lbSavedNote.classList.add('show');
+    if (typeof pushGlobalScore === 'function') pushGlobalScore(save.playerName, s, lvl, cmb);
   }
   lbSaveBtn.addEventListener('click', saveLeaderboardEntry);
   lbNameInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') saveLeaderboardEntry(); });
