@@ -400,13 +400,211 @@
   .auth-btn.signed-in { padding: 0 14px 0 5px; }
   .auth-avatar { width: 24px; height: 24px; border-radius: 50%; display: none; object-fit: cover; flex-shrink: 0; }
   .auth-btn.signed-in .auth-avatar { display: block; }
-  .auth-btn.signed-in .auth-google-icon { display: none; }
+  .auth-btn.signed-in .auth-default-icon { display: none; }
   .auth-label { white-space: nowrap; max-width: 92px; overflow: hidden; text-overflow: ellipsis; }
   @media (max-width: 640px) {
     .auth-btn { width: 34px; height: 34px; min-width: 36px; min-height: 36px; padding: 0; justify-content: center; }
     .auth-btn.signed-in { width: 34px; padding: 0; }
     .auth-label { display: none; }
   }
+
+  /* ---------- Sign-in provider menu: tapping the auth button while signed
+     out opens a small choice (Google / Facebook) instead of jumping
+     straight into one provider -- keeps the topbar to a single icon while
+     still offering both. ---------- */
+  .auth-wrap { position: relative; }
+  .auth-menu {
+    position: absolute; top: calc(100% + 8px); right: 0; z-index: 200;
+    min-width: 210px; padding: 7px;
+    background: linear-gradient(155deg, rgba(52,54,37,0.98), rgba(19,20,7,0.99));
+    border: 1px solid rgba(233,195,73,0.4); border-radius: 12px;
+    box-shadow: 0 14px 40px rgba(0,0,0,0.5), 0 0 30px rgba(233,195,73,0.18);
+    display: none; flex-direction: column; gap: 3px;
+    opacity: 0; transform: translateY(-6px); transition: opacity 0.2s var(--ease-premium), transform 0.2s var(--ease-premium);
+  }
+  .auth-menu.show { display: flex; opacity: 1; transform: translateY(0); }
+  .auth-menu-item {
+    display: flex; align-items: center; gap: 10px; width: 100%;
+    background: transparent; border: none; border-radius: 8px;
+    padding: 9px 10px; cursor: pointer; text-align: left;
+    font-family: var(--font-label); font-size: 12px; font-weight: 600; color: var(--fixed-text);
+    transition: background 0.2s ease;
+  }
+  .auth-menu-item:hover { background: rgba(233,195,73,0.12); }
+  .auth-menu-item svg { width: 18px; height: 18px; flex-shrink: 0; }
+  .auth-menu-signedout { display: flex; flex-direction: column; gap: 3px; }
+  .auth-menu-item.signout { color: #e74b38; }
+  .auth-menu-item.signout:hover { background: rgba(231,75,56,0.14); }
+
+  /* ---------- Signed-in state of the same dropdown: account card (avatar,
+     name, email) + an explicit Sign Out action -- tapping the round avatar
+     button now always opens this instead of signing out immediately, so a
+     stray tap can never log someone out by accident. ---------- */
+  .auth-menu-profile { display: flex; align-items: center; gap: 10px; padding: 8px 9px 10px; }
+  .auth-menu-profile-avatar {
+    width: 34px; height: 34px; border-radius: 50%; object-fit: cover; flex-shrink: 0;
+    background: rgba(233,195,73,0.15);
+  }
+  .auth-menu-profile-avatar.fallback {
+    display: flex; align-items: center; justify-content: center;
+    color: var(--fixed-gold-light); font-family: var(--font-display); font-size: 15px; font-weight: 700;
+  }
+  .auth-menu-profile-text { min-width: 0; flex: 1; }
+  .auth-menu-profile-text strong {
+    display: block; font-family: var(--font-label); font-size: 12.5px; color: var(--fixed-text);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .auth-menu-profile-text span {
+    display: block; font-family: var(--font-label); font-size: 10.5px; color: var(--fixed-text-dim);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .auth-menu-divider { height: 1px; background: rgba(233,195,73,0.18); margin: 2px 6px 5px; }
+
+  /* ---------- Email/password sign-in: its own small modal (not the topbar
+     dropdown) since it needs input fields -- opened from "Continue with
+     Email" in the dropdown, works whether or not a trial is in progress. ---------- */
+  .auth-veil {
+    position: fixed; inset: 0; background: rgba(6,7,2,0.78); backdrop-filter: blur(4px);
+    display: none; align-items: center; justify-content: center; z-index: 500; padding: 20px;
+  }
+  .auth-veil.show { display: flex; }
+  .auth-email-card {
+    width: min(360px, 100%); position: relative;
+    background: linear-gradient(180deg, rgba(233,195,73,0.07), transparent 25%), var(--surface-1);
+    border: 1px solid rgba(233,195,73,0.35); border-radius: 14px; padding: 28px 26px 24px; text-align: center;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.75), 0 0 40px rgba(233,195,73,0.10);
+    animation: fadeUp 0.4s cubic-bezier(.2,.8,.25,1);
+  }
+  .auth-email-close {
+    position: absolute; top: 10px; right: 12px; background: none; border: none; color: var(--text-dim);
+    font-size: 20px; line-height: 1; cursor: pointer; padding: 4px 6px; opacity: 0.65;
+  }
+  .auth-email-close:hover { opacity: 1; }
+  .auth-email-icon { color: var(--gold); margin-bottom: 6px; }
+  .auth-email-icon svg { width: 26px; height: 26px; }
+  .auth-email-card h3 { font-family: var(--font-display); font-size: 20px; color: var(--gold); margin-bottom: 4px; font-weight: 600; }
+  .auth-email-sub { font-family: var(--font-label); font-size: 11.5px; color: var(--text-dim); margin-bottom: 18px; line-height: 1.4; }
+  .auth-email-field { text-align: left; margin-bottom: 12px; }
+  .auth-email-field label {
+    display: block; font-family: var(--font-label); font-size: 10.5px; letter-spacing: 0.06em;
+    text-transform: uppercase; color: var(--gold-label); margin-bottom: 5px;
+  }
+  .auth-email-field input {
+    width: 100%; height: 40px; padding: 0 12px; border-radius: 8px;
+    background: var(--surface-2); border: 1px solid rgba(233,195,73,0.25); color: var(--text);
+    font-family: var(--font-label); font-size: 13px;
+  }
+  .auth-email-field input:focus { outline: none; border-color: rgba(233,195,73,0.6); }
+  .auth-email-error {
+    display: none; text-align: left; font-family: var(--font-label); font-size: 11px; color: #e74b38;
+    margin: -4px 0 12px; line-height: 1.4;
+  }
+  .auth-email-error.show { display: block; }
+  .auth-email-submit { width: 100%; margin-top: 4px; }
+  .auth-email-links { display: flex; align-items: center; justify-content: space-between; margin-top: 16px; gap: 10px; }
+  .auth-email-link {
+    background: none; border: none; cursor: pointer; padding: 2px;
+    font-family: var(--font-label); font-size: 11px; color: var(--text-dim); text-decoration: underline;
+  }
+  .auth-email-link:hover { color: var(--gold-light); }
+  @media (max-width: 480px) {
+    .auth-email-links { flex-direction: column; align-items: flex-start; gap: 8px; }
+  }
+
+  /* ---------- Simple text toast (sign-in errors/confirmations), reusing
+     the same toast-stack the achievement toasts use. ---------- */
+  .simple-toast {
+    display: flex; align-items: center; gap: 10px; width: 100%;
+    background: linear-gradient(155deg, rgba(52,54,37,0.96), rgba(19,20,7,0.98));
+    border: 1px solid rgba(233,195,73,0.5);
+    border-radius: 14px; padding: 12px 18px; text-align: left;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5), 0 0 34px rgba(233,195,73,0.28);
+    opacity: 0; transform: translateY(-16px) scale(0.92);
+    animation: toastIn 0.45s var(--ease-premium) forwards, toastOut 0.4s var(--ease-premium) forwards 3.9s;
+  }
+  .simple-toast strong { display: block; font-family: var(--font-display); font-weight: 600; font-size: 12.5px; color: var(--fixed-gold-light); margin-bottom: 2px; }
+  .simple-toast span { font-family: var(--font-label); font-size: 10.8px; color: var(--fixed-text-dim); line-height: 1.4; }
+
+  /* ---------- Soft, dismissible, one-time nudge to sign in -- shown once
+     per browser, never blocks play, and never reappears once dismissed or
+     once signed in. This is the entire "ask nicely, don't force it" login
+     strategy: the game must stay fully playable with zero account. ---------- */
+  .signin-nudge {
+    position: fixed; left: 50%; bottom: -160px; transform: translateX(-50%);
+    z-index: 150; width: min(92vw, 420px);
+    display: flex; align-items: center; gap: 12px;
+    background: linear-gradient(155deg, rgba(52,54,37,0.97), rgba(19,20,7,0.99));
+    border: 1px solid rgba(233,195,73,0.4); border-radius: 16px;
+    padding: 14px 34px 14px 16px; box-shadow: 0 14px 40px rgba(0,0,0,0.5), 0 0 30px rgba(233,195,73,0.18);
+    transition: bottom 0.5s var(--ease-premium);
+  }
+  .signin-nudge.show { bottom: 20px; }
+  .signin-nudge-icon { font-size: 24px; flex-shrink: 0; filter: drop-shadow(0 0 8px rgba(233,195,73,0.4)); }
+  .signin-nudge-text { flex: 1; min-width: 0; font-family: var(--font-label); }
+  .signin-nudge-text strong { display: block; font-family: var(--font-display); font-size: 13px; color: var(--fixed-gold-light); margin-bottom: 2px; }
+  .signin-nudge-text span { display: block; font-size: 10.8px; color: var(--fixed-text-dim); line-height: 1.4; }
+  .signin-nudge-btn {
+    flex-shrink: 0; background: linear-gradient(160deg, var(--gold-light), var(--gold)); color: #241a04; border: none;
+    font-family: var(--font-label); font-weight: 700; font-size: 11px; letter-spacing: 0.03em;
+    padding: 9px 14px; border-radius: 3px 8px 3px 8px; cursor: pointer; white-space: nowrap;
+  }
+  .signin-nudge-btn:hover { filter: brightness(1.08); }
+  .signin-nudge-close {
+    position: absolute; top: 6px; right: 8px; background: none; border: none; color: var(--fixed-text-dim);
+    font-size: 18px; line-height: 1; cursor: pointer; padding: 4px 6px; opacity: 0.65;
+  }
+  .signin-nudge-close:hover { opacity: 1; }
+  @media (max-width: 480px) {
+    .signin-nudge { width: calc(100vw - 24px); padding: 14px 30px 14px 14px; }
+    .signin-nudge-text span { display: none; }
+  }
+
+  /* ---------- Inline sign-in invite on the result scroll itself -- appears
+     only when a run was good enough to matter (same test as the local
+     Trial Log entry) AND the player isn't signed in. Uses the theme-
+     reactive surface tokens (not --fixed-*) because .scroll reskins light
+     in light theme, unlike the always-dark canvas HUD. ---------- */
+  .modal-signin-nudge {
+    display: none; align-items: center; gap: 10px; margin: 4px 0 14px;
+    padding: 12px 14px; border-radius: 3px 8px 3px 8px;
+    background: var(--surface-2); border: 1px solid rgba(233,195,73,0.3);
+  }
+  .modal-signin-nudge.show { display: flex; }
+  .modal-signin-nudge .msn-icon-wrap {
+    flex-shrink: 0; width: 30px; height: 30px; border-radius: 50%;
+    background: var(--surface-1); display: flex; align-items: center; justify-content: center;
+  }
+  .modal-signin-nudge .msn-icon-wrap svg { width: 16px; height: 16px; }
+  .modal-signin-nudge .msn-text { flex: 1; min-width: 0; }
+  .modal-signin-nudge .msn-text strong {
+    display: block; font-family: var(--font-label); font-size: 11px; letter-spacing: 0.04em;
+    text-transform: uppercase; color: var(--gold-label); margin-bottom: 2px;
+  }
+  .modal-signin-nudge .msn-text span { display: block; font-family: var(--font-label); font-size: 10.8px; color: var(--text-dim); line-height: 1.4; }
+  .modal-signin-nudge .msn-btn {
+    flex-shrink: 0; background: linear-gradient(160deg, var(--gold-light), var(--gold)); color: #241a04; border: none;
+    font-family: var(--font-label); font-weight: 700; font-size: 11px; letter-spacing: 0.03em;
+    padding: 9px 12px; border-radius: 3px 8px 3px 8px; cursor: pointer; white-space: nowrap;
+  }
+  .modal-signin-nudge .msn-btn:hover { filter: brightness(1.08); }
+  .modal-signin-done { display: none; font-family: var(--font-label); font-size: 11.5px; color: var(--gold-light); margin: 4px 0 14px; align-items: center; gap: 6px; }
+  .modal-signin-done.show { display: flex; }
+  @media (max-width: 480px) {
+    .modal-signin-nudge .msn-text span { display: none; }
+  }
+
+  /* ---------- Global leaderboard: country flag + scrollable top-100 list
+     (the local Trial Log stays the small auto-fill grid above -- this one
+     needs its own single-column, scrollable layout to hold far more rows
+     without turning into an unreadable multi-column wall). ---------- */
+  .lb-flag { flex-shrink: 0; font-size: 14px; width: 18px; text-align: center; line-height: 1; }
+  .leaderboard-list.global {
+    display: flex; flex-direction: column; gap: 6px;
+    max-height: 420px; overflow-y: auto; padding-right: 4px; margin-right: -4px;
+  }
+  .leaderboard-list.global::-webkit-scrollbar { width: 6px; }
+  .leaderboard-list.global::-webkit-scrollbar-track { background: transparent; }
+  .leaderboard-list.global::-webkit-scrollbar-thumb { background: rgba(233,195,73,0.3); border-radius: 4px; }
 
   /* ---------- Play-tab cinematic hero: full-width artwork, text + live stat cards ---------- */
   .cinematic-hero {
@@ -1452,21 +1650,99 @@
         <svg class="icon-svg" id="themeIconSun"><use href="#ic-sun"/></svg>
         <svg class="icon-svg" id="themeIconMoon" style="display:none"><use href="#ic-moon"/></svg>
       </button>
-      <button class="auth-btn" id="authBtn" type="button" aria-label="Sign in with Google" title="Sign in with Google to sync your progress and join the global leaderboard">
-        <img class="auth-avatar" id="authAvatar" alt="" src="">
-        <svg class="auth-google-icon" viewBox="0 0 18 18" width="16" height="16" aria-hidden="true">
-          <path fill="#4285F4" d="M17.64 9.2c0-.64-.06-1.25-.16-1.84H9v3.48h4.84c-.21 1.13-.84 2.09-1.79 2.73v2.27h2.9c1.7-1.56 2.69-3.87 2.69-6.64z"/>
-          <path fill="#34A853" d="M9 18c2.43 0 4.47-.8 5.96-2.18l-2.9-2.27c-.8.54-1.83.86-3.06.86-2.35 0-4.34-1.59-5.05-3.71H.97v2.33C2.45 15.98 5.48 18 9 18z"/>
-          <path fill="#FBBC05" d="M3.95 10.71c-.18-.54-.28-1.11-.28-1.71s.1-1.17.28-1.71V4.96H.97C.35 6.2 0 7.56 0 9s.35 2.8.97 4.04l2.98-2.33z"/>
-          <path fill="#EA4335" d="M9 3.58c1.32 0 2.51.45 3.44 1.35l2.58-2.58C13.46.89 11.43 0 9 0 5.48 0 2.45 2.02.97 4.96l2.98 2.33C4.66 5.17 6.65 3.58 9 3.58z"/>
-        </svg>
-        <span class="auth-label" id="authLabel">Sign in</span>
-      </button>
+      <div class="auth-wrap" id="authWrap">
+        <button class="auth-btn" id="authBtn" type="button" aria-label="Account" title="Sign in to sync your progress and join the global leaderboard">
+          <img class="auth-avatar" id="authAvatar" alt="" src="">
+          <svg class="auth-default-icon icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" width="16" height="16" aria-hidden="true">
+            <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M10 17l5-5-5-5" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M15 12H3" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <span class="auth-label" id="authLabel">Sign in</span>
+        </button>
+        <div class="auth-menu" id="authMenu" role="menu">
+          <div class="auth-menu-signedout" id="authMenuSignedOut">
+            <button class="auth-menu-item" id="authMenuGoogle" type="button" role="menuitem">
+              <svg viewBox="0 0 18 18" aria-hidden="true">
+                <path fill="#4285F4" d="M17.64 9.2c0-.64-.06-1.25-.16-1.84H9v3.48h4.84c-.21 1.13-.84 2.09-1.79 2.73v2.27h2.9c1.7-1.56 2.69-3.87 2.69-6.64z"/>
+                <path fill="#34A853" d="M9 18c2.43 0 4.47-.8 5.96-2.18l-2.9-2.27c-.8.54-1.83.86-3.06.86-2.35 0-4.34-1.59-5.05-3.71H.97v2.33C2.45 15.98 5.48 18 9 18z"/>
+                <path fill="#FBBC05" d="M3.95 10.71c-.18-.54-.28-1.11-.28-1.71s.1-1.17.28-1.71V4.96H.97C.35 6.2 0 7.56 0 9s.35 2.8.97 4.04l2.98-2.33z"/>
+                <path fill="#EA4335" d="M9 3.58c1.32 0 2.51.45 3.44 1.35l2.58-2.58C13.46.89 11.43 0 9 0 5.48 0 2.45 2.02.97 4.96l2.98 2.33C4.66 5.17 6.65 3.58 9 3.58z"/>
+              </svg>
+              <span>Continue with Google</span>
+            </button>
+            <button class="auth-menu-item" id="authMenuFacebook" type="button" role="menuitem">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#1877F2" d="M24 12.07C24 5.4 18.63 0 12 0S0 5.4 0 12.07C0 18.1 4.39 23.1 10.13 24v-8.44H7.08v-3.49h3.05V9.41c0-3.02 1.79-4.69 4.53-4.69 1.31 0 2.68.24 2.68.24v2.97h-1.51c-1.49 0-1.96.93-1.96 1.89v2.25h3.33l-.53 3.49h-2.8V24C19.61 23.1 24 18.1 24 12.07z"/></svg>
+              <span>Continue with Facebook</span>
+            </button>
+            <button class="auth-menu-item" id="authMenuEmail" type="button" role="menuitem">
+              <svg viewBox="0 0 24 24" fill="none" stroke="var(--fixed-gold-light)" stroke-width="1.6" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m4 7 8 6 8-6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              <span>Continue with Email</span>
+            </button>
+          </div>
+          <div class="auth-menu-signedin" id="authMenuSignedIn" style="display:none">
+            <div class="auth-menu-profile">
+              <img class="auth-menu-profile-avatar" id="authMenuAvatar" alt="" style="display:none">
+              <div class="auth-menu-profile-avatar fallback" id="authMenuAvatarFallback">A</div>
+              <div class="auth-menu-profile-text">
+                <strong id="authMenuName">Archer</strong>
+                <span id="authMenuEmailText"></span>
+              </div>
+            </div>
+            <div class="auth-menu-divider"></div>
+            <button class="auth-menu-item signout" id="authMenuSignOut" type="button" role="menuitem">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M9 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h3" stroke-linecap="round" stroke-linejoin="round"/><path d="M16 17l5-5-5-5" stroke-linecap="round" stroke-linejoin="round"/><path d="M21 12H9" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              <span>Sign out</span>
+            </button>
+          </div>
+        </div>
+      </div>
     </nav>
   </div>
 </header>
 
+<div class="auth-veil" id="authEmailVeil">
+  <div class="auth-email-card">
+    <button class="auth-email-close" id="authEmailClose" type="button" aria-label="Close">&times;</button>
+    <div class="auth-email-icon" aria-hidden="true">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m4 7 8 6 8-6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </div>
+    <h3 id="authEmailTitle">Sign In</h3>
+    <p class="auth-email-sub" id="authEmailSub">Sync your progress across devices and join the global leaderboard.</p>
+    <form id="authEmailForm">
+      <div class="auth-email-field" id="authEmailNameField" style="display:none">
+        <label for="authEmailName">Name</label>
+        <input type="text" id="authEmailName" maxlength="24" autocomplete="name" placeholder="Your name">
+      </div>
+      <div class="auth-email-field">
+        <label for="authEmailAddr">Email</label>
+        <input type="email" id="authEmailAddr" autocomplete="email" required placeholder="you@example.com">
+      </div>
+      <div class="auth-email-field">
+        <label for="authEmailPass">Password</label>
+        <input type="password" id="authEmailPass" autocomplete="current-password" required placeholder="At least 6 characters" minlength="6">
+      </div>
+      <div class="auth-email-error" id="authEmailError"></div>
+      <button type="submit" class="primary auth-email-submit" id="authEmailSubmit">Sign In</button>
+    </form>
+    <div class="auth-email-links">
+      <button type="button" class="auth-email-link" id="authEmailForgot">Forgot password?</button>
+      <button type="button" class="auth-email-link" id="authEmailToggleMode">Create an account</button>
+    </div>
+  </div>
+</div>
+
 <div class="header-spacer"></div>
+
+<div class="signin-nudge" id="signinNudge" role="note" aria-live="polite">
+  <button class="signin-nudge-close" id="signinNudgeClose" type="button" aria-label="Dismiss">&times;</button>
+  <div class="signin-nudge-icon" aria-hidden="true">🏹</div>
+  <div class="signin-nudge-text">
+    <strong>Save your progress?</strong>
+    <span>Sign in with Google to sync your best score across devices and join the global leaderboard. Totally optional.</span>
+  </div>
+  <button class="signin-nudge-btn" id="signinNudgeBtn" type="button">Sign in</button>
+</div>
 
 <div class="tab-panel active" id="tabPlay">
 
@@ -1621,6 +1897,22 @@
             </div>
           </div>
           <div class="lb-saved-note" id="lbSavedNote">Saved to your trial log.</div>
+          <div class="modal-signin-nudge" id="modalSigninNudge">
+            <div class="msn-icon-wrap" aria-hidden="true">
+              <svg viewBox="0 0 18 18" width="16" height="16">
+                <path fill="#4285F4" d="M17.64 9.2c0-.64-.06-1.25-.16-1.84H9v3.48h4.84c-.21 1.13-.84 2.09-1.79 2.73v2.27h2.9c1.7-1.56 2.69-3.87 2.69-6.64z"/>
+                <path fill="#34A853" d="M9 18c2.43 0 4.47-.8 5.96-2.18l-2.9-2.27c-.8.54-1.83.86-3.06.86-2.35 0-4.34-1.59-5.05-3.71H.97v2.33C2.45 15.98 5.48 18 9 18z"/>
+                <path fill="#FBBC05" d="M3.95 10.71c-.18-.54-.28-1.11-.28-1.71s.1-1.17.28-1.71V4.96H.97C.35 6.2 0 7.56 0 9s.35 2.8.97 4.04l2.98-2.33z"/>
+                <path fill="#EA4335" d="M9 3.58c1.32 0 2.51.45 3.44 1.35l2.58-2.58C13.46.89 11.43 0 9 0 5.48 0 2.45 2.02.97 4.96l2.98 2.33C4.66 5.17 6.65 3.58 9 3.58z"/>
+              </svg>
+            </div>
+            <div class="msn-text">
+              <strong>Rank yourself worldwide</strong>
+              <span>Sign in with Google to add this run to the global leaderboard.</span>
+            </div>
+            <button class="msn-btn" id="modalSigninBtn" type="button">Sign in</button>
+          </div>
+          <div class="modal-signin-done" id="modalSigninDone">🌍 Added to the global leaderboard.</div>
           <button class="modal-share-btn" id="shareResultBtn" type="button">
             <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="18" cy="5" r="2.6"/><circle cx="6" cy="12" r="2.6"/><circle cx="18" cy="19" r="2.6"/><path d="M8.3 10.7 15.7 6.3M8.3 13.3 15.7 17.7" stroke-linecap="round"/></svg>
             <span class="msb-label">Share This Result</span>
@@ -1675,7 +1967,7 @@
     <span>Global Leaderboard</span>
   </div>
   <div class="record-heading-sub" id="globalLeaderboardSub">Sign in with Google to see how you rank worldwide</div>
-  <div class="leaderboard-list" id="globalLeaderboardList"><div class="lb-empty">Loading...</div></div>
+  <div class="leaderboard-list global" id="globalLeaderboardList"><div class="lb-empty">Loading...</div></div>
 </aside>
 </div>
 
@@ -3111,27 +3403,146 @@
   const authBtn = document.getElementById('authBtn');
   const authLabel = document.getElementById('authLabel');
   const authAvatar = document.getElementById('authAvatar');
+  const authWrap = document.getElementById('authWrap');
+  const authMenu = document.getElementById('authMenu');
+  const authMenuGoogle = document.getElementById('authMenuGoogle');
+  const authMenuFacebook = document.getElementById('authMenuFacebook');
+  const authMenuEmail = document.getElementById('authMenuEmail');
+  const authMenuSignedOut = document.getElementById('authMenuSignedOut');
+  const authMenuSignedIn = document.getElementById('authMenuSignedIn');
+  const authMenuAvatar = document.getElementById('authMenuAvatar');
+  const authMenuAvatarFallback = document.getElementById('authMenuAvatarFallback');
+  const authMenuName = document.getElementById('authMenuName');
+  const authMenuEmailText = document.getElementById('authMenuEmailText');
+  const authMenuSignOut = document.getElementById('authMenuSignOut');
+  const authEmailVeil = document.getElementById('authEmailVeil');
+  const authEmailClose = document.getElementById('authEmailClose');
+  const authEmailForm = document.getElementById('authEmailForm');
+  const authEmailTitle = document.getElementById('authEmailTitle');
+  const authEmailSub = document.getElementById('authEmailSub');
+  const authEmailNameField = document.getElementById('authEmailNameField');
+  const authEmailName = document.getElementById('authEmailName');
+  const authEmailAddr = document.getElementById('authEmailAddr');
+  const authEmailPass = document.getElementById('authEmailPass');
+  const authEmailError = document.getElementById('authEmailError');
+  const authEmailSubmit = document.getElementById('authEmailSubmit');
+  const authEmailForgot = document.getElementById('authEmailForgot');
+  const authEmailToggleMode = document.getElementById('authEmailToggleMode');
+  let authEmailMode = 'signin';
   const globalLeaderboardList = document.getElementById('globalLeaderboardList');
   const globalLeaderboardSub = document.getElementById('globalLeaderboardSub');
+  const signinNudge = document.getElementById('signinNudge');
+  const signinNudgeClose = document.getElementById('signinNudgeClose');
+  const signinNudgeBtn = document.getElementById('signinNudgeBtn');
+  const modalSigninNudge = document.getElementById('modalSigninNudge');
+  const modalSigninBtn = document.getElementById('modalSigninBtn');
+  const modalSigninDone = document.getElementById('modalSigninDone');
+  let lastTrialScore = 0, lastTrialLevel = 1, lastTrialCombo = 0;
+
+  /* ---------- Simple text toast, reusing the achievement-toast visual
+     system for sign-in errors/confirmations (see .simple-toast CSS). ---------- */
+  function showSimpleToast(title, message) {
+    if (!toastStack) return;
+    const el = document.createElement('div');
+    el.className = 'simple-toast';
+    el.innerHTML = '<div class="txt"><strong>' + escapeHtml(title) + '</strong><span>' + escapeHtml(message) + '</span></div>';
+    toastStack.appendChild(el);
+    setTimeout(() => { el.remove(); }, 4300);
+  }
+
+  /* ---------- Country flag for the global leaderboard: converts a 2-letter
+     ISO country code into its flag emoji (regional-indicator trick -- no
+     image assets needed). Detected once via a free, keyless IP-geolocation
+     endpoint and cached in localStorage; if it fails (offline, blocked,
+     ad-blocker) the player's row simply shows a globe instead of a flag --
+     never blocks anything. ---------- */
+  let userCountry = null;
+  function countryCodeToFlag(cc) {
+    if (!cc || cc.length !== 2) return '🌐';
+    const upper = cc.toUpperCase();
+    if (!/^[A-Z]{2}$/.test(upper)) return '🌐';
+    return String.fromCodePoint(...[...upper].map(c => 127397 + c.charCodeAt(0)));
+  }
+  async function detectCountry() {
+    try {
+      const cached = localStorage.getItem('matsyaVedhCountry');
+      if (cached) { userCountry = JSON.parse(cached); return; }
+    } catch (e) {}
+    try {
+      const res = await fetch('https://get.geojs.io/v1/ip/country.json');
+      if (res.ok) {
+        const data = await res.json();
+        if (data && data.country) {
+          userCountry = { code: data.country, name: data.name || data.country };
+          try { localStorage.setItem('matsyaVedhCountry', JSON.stringify(userCountry)); } catch (e) {}
+        }
+      }
+    } catch (e) { /* offline or blocked -- fine, just no flag for this player */ }
+  }
+  detectCountry();
+
+  /* ---------- Soft, dismissible, one-time sign-in nudge -- never nags:
+     shown once ever per browser (after a short delay so it never competes
+     with first paint), and permanently remembered as dismissed the moment
+     the player closes it, signs in, or taps "Sign in" from it. ---------- */
+  function dismissSigninNudge(remember) {
+    if (signinNudge) signinNudge.classList.remove('show');
+    if (remember) { try { localStorage.setItem('matsyaVedhSigninNudgeSeen', '1'); } catch (e) {} }
+  }
+  function maybeShowSigninNudge() {
+    if (fbUser || !signinNudge) return;
+    try { if (localStorage.getItem('matsyaVedhSigninNudgeSeen')) return; } catch (e) {}
+    setTimeout(() => { if (!fbUser) signinNudge.classList.add('show'); }, 2200);
+  }
+  if (signinNudgeClose) signinNudgeClose.addEventListener('click', () => dismissSigninNudge(true));
+  if (signinNudgeBtn) signinNudgeBtn.addEventListener('click', () => { dismissSigninNudge(true); signInWithGoogle(); });
+  if (modalSigninBtn) modalSigninBtn.addEventListener('click', () => { dismissSigninNudge(true); signInWithGoogle(); });
 
   function renderAuthUI() {
     if (!authBtn) return;
     if (fbUser) {
       authBtn.classList.add('signed-in');
-      const displayName = fbUser.displayName || fbUser.email || 'Archer';
-      authBtn.title = 'Signed in as ' + displayName + ' — tap to sign out';
+      const displayName = fbUser.displayName || (fbUser.email ? fbUser.email.split('@')[0] : 'Archer');
+      authBtn.title = 'Signed in as ' + displayName + ' — tap for account options';
       if (authLabel) authLabel.textContent = displayName.split(' ')[0];
       if (authAvatar) {
         if (fbUser.photoURL) { authAvatar.src = fbUser.photoURL; authAvatar.style.display = ''; }
-        else authAvatar.style.display = 'none'; // no photo on the Google account -- avoid a broken-image icon
+        else authAvatar.style.display = 'none'; // no photo on the account -- avoid a broken-image icon
       }
+      /* Populate the dropdown's account card -- same photo-or-initial
+         fallback logic as the topbar avatar, just a bit bigger. */
+      if (authMenuName) authMenuName.textContent = displayName;
+      if (authMenuEmailText) authMenuEmailText.textContent = fbUser.email || '';
+      if (authMenuAvatar && authMenuAvatarFallback) {
+        if (fbUser.photoURL) {
+          authMenuAvatar.src = fbUser.photoURL;
+          authMenuAvatar.style.display = '';
+          authMenuAvatarFallback.style.display = 'none';
+        } else {
+          authMenuAvatar.style.display = 'none';
+          authMenuAvatarFallback.style.display = 'flex';
+          authMenuAvatarFallback.textContent = displayName.charAt(0).toUpperCase();
+        }
+      }
+      if (authMenuSignedOut) authMenuSignedOut.style.display = 'none';
+      if (authMenuSignedIn) authMenuSignedIn.style.display = 'block';
     } else {
       authBtn.classList.remove('signed-in');
-      authBtn.title = 'Sign in with Google to sync your progress and join the global leaderboard';
+      authBtn.title = 'Sign in to sync your progress and join the global leaderboard';
       if (authLabel) authLabel.textContent = 'Sign in';
+      if (authMenuSignedOut) authMenuSignedOut.style.display = 'flex';
+      if (authMenuSignedIn) authMenuSignedIn.style.display = 'none';
     }
     if (globalLeaderboardSub) {
-      globalLeaderboardSub.textContent = fbUser ? 'Top archers across every signed-in device' : 'Sign in with Google to see how you rank worldwide';
+      globalLeaderboardSub.textContent = fbUser ? 'Top 100 archers worldwide' : 'Sign in to see how you rank worldwide';
+    }
+    if (fbUser) {
+      dismissSigninNudge(true);
+      if (modalSigninNudge) modalSigninNudge.classList.remove('show');
+      closeAuthMenu();
+      closeAuthEmailModal();
+    } else {
+      maybeShowSigninNudge();
     }
   }
 
@@ -3179,7 +3590,9 @@
       const ref = fbDb.collection('leaderboard').doc(fbUser.uid);
       const snap = await ref.get();
       if (!snap.exists || (snap.data().score || 0) < score) {
-        await ref.set({ name, score, level, combo, updatedAt: firebase.firestore.FieldValue.serverTimestamp() });
+        const data = { name, score, level, combo, updatedAt: firebase.firestore.FieldValue.serverTimestamp() };
+        if (userCountry && userCountry.code) { data.countryCode = userCountry.code; data.countryName = userCountry.name; }
+        await ref.set(data, { merge: true });
         loadGlobalLeaderboard();
       }
     } catch (e) { console.warn('Global leaderboard update failed:', e); }
@@ -3192,7 +3605,7 @@
       return;
     }
     try {
-      const q = await fbDb.collection('leaderboard').orderBy('score', 'desc').limit(10).get();
+      const q = await fbDb.collection('leaderboard').orderBy('score', 'desc').limit(100).get();
       if (q.empty) {
         globalLeaderboardList.innerHTML = '<div class="lb-empty">No trials recorded yet — sign in and set the first global record.</div>';
         return;
@@ -3203,8 +3616,11 @@
         i++;
         const rankClass = i <= 3 ? ' rank-' + i : '';
         const youClass = fbUser && doc.id === fbUser.uid ? ' you' : '';
+        const flag = countryCodeToFlag(row.countryCode);
+        const countryTitle = row.countryName ? ' title="' + escapeHtml(row.countryName) + '"' : ' title="Unknown country"';
         return '<div class="lb-row' + rankClass + youClass + '">' +
           '<div class="lb-rank">' + i + '</div>' +
+          '<div class="lb-flag"' + countryTitle + '>' + flag + '</div>' +
           '<div class="lb-name">' + escapeHtml(row.name || 'Archer') + '</div>' +
           '<div class="lb-score">' + row.score + '</div>' +
           '</div>';
@@ -3214,20 +3630,147 @@
     }
   }
 
+  /* Turns a Firebase Auth error into a short, human message -- returns null
+     for errors that don't need one (the player closed the popup themselves,
+     nothing went wrong). Every OTHER path now always shows something, so a
+     tap on "Sign in" is never a silent no-op -- if the sign-in system
+     itself is unreachable (SDK blocked, popup blocked, wrong domain, no
+     network) the player sees exactly that, instead of nothing happening. */
+  function authErrorMessage(e) {
+    const code = e && e.code;
+    if (code === 'auth/popup-closed-by-user' || code === 'auth/cancelled-popup-request') return null;
+    if (code === 'auth/unauthorized-domain') return 'Sign-in isn’t enabled for this website yet.';
+    if (code === 'auth/network-request-failed') return 'No connection — sign-in needs the internet.';
+    if (code === 'auth/account-exists-with-different-credential') return 'This email is already linked to a different sign-in method — try that one instead.';
+    if (code === 'auth/email-already-in-use') return 'An account already exists with this email — try signing in instead.';
+    if (code === 'auth/invalid-email') return 'That doesn’t look like a valid email address.';
+    if (code === 'auth/weak-password') return 'Password should be at least 6 characters.';
+    if (code === 'auth/wrong-password' || code === 'auth/invalid-credential' || code === 'auth/invalid-login-credentials') return 'Incorrect email or password.';
+    if (code === 'auth/user-not-found') return 'No account found with this email.';
+    if (code === 'auth/too-many-requests') return 'Too many attempts — please wait a moment and try again.';
+    return 'Sign-in isn’t working right now — try again in a moment.';
+  }
+
+  /* ---------- Google / Facebook sign-in: full-page redirect, not a popup.
+     A popup window is unreliable across browsers -- some (especially on
+     mobile) open it as an actual new tab instead of a small floating
+     window, which reads as broken/confusing. signInWithRedirect instead
+     navigates the SAME tab out to the provider and straight back -- no
+     second window or tab ever appears. Errors from a completed redirect
+     surface later via getRedirectResult() near initCloudAccount(). ---------- */
   async function signInWithGoogle() {
-    if (!fbAuth) return;
-    const provider = new firebase.auth.GoogleAuthProvider();
+    if (!fbAuth) {
+      showSimpleToast('Sign-in unavailable', 'Couldn’t reach Google sign-in right now — check your connection and try again.');
+      return;
+    }
+    closeAuthMenu();
     try {
-      await fbAuth.signInWithPopup(provider);
+      await fbAuth.signInWithRedirect(new firebase.auth.GoogleAuthProvider());
     } catch (e) {
-      const popupIssue = e && (e.code === 'auth/popup-blocked' || e.code === 'auth/cancelled-popup-request' || e.code === 'auth/operation-not-supported-in-this-environment');
-      if (popupIssue) {
-        try { await fbAuth.signInWithRedirect(provider); } catch (e2) { console.warn('Sign-in failed:', e2); }
-      } else if (e && e.code !== 'auth/popup-closed-by-user') {
-        console.warn('Sign-in failed:', e);
-      }
+      const msg = authErrorMessage(e);
+      if (msg) showSimpleToast('Sign-in failed', msg);
+      console.warn('Sign-in failed:', e);
     }
   }
+
+  async function signInWithFacebook() {
+    if (!fbAuth) {
+      showSimpleToast('Sign-in unavailable', 'Couldn’t reach Facebook sign-in right now — check your connection and try again.');
+      return;
+    }
+    closeAuthMenu();
+    const provider = new firebase.auth.FacebookAuthProvider();
+    provider.addScope('email');
+    try {
+      await fbAuth.signInWithRedirect(provider);
+    } catch (e) {
+      const msg = authErrorMessage(e);
+      if (msg) showSimpleToast('Sign-in failed', msg);
+      console.warn('Sign-in failed:', e);
+    }
+  }
+
+  /* ---------- Email/password sign-in -- its own small modal (opened from
+     "Continue with Email" in the dropdown) since it needs input fields.
+     Includes email verification on sign-up (non-blocking: the account
+     works immediately, the verification email is just sent alongside). ---------- */
+  function openAuthEmailModal(mode) {
+    closeAuthMenu();
+    setAuthEmailMode(mode || 'signin');
+    if (authEmailError) authEmailError.classList.remove('show');
+    if (authEmailForm) authEmailForm.reset();
+    if (authEmailVeil) authEmailVeil.classList.add('show');
+    setTimeout(() => { if (authEmailAddr) authEmailAddr.focus(); }, 50);
+  }
+  function closeAuthEmailModal() { if (authEmailVeil) authEmailVeil.classList.remove('show'); }
+  function setAuthEmailMode(mode) {
+    authEmailMode = mode;
+    const isSignup = mode === 'signup';
+    if (authEmailNameField) authEmailNameField.style.display = isSignup ? 'block' : 'none';
+    if (authEmailTitle) authEmailTitle.textContent = isSignup ? 'Create Account' : 'Sign In';
+    if (authEmailSub) authEmailSub.textContent = isSignup
+      ? 'We’ll send a verification link to confirm your email.'
+      : 'Sync your progress across devices and join the global leaderboard.';
+    if (authEmailSubmit) authEmailSubmit.textContent = isSignup ? 'Create Account' : 'Sign In';
+    if (authEmailToggleMode) authEmailToggleMode.textContent = isSignup ? 'Already have an account? Sign in' : 'Create an account';
+    if (authEmailError) authEmailError.classList.remove('show');
+  }
+  function showAuthEmailError(msg) {
+    if (!authEmailError) return;
+    authEmailError.textContent = msg;
+    authEmailError.classList.add('show');
+  }
+  if (authEmailClose) authEmailClose.addEventListener('click', closeAuthEmailModal);
+  if (authEmailVeil) authEmailVeil.addEventListener('click', (e) => { if (e.target === authEmailVeil) closeAuthEmailModal(); });
+  if (authEmailToggleMode) authEmailToggleMode.addEventListener('click', () => setAuthEmailMode(authEmailMode === 'signup' ? 'signin' : 'signup'));
+  if (authEmailForgot) authEmailForgot.addEventListener('click', async () => {
+    const email = (authEmailAddr && authEmailAddr.value || '').trim();
+    if (!email) { showAuthEmailError('Enter your email above first, then tap "Forgot password?" again.'); return; }
+    if (!fbAuth) { showAuthEmailError('Couldn’t reach the sign-in system right now.'); return; }
+    try {
+      await fbAuth.sendPasswordResetEmail(email);
+      showAuthEmailError('Password reset email sent — check your inbox.');
+    } catch (e) { showAuthEmailError(authErrorMessage(e) || 'Couldn’t send the reset email right now.'); }
+  });
+  if (authEmailForm) authEmailForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    if (!fbAuth) { showAuthEmailError('Couldn’t reach the sign-in system right now.'); return; }
+    const email = (authEmailAddr && authEmailAddr.value || '').trim();
+    const password = authEmailPass && authEmailPass.value || '';
+    const name = (authEmailName && authEmailName.value || '').trim();
+    if (authEmailError) authEmailError.classList.remove('show');
+    if (authEmailSubmit) authEmailSubmit.disabled = true;
+    try {
+      if (authEmailMode === 'signup') {
+        const cred = await fbAuth.createUserWithEmailAndPassword(email, password);
+        if (name && cred.user) { try { await cred.user.updateProfile({ displayName: name }); } catch (e2) {} }
+        try { await cred.user.sendEmailVerification(); } catch (e3) {}
+        showSimpleToast('Account created', 'A verification link was sent to your email.');
+      } else {
+        await fbAuth.signInWithEmailAndPassword(email, password);
+      }
+      closeAuthEmailModal();
+    } catch (err) {
+      showAuthEmailError(authErrorMessage(err) || 'Something went wrong — try again.');
+    } finally {
+      if (authEmailSubmit) authEmailSubmit.disabled = false;
+    }
+  });
+
+  /* ---------- Sign-in/account menu open/close. Tapping the main auth
+     button ALWAYS opens this dropdown now, whether signed in or out --
+     it never signs out on its own tap. Signed out: choose a provider.
+     Signed in: see the account card and an explicit "Sign out" button.
+     Tapping outside, or picking an option, closes it. ---------- */
+  function closeAuthMenu() { if (authMenu) authMenu.classList.remove('show'); }
+  function toggleAuthMenu() { if (authMenu) authMenu.classList.toggle('show'); }
+  if (authMenuGoogle) authMenuGoogle.addEventListener('click', signInWithGoogle);
+  if (authMenuFacebook) authMenuFacebook.addEventListener('click', signInWithFacebook);
+  if (authMenuEmail) authMenuEmail.addEventListener('click', () => openAuthEmailModal('signin'));
+  if (authMenuSignOut) authMenuSignOut.addEventListener('click', () => { closeAuthMenu(); if (fbAuth) fbAuth.signOut(); });
+  document.addEventListener('click', (e) => {
+    if (authWrap && authMenu && authMenu.classList.contains('show') && !authWrap.contains(e.target)) closeAuthMenu();
+  });
 
   /* The Firebase SDK <script> tags load with `defer` (so they never block
      first paint) and this whole game script runs immediately/synchronously
@@ -3246,14 +3789,31 @@
     } catch (e) { console.warn('Cloud account unavailable, playing fully offline.', e); }
 
     if (authBtn) {
-      authBtn.addEventListener('click', () => {
-        if (fbUser) { if (fbAuth) fbAuth.signOut(); }
-        else signInWithGoogle();
+      authBtn.addEventListener('click', toggleAuthMenu);
+    }
+
+    /* A signInWithRedirect() navigates away and back -- this is where its
+       result (or error) actually surfaces, on the page load right after
+       the provider sends the player back. onAuthStateChanged above still
+       fires normally on success; this just catches failures (e.g. an
+       account-exists-with-different-credential clash) that a redirect
+       can't report any other way, so redirect sign-in is never a silent
+       failure either. */
+    if (fbAuth) {
+      fbAuth.getRedirectResult().catch((e) => {
+        const msg = authErrorMessage(e);
+        if (msg) showSimpleToast('Sign-in failed', msg);
+        if (e) console.warn('Redirect sign-in failed:', e);
       });
     }
 
     if (fbAuth) {
       fbAuth.onAuthStateChanged(async (user) => {
+        const justSignedIn = !fbUser && user;
+        /* Captured BEFORE renderAuthUI(), which unconditionally hides this
+           nudge the moment fbUser is truthy -- checking the class after
+           that call would always see it already gone. */
+        const nudgeWasShowing = !!(modalSigninNudge && modalSigninNudge.classList.contains('show'));
         fbUser = user;
         renderAuthUI();
         if (user && fbDb && !fbSyncing) {
@@ -3265,6 +3825,15 @@
             persistSave();
           } catch (e) { console.warn('Cloud sync failed:', e); }
           fbSyncing = false;
+        }
+        /* Signed in while the result scroll was still open with an
+           unclaimed run sitting on it (the modal sign-in nudge was
+           showing) -- push that same run to the global leaderboard right
+           now instead of making them replay just to appear on it. */
+        if (justSignedIn && nudgeWasShowing && lastTrialScore > 0) {
+          const name = save.playerName || (user.displayName ? user.displayName.split(' ')[0] : 'Archer');
+          await pushGlobalScore(name, lastTrialScore, lastTrialLevel, lastTrialCombo);
+          if (modalSigninDone) modalSigninDone.classList.add('show');
         }
         loadGlobalLeaderboard();
       });
@@ -4286,6 +4855,11 @@
     } else {
       lbEntry.classList.remove('show');
     }
+    lastTrialScore = score;
+    lastTrialLevel = level;
+    lastTrialCombo = save.bestCombo;
+    if (modalSigninDone) modalSigninDone.classList.remove('show');
+    if (modalSigninNudge) modalSigninNudge.classList.toggle('show', !fbUser && qualifiesForLeaderboard(score));
     modalVeil.style.display = 'flex';
   }
 
