@@ -1016,6 +1016,21 @@
     .audio-controls { flex-shrink: 0; gap: 5px; }
     .sound-btn { width: 23px; height: 23px; }
     .sound-btn .icon-svg { width: 12px; height: 12px; }
+
+    /* Notifications (achievement unlocks + sign-in toasts) must never sit
+       under/near the header on small screens -- slide them up from the
+       bottom of the viewport instead, same direction as .signin-nudge. */
+    .toast-stack { top: auto; bottom: 20px; }
+    .achv-toast {
+      transform: translateY(16px) scale(0.92);
+      animation: toastInMobile 0.45s var(--ease-premium) forwards, toastOutMobile 0.4s var(--ease-premium) forwards 3.3s;
+    }
+    .simple-toast {
+      transform: translateY(16px) scale(0.92);
+      animation: toastInMobile 0.45s var(--ease-premium) forwards, toastOutMobile 0.4s var(--ease-premium) forwards 3.9s;
+    }
+    @keyframes toastInMobile { to { opacity: 1; transform: translateY(0) scale(1); } }
+    @keyframes toastOutMobile { to { opacity: 0; transform: translateY(10px) scale(0.95); } }
   }
 
   /* ================================================================
