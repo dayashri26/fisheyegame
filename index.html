@@ -764,6 +764,11 @@
     box-shadow: 0 0 8px rgba(233,195,73,0.25);
   }
   .record-badge .icon-svg { width: 15px; height: 15px; color: inherit; filter: none; }
+  .next-achievement {
+    margin-top: 8px; font-family: var(--font-label); font-size: 10.5px; letter-spacing: 0.05em;
+    color: var(--text-dim); opacity: 0.85;
+  }
+  .next-achievement strong { color: var(--gold-light); font-weight: 600; }
 
   /* Trial Log rows -- kept fixed-dark-on-purpose (not theme-reactive) as a
      guaranteed-legible fallback: they used an undefined --text-main custom
@@ -972,7 +977,24 @@
     transition: opacity 0.2s ease;
   }
   .combo-badge.show { animation: comboPop 0.42s var(--ease-premium) forwards; }
-  .combo-badge.hot { background: linear-gradient(160deg, var(--fixed-gold-light), var(--fixed-gold)); color: #1a1500; box-shadow: 0 2px 10px rgba(233,195,73,0.7), inset 0 1px 0 rgba(255,255,255,0.5); }
+  /* HOT tier (x3-4): a restrained pulse layered on top of the pop-in --
+     noticeable without being distracting mid-gameplay. */
+  .combo-badge.combo-pulse { animation: comboPop 0.42s var(--ease-premium) forwards, comboPulse 0.7s ease-in-out 0.42s infinite; }
+  /* MASTER tier (x5+): the premium gold gradient plus a soft animated
+     ring -- reserved for the rarer, more impressive streaks. */
+  .combo-badge.hot {
+    background: linear-gradient(160deg, var(--fixed-gold-light), var(--fixed-gold)); color: #1a1500;
+    box-shadow: 0 2px 10px rgba(233,195,73,0.7), inset 0 1px 0 rgba(255,255,255,0.5);
+    animation: comboPop 0.42s var(--ease-premium) forwards, comboMasterRing 1.1s ease-in-out 0.42s infinite;
+  }
+  @keyframes comboPulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+  }
+  @keyframes comboMasterRing {
+    0%, 100% { box-shadow: 0 2px 8px rgba(233,195,73,0.55), 0 0 0 0 rgba(255,240,180,0.5); }
+    50% { box-shadow: 0 2px 14px rgba(233,195,73,0.85), 0 0 0 4px rgba(255,240,180,0.18); }
+  }
   @keyframes comboPop {
     0%   { opacity: 0; transform: scale(0.4) rotate(-8deg); }
     55%  { opacity: 1; transform: scale(1.18) rotate(4deg); }
@@ -1103,10 +1125,15 @@
     box-shadow: 0 0 10px rgba(233,195,73,0.7);
     transition: width 0.05s linear, background 0.15s ease, box-shadow 0.15s ease;
   }
+  .draw-strength .fill.good {
+    background: linear-gradient(90deg, var(--fixed-vermilion), var(--fixed-gold));
+    box-shadow: 0 0 12px rgba(233,195,73,0.8);
+  }
   .draw-strength .fill.perfect {
     background: linear-gradient(90deg, var(--fixed-gold-light), #fff2c0);
     box-shadow: 0 0 18px rgba(255,240,180,0.95);
   }
+  .draw-strength .label.good { color: var(--fixed-gold-light); opacity: 1; }
   .draw-strength .label.perfect { color: #fff2c0; text-shadow: 0 0 10px rgba(255,240,180,0.8); }
 
   /* ---------- Level banner ---------- */
@@ -1203,6 +1230,14 @@
   .scroll .stats-row div { text-align: center; }
   .scroll .stats-row .num { font-family: var(--font-display-bold); font-weight: 700; font-size: 27px; color: var(--gold); display: block; }
   .scroll .stats-row .lbl { font-family: var(--font-label); font-size: 9px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--gold-dim); }
+  /* Post-game psychology (spec #20): recognizes improvement, not only
+     victory -- a plain distance-from-best reads neutral, a beaten record
+     gets the brighter gold treatment. */
+  .record-msg {
+    font-family: var(--font-label); font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--gold-light, var(--gold)); text-align: center; margin: -8px 0 18px;
+  }
+  .record-msg.record-new { color: #fff2c0; text-shadow: 0 0 10px rgba(255,240,180,0.5); }
 
   /* A carved brass seal, not the generic AI-gradient pill button: notched
      corners, a beveled rim, and small corner rivets. */
@@ -1878,7 +1913,7 @@
 
         <div class="level-banner" id="levelBanner">
           <div class="rule"></div>
-          <div class="small">Level Cleared</div>
+          <div class="small" id="levelBannerSmall">Level Cleared</div>
           <div class="big" id="levelBannerBig">Level 2</div>
           <div class="rule"></div>
         </div>
@@ -1901,11 +1936,17 @@
             <span class="txt" id="streakText">Day 1 streak</span>
           </div>
           <div id="modalStats" style="display:none" class="stats-row">
-            <div><span class="num" id="finalAccuracy">0%</span><span class="lbl">Accuracy</span></div>
+            <div><span class="num" id="finalAccuracy">0%</span><span class="lbl" id="finalAccuracyLbl">Accuracy</span></div>
             <div><span class="num" id="finalScore">0</span><span class="lbl">Final Score</span></div>
             <div><span class="num" id="finalLevel">1</span><span class="lbl">Level Reached</span></div>
             <div><span class="num" id="finalBest">0</span><span class="lbl">Personal Best</span></div>
           </div>
+          <div id="scoreBreakdown" style="display:none" class="stats-row">
+            <div><span class="num" id="bdRaw">0</span><span class="lbl">Raw</span></div>
+            <div><span class="num" id="bdCombo">0</span><span class="lbl">Combo Bonus</span></div>
+            <div><span class="num" id="bdPerfect">0</span><span class="lbl">Perfect Bonus</span></div>
+          </div>
+          <div class="record-msg" id="recordMsg" style="display:none"></div>
           <p id="modalText">
             Watch only the fish's reflection in the water below — fix your mind on its eye alone.<br>
             Move to aim. Hold to draw the bowstring. Release to loose the arrow.
@@ -1990,6 +2031,7 @@
     <span>Honors <span id="rpAchvCount">0</span>/<span id="rpAchvTotal">8</span></span>
   </div>
   <div class="record-badges" id="recordBadges"></div>
+  <div class="next-achievement" id="nextAchievement" style="display:none"></div>
   <div class="record-divider"></div>
   <div class="record-heading small">
     <svg class="icon-svg"><use href="#ic-crown"/></svg>
@@ -2649,6 +2691,12 @@
   const modalTagline = document.getElementById('modalTagline');
   const modalText = document.getElementById('modalText');
   const modalStats = document.getElementById('modalStats');
+  const finalAccuracyLbl = document.getElementById('finalAccuracyLbl');
+  const scoreBreakdown = document.getElementById('scoreBreakdown');
+  const bdRawEl = document.getElementById('bdRaw');
+  const bdComboEl = document.getElementById('bdCombo');
+  const bdPerfectEl = document.getElementById('bdPerfect');
+  const recordMsgEl = document.getElementById('recordMsg');
   const finalScoreEl = document.getElementById('finalScore');
   const finalLevelEl = document.getElementById('finalLevel');
   const startBtn = document.getElementById('startBtn');
@@ -2656,6 +2704,7 @@
   const flashEl = document.getElementById('flashEl');
   const levelBanner = document.getElementById('levelBanner');
   const levelBannerBig = document.getElementById('levelBannerBig');
+  const levelBannerSmall = document.getElementById('levelBannerSmall');
   const soundBtn = document.getElementById('soundBtn');
   const soundIconOn = document.getElementById('soundIconOn');
   const soundIconOff = document.getElementById('soundIconOff');
@@ -2680,6 +2729,7 @@
   const rpAchvCount = document.getElementById('rpAchvCount');
   const rpAchvTotal = document.getElementById('rpAchvTotal');
   const recordBadges = document.getElementById('recordBadges');
+  const nextAchievementEl = document.getElementById('nextAchievement');
   const leaderboardList = document.getElementById('leaderboardList');
   const lbEntry = document.getElementById('lbEntry');
   const lbNameInput = document.getElementById('lbNameInput');
@@ -2696,11 +2746,20 @@
   let combo = 0;
   let hitThisGame = false;
   let shotsThisTrial = 0, hitsThisTrial = 0;
+  /* Score breakdown accumulators for the result screen -- kept separate
+     from `score` itself so RAW/COMBO BONUS/PERFECT BONUS can be shown
+     transparently without changing how the final score is computed. */
+  let trialRawScore = 0, trialComboBonus = 0, trialPerfectBonus = 0;
+  /* Snapshotted at trial start (before this run can mutate `save`) so the
+     result screen can honestly compare "this run" against "the record
+     going in", instead of against a save object the run has already
+     been updating live as it went. */
+  let prevBestScore = 0, prevBestCombo = 0, prevBestAccuracy = 0;
 
   /* ---------- Persistence: high score, streak, achievements ---------- */
   const SAVE_KEY = 'matsyaVedhSave_v1';
   function defaultSave() {
-    return { highScore: 0, bestLevel: 1, bestCombo: 0, gamesPlayed: 0, totalHits: 0, totalShots: 0, streakDays: 0, bestStreak: 0, lastPlayedDate: null, achievements: [], leaderboard: [], playerName: '' };
+    return { highScore: 0, bestLevel: 1, bestCombo: 0, bestAccuracy: 0, gamesPlayed: 0, totalHits: 0, totalShots: 0, streakDays: 0, bestStreak: 0, lastPlayedDate: null, achievements: [], leaderboard: [], playerName: '' };
   }
   function loadSave() {
     try {
@@ -2757,15 +2816,31 @@
   /* Named level tiers: every 5 levels the trial takes on a new name, a
      subtle arena color shift, and (past level 30) the difficulty formula
      keeps scaling indefinitely so there is always a next tier to reach. */
+  /* `sub` is a short cinematic subtitle shown beneath the tier name only
+     at the moment a new tier begins (not on every single level-up) --
+     gives each stretch of levels its own brief identity without
+     renaming the tiers themselves (achievement text already references
+     these exact names). */
   const LEVEL_TIERS = [
-    { min: 1,  name: "Novice's Trial",     tint: '#e9c349' },
-    { min: 5,  name: "Disciple's Trial",   tint: '#e0a83f' },
-    { min: 10, name: "Kshatriya's Trial",  tint: '#e74b38' },
-    { min: 15, name: "Adept's Trial",      tint: '#c9822f' },
-    { min: 20, name: "Champion's Trial",   tint: '#b1c8e9' },
-    { min: 25, name: "Hero's Trial",       tint: '#8a5adf' },
-    { min: 30, name: 'The Trial Eternal',  tint: '#f6dd8a' },
+    { min: 1,  name: "Novice's Trial",     tint: '#e9c349', sub: 'First Loose' },
+    { min: 5,  name: "Disciple's Trial",   tint: '#e0a83f', sub: 'The Test of Focus' },
+    { min: 10, name: "Kshatriya's Trial",  tint: '#e74b38', sub: 'Trial of Stillness' },
+    { min: 15, name: "Adept's Trial",      tint: '#c9822f', sub: 'The Precise Eye' },
+    { min: 20, name: "Champion's Trial",   tint: '#b1c8e9', sub: 'Under Pressure' },
+    { min: 25, name: "Hero's Trial",       tint: '#8a5adf', sub: 'Path to Mastery' },
+    { min: 30, name: 'The Trial Eternal',  tint: '#f6dd8a', sub: "Arjuna's Equal" },
   ];
+  /* Accuracy classification -- turns a bare percentage into a mythology-
+     flavored performance tier so the player reads meaning at a glance
+     instead of doing math on a number. */
+  function accuracyTierName(pct) {
+    if (pct >= 95) return 'Divine';
+    if (pct >= 90) return 'Masterful';
+    if (pct >= 80) return 'Excellent';
+    if (pct >= 70) return 'Sharp';
+    if (pct >= 50) return 'Steady';
+    return 'Needs Focus';
+  }
   function getLevelTier(lv) {
     let tier = LEVEL_TIERS[0];
     for (const t of LEVEL_TIERS) { if (lv >= t.min) tier = t; else break; }
@@ -2861,6 +2936,19 @@
   let ripples = [];
   let reflectTime = 0;
   let slowMoTimer = 0;
+  /* Frame-rate independence: every "per frame" motion constant below
+     (fishAngle speed, particle velocities, floating-text drift, ripple
+     growth) was originally tuned assuming a steady 60fps tick. dtScale
+     normalizes each frame's delta-time against that 60fps baseline (1 at
+     60fps, ~0.5 at 120fps, ~2 at 30fps) so gameplay speed stays identical
+     across refresh rates instead of running proportionally faster on
+     high-refresh displays. Clamped to guard against huge stalls (tab
+     backgrounded, slow device hiccup) turning into a teleporting fish or
+     an instant multi-second combo/particle skip on return. */
+  let lastFrameTime = null;
+  const FRAME_MS_60FPS = 1000 / 60;
+  const MAX_DT_SCALE = 3;
+  let frameDtScale = 1;
 
   let isDrawing = false;
   let drawStart = 0;
@@ -2869,6 +2957,13 @@
   let audioCtx = null;
   let sfxMuted = false;
   let musicMuted = false;
+  /* Shared SFX bus: every one-shot sound effect (twang, bell, thud, combo
+     chime, fanfare...) routes through this single gain node instead of
+     each function wiring straight to audioCtx.destination. Behavior is
+     unchanged today (gain stays at 1, so nothing sounds different) --
+     this just gives a single, centralized point for a future master SFX
+     volume control instead of touching every sound function individually. */
+  let sfxGain = null;
   let musicGain = null;
   let musicStarted = false;
   let musicTimers = [];
@@ -2876,6 +2971,11 @@
   function ensureAudio() {
     if (!audioCtx) {
       try { audioCtx = new (window.AudioContext || window.webkitAudioContext)(); } catch(e) {}
+    }
+    if (audioCtx && !sfxGain) {
+      sfxGain = audioCtx.createGain();
+      sfxGain.gain.value = 1;
+      sfxGain.connect(audioCtx.destination);
     }
     if (audioCtx && audioCtx.state === 'suspended') { audioCtx.resume().catch(()=>{}); }
     startMusic();
@@ -2896,6 +2996,7 @@
       audioCtx.resume().catch(() => {});
     } else if (audioCtx.state === 'closed') {
       audioCtx = null;
+      sfxGain = null;
       musicGain = null;
       musicStarted = false;
       musicTimers.forEach(t => clearTimeout(t));
@@ -3183,7 +3284,7 @@
     f.Q.value = 0.4;
     const g = audioCtx.createGain();
     g.gain.setValueAtTime(0.014, t);
-    noise.connect(f); f.connect(g); g.connect(audioCtx.destination);
+    noise.connect(f); f.connect(g); g.connect(sfxGain || audioCtx.destination);
     noise.start(t);
   }
   function playWhoosh() {
@@ -3203,7 +3304,7 @@
     const g = audioCtx.createGain();
     g.gain.setValueAtTime(0.15, t);
     g.gain.exponentialRampToValueAtTime(0.001, t + 0.22);
-    noise.connect(f); f.connect(g); g.connect(audioCtx.destination);
+    noise.connect(f); f.connect(g); g.connect(sfxGain || audioCtx.destination);
     noise.start(t);
   }
   function playTwang() {
@@ -3216,7 +3317,7 @@
     o.frequency.exponentialRampToValueAtTime(90, t + 0.15);
     g.gain.setValueAtTime(0.18, t);
     g.gain.exponentialRampToValueAtTime(0.001, t + 0.18);
-    o.connect(g); g.connect(audioCtx.destination);
+    o.connect(g); g.connect(sfxGain || audioCtx.destination);
     o.start(t); o.stop(t + 0.2);
   }
   function playBell() {
@@ -3230,7 +3331,7 @@
       g.gain.setValueAtTime(0.001, t);
       g.gain.linearRampToValueAtTime(0.12 / (i+1), t + 0.02);
       g.gain.exponentialRampToValueAtTime(0.001, t + 1.1);
-      o.connect(g); g.connect(audioCtx.destination);
+      o.connect(g); g.connect(sfxGain || audioCtx.destination);
       o.start(t); o.stop(t + 1.2);
     });
   }
@@ -3244,7 +3345,7 @@
     o.frequency.exponentialRampToValueAtTime(55, t + 0.2);
     g.gain.setValueAtTime(0.16, t);
     g.gain.exponentialRampToValueAtTime(0.001, t + 0.22);
-    o.connect(g); g.connect(audioCtx.destination);
+    o.connect(g); g.connect(sfxGain || audioCtx.destination);
     o.start(t); o.stop(t + 0.25);
   }
 
@@ -3260,7 +3361,7 @@
     g.gain.setValueAtTime(0.0001, t);
     g.gain.linearRampToValueAtTime(0.13, t + 0.02);
     g.gain.exponentialRampToValueAtTime(0.0001, t + 0.3);
-    o.connect(g); g.connect(audioCtx.destination);
+    o.connect(g); g.connect(sfxGain || audioCtx.destination);
     o.start(t); o.stop(t + 0.32);
   }
   function playAchievementChime() {
@@ -3274,7 +3375,7 @@
       g.gain.setValueAtTime(0.0001, t + i * 0.08);
       g.gain.linearRampToValueAtTime(0.11, t + i * 0.08 + 0.02);
       g.gain.exponentialRampToValueAtTime(0.0001, t + i * 0.08 + 0.4);
-      o.connect(g); g.connect(audioCtx.destination);
+      o.connect(g); g.connect(sfxGain || audioCtx.destination);
       o.start(t + i * 0.08); o.stop(t + i * 0.08 + 0.42);
     });
   }
@@ -3288,7 +3389,7 @@
     o.frequency.exponentialRampToValueAtTime(120, t + 0.2);
     g.gain.setValueAtTime(0.2, t);
     g.gain.exponentialRampToValueAtTime(0.001, t + 0.25);
-    o.connect(g); g.connect(audioCtx.destination);
+    o.connect(g); g.connect(sfxGain || audioCtx.destination);
     o.start(t); o.stop(t + 0.28);
   }
 
@@ -3359,7 +3460,36 @@
       return '<div class="record-badge' + (unlocked ? ' unlocked' : '') + '" title="' + a.title + (unlocked ? '' : ' (locked)') + '">' +
         '<svg class="icon-svg"><use href="#' + a.icon + '"/></svg></div>';
     }).join('');
+    renderNextAchievementHint();
     renderLeaderboard();
+  }
+  /* Progress-toward-next-achievement (client-side only, no server data
+     needed): only achievements with a measurable numeric target
+     (combo/level/streak) get a hint -- one-off achievements like "First
+     Blood" or "Perfect Draw" are binary and have no meaningful "progress"
+     to show. Surfaces whichever locked achievement is closest to done. */
+  function achievementProgress(a) {
+    if (a.id === 'combo3') return { current: save.bestCombo, target: 3 };
+    if (a.id === 'combo5') return { current: save.bestCombo, target: 5 };
+    if (a.id === 'streak3') return { current: save.streakDays, target: 3 };
+    const levelMatch = a.id.match(/^level(\d+)$/);
+    if (levelMatch) return { current: save.bestLevel, target: parseInt(levelMatch[1], 10) };
+    return null;
+  }
+  function renderNextAchievementHint() {
+    if (!nextAchievementEl) return;
+    let best = null;
+    for (const a of ACHIEVEMENTS) {
+      if (save.achievements.includes(a.id)) continue;
+      const p = achievementProgress(a);
+      if (!p || p.target <= 0 || p.current >= p.target) continue;
+      const ratio = p.current / p.target;
+      if (!best || ratio > best.ratio) best = { a, p, ratio };
+    }
+    if (!best) { nextAchievementEl.style.display = 'none'; return; }
+    const remaining = best.p.target - best.p.current;
+    nextAchievementEl.innerHTML = remaining + (remaining === 1 ? ' more' : ' more') + ' to unlock <strong>' + escapeHtml(best.a.title) + '</strong>';
+    nextAchievementEl.style.display = 'block';
   }
 
   function renderHeroStats() {
@@ -3916,14 +4046,23 @@
     initCloudAccount();
   }
 
+  /* Combo has three visual states matching its gameplay weight:
+     BUILDING (×2) -- subtle glow, the default badge look.
+     HOT (×3-4) -- a soft pulse animation, stage shimmer kicks in.
+     MASTER (×5+) -- the premium gold gradient plus an animated ring,
+     reserved for the rarer, more impressive streaks. */
   function updateComboBadge() {
     if (combo >= 2) {
       comboBadge.textContent = '×' + combo;
-      comboBadge.classList.toggle('hot', combo >= 5);
+      const isMaster = combo >= 5;
+      const isHot = combo >= 3 && combo < 5;
+      comboBadge.classList.toggle('hot', isMaster);
+      comboBadge.classList.toggle('combo-pulse', isHot);
       comboBadge.classList.remove('show'); void comboBadge.offsetWidth; comboBadge.classList.add('show');
       comboBadge.style.opacity = '1';
-      stageEl && stageEl.classList.toggle('combo-hot', combo >= 4);
+      stageEl && stageEl.classList.toggle('combo-hot', combo >= 3);
     } else {
+      comboBadge.classList.remove('hot', 'combo-pulse');
       comboBadge.style.opacity = '0';
       stageEl && stageEl.classList.remove('combo-hot');
     }
@@ -4584,10 +4723,18 @@
 
     drawStrength.classList.toggle('active', isDrawing);
     drawFill.style.width = (pull * 100) + '%';
+    /* Three draw zones instead of a plain power bar: LOW (still building
+       tension), GOOD (a usable, no-bonus release), PERFECT (the ≥0.88
+       release window that already grants the perfect-draw bonus below).
+       The reflection stays the primary focus -- this is a label/color
+       change on the existing bar, not a new mechanic. */
     const inPerfectZone = pull >= 0.88;
+    const inGoodZone = pull >= 0.55 && !inPerfectZone;
     drawFill.classList.toggle('perfect', inPerfectZone);
+    drawFill.classList.toggle('good', inGoodZone);
     drawLabel.classList.toggle('perfect', inPerfectZone);
-    drawLabel.textContent = inPerfectZone ? 'Perfect — Release!' : 'Draw Strength';
+    drawLabel.classList.toggle('good', inGoodZone);
+    drawLabel.textContent = inPerfectZone ? 'Perfect — Release!' : inGoodZone ? 'Good' : 'Draw Strength';
 
     const archerDrewVector = drawArcherSprite(pull);
 
@@ -4703,8 +4850,17 @@
     triggerArcherRelease();
   }
 
+  /* Device quality tier for particles: gameplay mechanics (hit detection,
+     scoring, timing) are identical on every device -- only the decorative
+     particle volume scales down on low-end hardware, plus a hard cap so a
+     rapid combo chain can never spike the live particle count into
+     something that costs real frame time regardless of device. */
+  const PARTICLE_QUALITY = LOW_END_DEVICE ? 0.55 : 1;
+  const MAX_PARTICLES = 220;
   function spawnParticles(x, y, color, count) {
-    for (let i = 0; i < count; i++) {
+    const n = Math.max(4, Math.round(count * PARTICLE_QUALITY));
+    for (let i = 0; i < n; i++) {
+      if (particles.length >= MAX_PARTICLES) break;
       const ang = Math.random() * Math.PI * 2;
       const spd = 1.5 + Math.random() * 6;
       particles.push({ x, y, vx: Math.cos(ang)*spd, vy: Math.sin(ang)*spd, life: 34, maxLife: 34, color });
@@ -4727,8 +4883,9 @@
   function triggerShakeMiss() {
     stageInner.classList.remove('shake-miss'); void stageInner.offsetWidth; stageInner.classList.add('shake-miss');
   }
-  function showLevelBanner(text) {
+  function showLevelBanner(text, smallText) {
     levelBannerBig.textContent = text;
+    if (levelBannerSmall) levelBannerSmall.textContent = smallText || 'Level Cleared';
     levelBanner.classList.remove('show'); void levelBanner.offsetWidth; levelBanner.classList.add('show');
   }
 
@@ -4741,16 +4898,27 @@
     const cx = x1 + t * dx, cy = y1 + t * dy;
     return Math.hypot(px - cx, py - cy);
   }
-  function checkArrows() {
+  function checkArrows(dtScale) {
+    if (!dtScale || !isFinite(dtScale)) dtScale = 1;
     const fpos = getFishPos();
     const wiggle = Math.sin(fishAngle * 4.2) * 0.10;
     const eyeLocal = fishEyeLocal(fishSize);
     const eyeX = fpos.x + eyeLocal.x * Math.cos(wiggle) - eyeLocal.y * Math.sin(wiggle);
     const eyeY = fpos.y + eyeLocal.x * Math.sin(wiggle) + eyeLocal.y * Math.cos(wiggle);
 
-    function registerBodyMiss(a) {
+    /* Per-shot "why" label -- so a miss teaches instead of just registering
+       as a silent failure. distToEye/eyeLocal.r are already computed at the
+       call site for the frame the miss is confirmed on. */
+    function missDirectionLabel(a, distToEye) {
+      if (distToEye <= eyeLocal.r + 22) return 'Near Edge';
+      const dx = a.x - eyeX, dy = a.y - eyeY;
+      if (Math.abs(dy) > Math.abs(dx) * 1.15) return dy < 0 ? 'Too High' : 'Too Low';
+      return 'Wide';
+    }
+    function registerBodyMiss(a, distToEye) {
+      const reason = missDirectionLabel(a, distToEye);
       spawnParticles(a.x, a.y, '#e74b38', 12);
-      showFloatingText(combo >= 2 ? 'Combo Broken' : 'Miss', fpos.x, fpos.y - 60, '#e74b38', false);
+      showFloatingText((combo >= 2 ? 'Combo Broken · ' : 'Miss · ') + reason, fpos.x, fpos.y - 60, '#e74b38', false);
       combo = 0;
       updateComboBadge();
       triggerFlash(a.x, a.y, true);
@@ -4763,7 +4931,7 @@
     for (let i = flyingArrows.length - 1; i >= 0; i--) {
       const a = flyingArrows[i];
       const prevX = a.x, prevY = a.y;
-      a.x += a.vx; a.y += a.vy;
+      a.x += a.vx * dtScale; a.y += a.vy * dtScale;
       a.angle = Math.atan2(a.vy, a.vx);
 
       /* Swept (segment) collision rather than a point-in-time check: at
@@ -4783,8 +4951,16 @@
       const outOfBounds = a.x < -30 || a.x > W + 30 || a.y > ARENA_H + 10 || a.y < -30;
       if (outOfBounds) {
         flyingArrows.splice(i, 1);
-        if (a.wasInBody) registerBodyMiss(a);
-        else if (combo >= 2) { combo = 0; updateComboBadge(); }
+        if (a.wasInBody) {
+          registerBodyMiss(a, distToEye);
+        } else {
+          /* Sailed past without ever touching the fish -- previously
+             completely silent. A light, non-punishing label so the shot
+             doesn't just vanish with no feedback (still no shake/vibrate,
+             this case is a clean whiff, not a body-graze). */
+          showFloatingText('Wide', fpos.x, fpos.y - 60, 'rgba(231,75,56,0.75)', false);
+          if (combo >= 2) { combo = 0; updateComboBadge(); }
+        }
         checkOutOfArrows();
         continue;
       }
@@ -4796,16 +4972,35 @@
         save.totalHits++;
         if (combo > save.bestCombo) save.bestCombo = combo;
         const comboMult = 1 + Math.min(combo - 1, 9) * 0.15;
+        const baseScore = 100 * level;
         const perfectBonus = a.perfect ? 50 * level : 0;
-        const gained = Math.round(100 * level * comboMult) + perfectBonus;
+        const gained = Math.round(baseScore * comboMult) + perfectBonus;
         score += gained;
+        trialRawScore += baseScore;
+        trialComboBonus += Math.round(baseScore * comboMult) - baseScore;
+        trialPerfectBonus += perfectBonus;
 
         const isNewHigh = score > save.highScore;
         if (isNewHigh) save.highScore = score;
         if (level > save.bestLevel) save.bestLevel = level;
         persistSave();
 
-        spawnParticles(a.x, a.y, a.perfect ? '#fff2c0' : '#e9c349', a.perfect ? 46 : 30);
+        /* Escalating hit-feedback hierarchy: NORMAL < EXCELLENT < PERFECT
+           < MASTER. precisionRatio measures how close to dead-center the
+           arrow landed (0 = center, 1 = edge of the hit window) so a
+           tight shot gets recognized even without a full-strength draw.
+           MASTER is deliberately rare -- perfect draw AND a x5+ combo at
+           once -- so it stays a genuine cinematic moment, not the norm. */
+        const precisionRatio = distToEye / (eyeLocal.r + 6);
+        let hitTier = 'normal';
+        if (precisionRatio <= 0.35 || combo >= 3) hitTier = 'excellent';
+        if (a.perfect) hitTier = 'perfect';
+        if (a.perfect && combo >= 5) hitTier = 'master';
+        const TIER_PARTICLES = { normal: 24, excellent: 34, perfect: 46, master: 64 };
+        const TIER_COLOR = { normal: '#e9c349', excellent: '#ffe08a', perfect: '#fff2c0', master: '#fff2c0' };
+
+        spawnParticles(a.x, a.y, TIER_COLOR[hitTier], TIER_PARTICLES[hitTier]);
+        if (hitTier === 'master') spawnParticles(a.x, a.y, '#ffffff', 18);
         spawnRipple(bowX, ARENA_H + 20);
         flyingArrows.splice(i, 1);
         updateHUD();
@@ -4813,12 +5008,16 @@
         pulse(scorePill); pulse(levelPill);
 
         let label = 'BULLSEYE · +' + gained;
-        if (a.perfect) label = 'PERFECT DRAW · +' + gained;
+        if (hitTier === 'excellent') label = 'EXCELLENT · +' + gained;
+        if (hitTier === 'perfect') label = 'PERFECT DRAW · +' + gained;
         if (combo >= 3) label = 'COMBO ×' + combo + ' · +' + gained;
-        showFloatingText(label, fpos.x, fpos.y - 68, a.perfect ? '#fff2c0' : '#e9c349', true);
+        if (hitTier === 'master') label = 'MASTERFUL ×' + combo + ' · +' + gained;
+        showFloatingText(label, fpos.x, fpos.y - 68, hitTier === 'normal' ? '#e9c349' : '#fff2c0', true);
 
         triggerFlash(a.x, a.y);
-        if (combo >= 3 || a.perfect) { triggerShake(true); vibrate(a.perfect ? [18, 40, 18] : [22]); }
+        if (hitTier === 'master') { triggerShake(true); vibrate([24, 50, 24, 50, 24]); }
+        else if (combo >= 3 || hitTier === 'perfect') { triggerShake(true); vibrate(hitTier === 'perfect' ? [18, 40, 18] : [22]); }
+        else if (hitTier === 'excellent') { triggerShake(false); vibrate(16); }
         else { triggerShake(false); vibrate(14); }
 
         if (combo >= 2) playComboChime(combo); else playBell();
@@ -4837,7 +5036,7 @@
           resetLevel();
           const newTier = currentTier;
           const tierJustChanged = newTier !== prevTier;
-          showLevelBanner(tierJustChanged ? newTier.name : ('Level ' + level));
+          showLevelBanner(tierJustChanged ? newTier.name : ('Level ' + level), tierJustChanged ? newTier.sub : null);
           playEpicFanfare();
           if (level >= 5) unlock('level5');
           if (level >= 10) unlock('level10');
@@ -4853,7 +5052,7 @@
            still inside, later frames get a fair chance at the eye check
            above first (see the swept-collision note). */
         flyingArrows.splice(i, 1);
-        registerBodyMiss(a);
+        registerBodyMiss(a, distToEye);
       }
     }
   }
@@ -4872,23 +5071,49 @@
     const isNewHighAtEnd = score > save.highScore;
     if (isNewHighAtEnd) save.highScore = score;
     if (level > save.bestLevel) save.bestLevel = level;
+    const accuracyPct = shotsThisTrial > 0 ? Math.round((hitsThisTrial / shotsThisTrial) * 100) : 0;
+    const accuracyTier = shotsThisTrial > 0 ? accuracyTierName(accuracyPct) : null;
+    if (shotsThisTrial > 0 && accuracyPct > (save.bestAccuracy || 0)) save.bestAccuracy = accuracyPct;
     persistSave();
     if (isNewHighAtEnd && score > 0) unlock('high_score');
 
-    const accuracyPct = shotsThisTrial > 0 ? Math.round((hitsThisTrial / shotsThisTrial) * 100) : 0;
+    /* Post-game psychology (spec #20): recognize improvement against the
+       record as it stood BEFORE this trial (prevBestScore/Combo/Accuracy,
+       snapshotted at trial start), not against `save` which this same
+       trial has already been updating live as it went. */
+    const recordLines = [];
+    if (prevBestScore > 0 && score > prevBestScore) recordLines.push('New Personal Best');
+    if (prevBestCombo > 0 && save.bestCombo > prevBestCombo) recordLines.push('New Combo Record ×' + save.bestCombo);
+    if (prevBestAccuracy > 0 && shotsThisTrial > 0 && accuracyPct > prevBestAccuracy) recordLines.push('Your Precision Improved');
+    let isRecordBreaking = recordLines.length > 0;
+    if (!isRecordBreaking && prevBestScore > 0 && score > 0 && score < prevBestScore) {
+      recordLines.push('Close — ' + (prevBestScore - score) + ' points from your best');
+    }
+    if (recordLines.length > 0) {
+      recordMsgEl.textContent = recordLines.join(' · ');
+      recordMsgEl.classList.toggle('record-new', isRecordBreaking);
+      recordMsgEl.style.display = 'block';
+    } else {
+      recordMsgEl.style.display = 'none';
+    }
 
     modalTitle.textContent = 'Trial Complete';
     if (score === 0) {
       modalTagline.textContent = 'The Reflection Eluded You';
-    } else if (accuracyPct >= 85) {
-      modalTagline.textContent = 'Exceptional Focus';
-    } else if (accuracyPct >= 60) {
-      modalTagline.textContent = 'A Steady Aim';
     } else {
-      modalTagline.textContent = 'The Reflection Wavered';
+      modalTagline.textContent = accuracyTier + ' Precision';
     }
     modalStats.style.display = 'flex';
+    finalAccuracyLbl.textContent = accuracyTier ? ('Accuracy · ' + accuracyTier) : 'Accuracy';
     animateCount(finalAccuracyEl, accuracyPct, { suffix: '%' });
+    if (shotsThisTrial > 0 && score > 0) {
+      scoreBreakdown.style.display = 'flex';
+      bdRawEl.textContent = trialRawScore;
+      bdComboEl.textContent = '+' + trialComboBonus;
+      bdPerfectEl.textContent = '+' + trialPerfectBonus;
+    } else {
+      scoreBreakdown.style.display = 'none';
+    }
     animateCount(finalScoreEl, score, { duration: 900 });
     animateCount(finalLevelEl, level, { duration: 500 });
     finalBestEl.textContent = save.highScore;
@@ -5114,10 +5339,10 @@
     ctx.restore();
   }
   function drawReflection() {
-    reflectTime += 0.035;
+    reflectTime += 0.035 * frameDtScale;
     for (let i = ripples.length - 1; i >= 0; i--) {
       const r = ripples[i];
-      r.r += 2.4; r.life--;
+      r.r += 2.4 * frameDtScale; r.life -= frameDtScale;
       if (r.life <= 0) { ripples.splice(i, 1); continue; }
       ctx.strokeStyle = `rgba(255,238,180,${r.life/40*0.6})`;
       ctx.lineWidth = 1.2;
@@ -5127,14 +5352,22 @@
     }
   }
 
-  function gameLoop() {
+  function gameLoop(nowTs) {
+    if (lastFrameTime === null) lastFrameTime = nowTs || performance.now();
+    const now = nowTs || performance.now();
+    let dtScale = (now - lastFrameTime) / FRAME_MS_60FPS;
+    lastFrameTime = now;
+    if (!isFinite(dtScale) || dtScale <= 0) dtScale = 1;
+    if (dtScale > MAX_DT_SCALE) dtScale = MAX_DT_SCALE;
+    frameDtScale = dtScale;
+
     ctx.clearRect(0, 0, W, H);
     drawBackground();
 
     if (gameActive) {
       const speedMul = slowMoTimer > 0 ? 0.12 : 1;
-      fishAngle += fishSpeed * speedMul;
-      if (slowMoTimer > 0) slowMoTimer--;
+      fishAngle += fishSpeed * speedMul * dtScale;
+      if (slowMoTimer > 0) slowMoTimer -= dtScale;
     }
 
     const fpos = getFishPos();
@@ -5159,11 +5392,11 @@
     }
 
     if (!gameActive) drawArcherSprite(0);
-    if (gameActive) checkArrows();
+    if (gameActive) checkArrows(dtScale);
 
     for (let i = particles.length - 1; i >= 0; i--) {
       const p = particles[i];
-      p.x += p.vx; p.y += p.vy; p.vy += 0.12; p.life--;
+      p.x += p.vx * dtScale; p.y += p.vy * dtScale; p.vy += 0.12 * dtScale; p.life -= dtScale;
       if (p.life <= 0) { particles.splice(i, 1); continue; }
       ctx.globalAlpha = p.life / p.maxLife;
       /* Soft glow dot instead of a flat circle -- reads as an ember/spark
@@ -5179,7 +5412,7 @@
 
     for (let i = floatingTexts.length - 1; i >= 0; i--) {
       const t = floatingTexts[i];
-      t.y -= 0.55; t.life--;
+      t.y -= 0.55 * dtScale; t.life -= dtScale;
       if (t.life <= 0) { floatingTexts.splice(i, 1); continue; }
       ctx.globalAlpha = Math.min(1, t.life / 22);
       ctx.fillStyle = t.color;
@@ -5269,6 +5502,8 @@
     ensureAudio();
     score = 0; level = 1; combo = 0; hitThisGame = false;
     shotsThisTrial = 0; hitsThisTrial = 0;
+    trialRawScore = 0; trialComboBonus = 0; trialPerfectBonus = 0;
+    prevBestScore = save.highScore; prevBestCombo = save.bestCombo; prevBestAccuracy = save.bestAccuracy || 0;
     flyingArrows = []; particles = []; floatingTexts = []; ripples = [];
     resetLevel();
     updateComboBadge();
