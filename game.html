@@ -2151,21 +2151,41 @@
     return 'Sign-in isn’t working right now — try again in a moment.';
   }
 
-  /* ---------- Google / Facebook sign-in: full-page redirect, not a popup.
-     A popup window is unreliable across browsers -- some (especially on
-     mobile) open it as an actual new tab instead of a small floating
-     window, which reads as broken/confusing. signInWithRedirect instead
-     navigates the SAME tab out to the provider and straight back -- no
-     second window or tab ever appears. Errors from a completed redirect
-     surface later via getRedirectResult() near initCloudAccount(). ---------- */
+  /* ---------- Google / Facebook sign-in: full-page redirect, not a popup,
+     EXCEPT on Safari (see isSafariBrowser below). A popup window is
+     unreliable across browsers -- some (especially on mobile) open it as
+     an actual new tab instead of a small floating window, which reads as
+     broken/confusing. signInWithRedirect instead navigates the SAME tab
+     out to the provider and straight back -- no second window or tab ever
+     appears. Errors from a completed redirect surface later via
+     getRedirectResult() near initCloudAccount().
+
+     Safari is the one exception: its Intelligent Tracking Prevention
+     blocks the storage bridge signInWithRedirect relies on to relay the
+     result back after the round trip through the provider, even with a
+     first-party custom auth domain -- the redirect completes (account
+     picker shows, account gets selected) but the app never learns sign-in
+     happened. signInWithPopup doesn't depend on that bridge (the result
+     comes back via the popup window directly), so Safari uses that
+     instead. ---------- */
+  function isSafariBrowser() {
+    const ua = navigator.userAgent;
+    return /^((?!chrome|android|crios|fxios|edg).)*safari/i.test(ua);
+  }
+
   async function signInWithGoogle() {
     if (!fbAuth) {
       showSimpleToast('Sign-in unavailable', 'Couldn’t reach Google sign-in right now — check your connection and try again.');
       return;
     }
     closeAuthMenu();
+    const provider = new firebase.auth.GoogleAuthProvider();
     try {
-      await fbAuth.signInWithRedirect(new firebase.auth.GoogleAuthProvider());
+      if (isSafariBrowser()) {
+        await fbAuth.signInWithPopup(provider);
+      } else {
+        await fbAuth.signInWithRedirect(provider);
+      }
     } catch (e) {
       const msg = authErrorMessage(e);
       if (msg) showSimpleToast('Sign-in failed', msg);
@@ -2182,7 +2202,11 @@
     const provider = new firebase.auth.FacebookAuthProvider();
     provider.addScope('email');
     try {
-      await fbAuth.signInWithRedirect(provider);
+      if (isSafariBrowser()) {
+        await fbAuth.signInWithPopup(provider);
+      } else {
+        await fbAuth.signInWithRedirect(provider);
+      }
     } catch (e) {
       const msg = authErrorMessage(e);
       if (msg) showSimpleToast('Sign-in failed', msg);
